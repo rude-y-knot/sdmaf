@@ -1,0 +1,225 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <!-- Gradients for realistic industrial shading -->
+    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4B5563" />
+      <stop offset="50%" stop-color="#374151" />
+      <stop offset="100%" stop-color="#1F2937" />
+    </linearGradient>
+
+    <linearGradient id="bodySideGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#374151" />
+      <stop offset="100%" stop-color="#1F2937" />
+    </linearGradient>
+
+    <linearGradient id="conveyorGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#262626" />
+      <stop offset="40%" stop-color="#1C1917" />
+      <stop offset="100%" stop-color="#0A0A0A" />
+    </linearGradient>
+
+    <linearGradient id="metalWhite" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F9FAFB" />
+      <stop offset="70%" stop-color="#E5E7EB" />
+      <stop offset="100%" stop-color="#D1D5DB" />
+    </linearGradient>
+
+    <linearGradient id="metalWhiteLight" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#E5E7EB" />
+    </linearGradient>
+
+    <linearGradient id="accentOrange" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#D97706" />
+    </linearGradient>
+
+    <linearGradient id="screenGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </linearGradient>
+
+    <!-- Shadow filter -->
+    <radialGradient id="dropShadow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(0,0,0,0.35)" />
+      <stop offset="60%" stop-color="rgba(0,0,0,0.15)" />
+      <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+    </radialGradient>
+  </defs>
+
+  <!-- Ground Ambient Shadow -->
+  <ellipse cx="400" cy="480" rx="360" ry="60" fill="url(#dropShadow)" />
+  <ellipse cx="690" cy="460" rx="70" ry="25" fill="url(#dropShadow)" opacity="0.6" />
+
+  <!-- Machine Base Structure (Chassis) -->
+  <g id="machine-chassis">
+    <!-- Adjustable Support Feet / Leveling Pads -->
+    <!-- Left rear leg -->
+    <path d="M102 430 L112 430 L112 460 L102 460 Z" fill="#374151" />
+    <ellipse cx="107" cy="460" rx="12" ry="5" fill="#1F2937" />
+    
+    <!-- Left mid leg -->
+    <path d="M312 505 L322 505 L322 535 L312 535 Z" fill="#374151" />
+    <ellipse cx="317" cy="535" rx="14" ry="6" fill="#1F2937" />
+
+    <!-- Right front leg -->
+    <path d="M608 480 L618 480 L618 510 L608 510 Z" fill="#374151" />
+    <ellipse cx="613" cy="510" rx="14" ry="6" fill="#1F2937" />
+
+    <!-- Far right rear leg -->
+    <path d="M625 420 L633 420 L633 445 L625 445 Z" fill="#374151" />
+    <ellipse cx="629" cy="445" rx="10" ry="4" fill="#1F2937" />
+
+    <!-- Main Bed Frame Left/Front Panels -->
+    <!-- Left Side Panel (dark grey) -->
+    <path d="M85 330 L318 410 L318 515 L85 435 Z" fill="url(#bodySideGrad)" stroke="#1F2937" stroke-width="1.5" />
+    
+    <!-- Left side cabinet seam & doors -->
+    <path d="M175 365 L175 465" stroke="#111827" stroke-width="2" />
+    <rect x="180" y="420" width="12" height="18" rx="2" fill="#DC2626" opacity="0.9" /> <!-- Red E-stop / latch -->
+    <rect x="205" y="425" width="6" height="15" rx="1" fill="#1F2937" />
+
+    <!-- Front Face Panel (facing bottom-right in isometric perspective) -->
+    <path d="M318 410 L635 345 L635 450 L318 515 Z" fill="url(#bodyGrad)" stroke="#111827" stroke-width="1.5" />
+
+    <!-- Front Panel Recessed Service Doors -->
+    <path d="M350 420 L445 400 L445 485 L350 503 Z" fill="#2E3744" stroke="#1F2937" stroke-width="1.5" />
+    <rect x="430" y="435" width="4" height="14" fill="#111827" />
+
+    <path d="M460 398 L590 370 L590 455 L460 482 Z" fill="#2E3744" stroke="#1F2937" stroke-width="1.5" />
+    <rect x="548" y="410" width="4" height="14" fill="#111827" />
+
+    <!-- Hexagonal Geometric Logo on front right panel -->
+    <g transform="translate(500, 420) scale(0.75)">
+      <polygon points="25,0 50,14 50,42 25,56 0,42 0,14" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round" />
+      <polygon points="25,10 40,19 40,37 25,46 10,37 10,19" fill="#FFFFFF" opacity="0.2" />
+      <path d="M25,12 L25,44 M12,20 L38,36 M38,20 L12,36" stroke="#FFFFFF" stroke-width="3" />
+    </g>
+
+    <!-- Side corner bumpers / yellow indicators -->
+    <ellipse cx="64" cy="318" rx="5" ry="3" fill="url(#accentOrange)" />
+    <ellipse cx="340" cy="385" rx="6" ry="3" fill="url(#accentOrange)" />
+    <ellipse cx="672" cy="340" rx="5" ry="3" fill="url(#accentOrange)" />
+  </g>
+
+  <!-- Cutting Table / Conveyor Bed Surface -->
+  <g id="conveyor-bed">
+    <!-- Roller edge at front and rear -->
+    <path d="M320 375 L350 370 L350 395 L320 400 Z" fill="#9CA3AF" />
+    <ellipse cx="370" cy="396" rx="8" ry="15" fill="#4B5563" />
+
+    <!-- Conveyor table top plane -->
+    <polygon points="175,255 530,225 640,335 220,380" fill="url(#conveyorGrad)" stroke="#111827" stroke-width="1.5" />
+
+    <!-- Micro textured grid lines on conveyor table -->
+    <line x1="240" y1="365" x2="570" y2="280" stroke="#333333" stroke-width="1" stroke-dasharray="3,3" />
+    <line x1="210" y1="325" x2="550" y2="250" stroke="#333333" stroke-width="1" stroke-dasharray="3,3" />
+    <line x1="280" y1="370" x2="350" y2="260" stroke="#262626" stroke-width="1" />
+    <line x1="360" y1="355" x2="430" y2="250" stroke="#262626" stroke-width="1" />
+    <line x1="440" y1="340" x2="510" y2="240" stroke="#262626" stroke-width="1" />
+  </g>
+
+  <!-- Left/Right Guide Rail Housing Structure (White side carriages) -->
+  <g id="gantry-carriages">
+    <!-- Left Carriage (White powder coated) -->
+    <polygon points="60,310 145,295 145,360 60,375" fill="url(#metalWhiteLight)" stroke="#D1D5DB" stroke-width="1" />
+    <polygon points="60,310 145,295 165,302 80,318" fill="#FFFFFF" />
+    <polygon points="145,295 165,302 165,367 145,360" fill="#9CA3AF" />
+    <text x="75" y="348" font-family="sans-serif" font-size="9" font-weight="bold" fill="#374151" transform="rotate(7, 75, 348)">YUCHON</text>
+
+    <!-- Front Right Carriage -->
+    <polygon points="325,385 425,360 425,455 325,480" fill="url(#metalWhite)" stroke="#9CA3AF" stroke-width="1" />
+    <polygon points="325,385 425,360 450,370 350,395" fill="#FFFFFF" />
+    <polygon points="425,360 450,370 450,465 425,455" fill="#9CA3AF" />
+    <ellipse cx="342" cy="388" rx="5" ry="3" fill="url(#accentOrange)" />
+
+    <!-- Rear Right Carriage End -->
+    <polygon points="485,285 520,280 520,315 485,320" fill="url(#metalWhite)" />
+  </g>
+
+  <!-- Cross Gantry Beam (The long transverse bridge) -->
+  <g id="gantry-beam">
+    <!-- Upper main beam -->
+    <polygon points="145,305 515,245 515,275 145,335" fill="url(#metalWhiteLight)" stroke="#9CA3AF" stroke-width="1" />
+    <polygon points="145,305 515,245 515,255 145,315" fill="#FFFFFF" />
+    <polygon points="145,335 515,275 515,282 145,342" fill="#6B7280" />
+
+    <!-- Precision Linear Guide Rail & Rack -->
+    <line x1="160" y1="322" x2="495" y2="265" stroke="#374151" stroke-width="3" />
+    <line x1="160" y1="326" x2="495" y2="269" stroke="#9CA3AF" stroke-width="1.5" />
+
+    <!-- Flexible Cable Carrier / Drag Chain (Energy chain along top of beam) -->
+    <path d="M205 295 Q235 275 270 280 L350 268" fill="none" stroke="#1F2937" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3,2" />
+    <path d="M205 293 Q235 273 270 278 L350 266" fill="none" stroke="#F59E0B" stroke-width="2" stroke-dasharray="6,4" />
+  </g>
+
+  <!-- Dual Cutting / Tool Head Assembly (Central module on gantry) -->
+  <g id="cutting-head">
+    <!-- Main carriage base housing (Dark graphite) -->
+    <polygon points="305,245 365,235 365,300 305,310" fill="#374151" stroke="#111827" stroke-width="1" />
+    <polygon points="305,245 365,235 385,242 325,252" fill="#4B5563" />
+    <polygon points="365,235 385,242 385,307 365,300" fill="#1F2937" />
+
+    <!-- Dual head modules (Laser & Oscillating knife / router spindles) -->
+    <rect x="310" y="250" width="22" height="40" rx="3" fill="#1F2937" stroke="#4B5563" stroke-width="1" />
+    <text x="313" y="265" font-family="sans-serif" font-size="5" fill="#9CA3AF">TOOL 1</text>
+    <rect x="336" y="250" width="22" height="40" rx="3" fill="#1F2937" stroke="#4B5563" stroke-width="1" />
+    <text x="339" y="265" font-family="sans-serif" font-size="5" fill="#9CA3AF">TOOL 2</text>
+
+    <!-- Downward tool spindles / nozzles -->
+    <path d="M318 290 L324 290 L322 325 L320 325 Z" fill="#9CA3AF" />
+    <circle cx="321" cy="327" r="2" fill="#E5E7EB" />
+    
+    <path d="M344 290 L350 290 L348 322 L346 322 Z" fill="#9CA3AF" />
+    <circle cx="347" cy="324" r="2" fill="#55AA53" />
+
+    <!-- Pneumatic / Laser fiber cables leading to head -->
+    <path d="M345 235 Q370 210 380 230" fill="none" stroke="#111827" stroke-width="3" />
+    <path d="M350 235 Q385 205 385 235" fill="none" stroke="#2563EB" stroke-width="2" />
+  </g>
+
+  <!-- Standalone CNC Operator Workstation Console (Right Side) -->
+  <g id="operator-workstation">
+    <!-- Pedestal Base Plate & Floor Caster -->
+    <polygon points="630,460 720,445 735,465 645,480" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1" />
+    <polygon points="630,460 645,480 645,490 630,470" fill="#9CA3AF" />
+    <polygon points="645,480 735,465 735,475 645,490" fill="#6B7280" />
+
+    <!-- White Column / Cabinet Body -->
+    <polygon points="640,350 710,335 710,455 640,470" fill="url(#metalWhiteLight)" stroke="#D1D5DB" stroke-width="1" />
+    <polygon points="710,335 730,345 730,465 710,455" fill="#9CA3AF" stroke="#6B7280" stroke-width="1" />
+
+    <!-- Recessed Computer Door / Side access -->
+    <rect x="685" y="365" width="20" height="75" rx="2" fill="#4B5563" />
+    <circle cx="700" cy="405" r="2" fill="#111827" />
+
+    <!-- Keyboard & Mouse Control Tray -->
+    <polygon points="620,330 740,305 765,315 645,340" fill="#FFFFFF" stroke="#9CA3AF" stroke-width="1.5" />
+    <polygon points="620,330 645,340 645,346 620,336" fill="#9CA3AF" />
+    <polygon points="645,340 765,315 765,321 645,346" fill="#6B7280" />
+
+    <!-- Keyboard & Mouse -->
+    <polygon points="640,325 715,310 720,317 645,332" fill="#374151" />
+    <ellipse cx="740" cy="318" rx="6" ry="3" fill="#1F2937" />
+
+    <!-- Monitor Mounting Neck -->
+    <rect x="665" y="270" width="8" height="40" fill="#4B5563" />
+
+    <!-- CNC LCD Display Screen (Tilt angle) -->
+    <polygon points="655,230 715,220 715,280 655,290" fill="url(#screenGrad)" stroke="#1E293B" stroke-width="3" rx="4" />
+    <!-- Screen Bezel & Display Glow -->
+    <polygon points="658,234 712,225 712,276 658,285" fill="#0F172A" />
+    <!-- Graphical UI on screen -->
+    <path d="M663 245 L685 240 L700 248 L690 265 L670 270 Z" fill="none" stroke="#55AA53" stroke-width="1.5" />
+    <line x1="662" y1="275" x2="685" y2="272" stroke="#60A5FA" stroke-width="1.5" />
+    <line x1="690" y1="271" x2="708" y2="268" stroke="#F59E0B" stroke-width="1.5" />
+  </g>
+
+  <!-- Quality & High-Precision Indicator Badge Accent -->
+  <g transform="translate(680, 80) scale(0.9)">
+    <rect x="0" y="0" width="100" height="32" rx="4" fill="rgba(0,0,0,0.85)" stroke="#374151" stroke-width="1" />
+    <circle cx="16" cy="16" r="6" fill="#55AA53" />
+    <text x="30" y="14" font-family="monospace" font-size="9" fill="#9CA3AF" font-weight="bold">ЧПУ 22 кВт</text>
+    <text x="30" y="24" font-family="monospace" font-size="9" fill="#FFFFFF">ТОЧНОСТЬ ±0.03</text>
+  </g>
+</svg>
