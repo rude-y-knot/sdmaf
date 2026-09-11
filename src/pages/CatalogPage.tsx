@@ -6,20 +6,23 @@ import {
   ArrowUpRight, 
   ArrowLeft,
   Filter,
-  SlidersHorizontal,
   Check,
   ChevronRight,
   Calculator,
   Compass,
-  Building2,
-  Layers,
-  Sparkles,
-  ShieldCheck,
+  FileText,
+  Eye,
   Plus
 } from 'lucide-react';
-import { MAF_PRODUCTS, RAL_PALETTE } from '../data/factoryData';
-import { MAFProduct, RALColor } from '../types';
+import { MAF_PRODUCTS } from '../data/factoryData';
+import { MAFProduct } from '../types';
 import { SlidesFilterBar, SlidesFilterState } from '../components/SlidesFilterBar';
+import { BikeFiltersBar, BikeFilterState } from '../components/catalog/BikeFiltersBar';
+import { FurnitureFiltersBar, FurnitureFilterState } from '../components/catalog/FurnitureFiltersBar';
+import { PlaygroundFiltersBar, PlaygroundFilterState } from '../components/catalog/PlaygroundFiltersBar';
+import { VatFiltersBar, VatFilterState } from '../components/catalog/VatFiltersBar';
+import { StainlessFiltersBar, StainlessFilterState } from '../components/catalog/StainlessFiltersBar';
+import { ProductDetailModal } from '../components/ProductDetailModal';
 import { useEstimate } from '../context/EstimateContext';
 
 interface CatalogPageProps {
@@ -48,7 +51,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
       return 'playgrounds';
     }
     if (cat === 'vats') return 'vats';
-    if (['metal-structures', 'fences', 'treeGrates', 'artObjects', 'lighting'].includes(cat)) {
+    if (['metal-structures', 'fences', 'treeGrates', 'artObjects', 'lighting', 'stairs', 'planters', 'entrance-groups', 'art-objects', 'pergolas'].includes(cat)) {
       return 'metal-structures';
     }
     return cat;
@@ -76,12 +79,16 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
       navigate(`/catalog/${catId}`);
     }
   };
+
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<'default' | 'weight-desc' | 'name-asc'>('default');
 
+  // Product detail passport modal state
+  const [selectedProductForDetail, setSelectedProductForDetail] = useState<MAFProduct | null>(null);
+
   const { addItem, isInEstimate, getItemQuantity, setCalculatingProduct } = useEstimate();
 
-  // Slide specific filter state
+  // 1. Slide specific filter state
   const initialSlideFilters: SlidesFilterState = {
     slideType: 'all',
     slideForm: 'all',
@@ -92,11 +99,44 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
   };
   const [slideFilters, setSlideFilters] = useState<SlidesFilterState>(initialSlideFilters);
 
-  useEffect(() => {
-    if (initialCategory) {
-      setSelectedCategory(normalizeCategory(initialCategory));
-    }
-  }, [initialCategory]);
+  // 2. Bike specific filter state
+  const initialBikeFilters: BikeFilterState = {
+    bikeType: 'all',
+    capacityRange: 'all',
+    bikeForm: 'all',
+  };
+  const [bikeFilters, setBikeFilters] = useState<BikeFilterState>(initialBikeFilters);
+
+  // 3. Furniture specific filter state
+  const initialFurnitureFilters: FurnitureFilterState = {
+    furnitureType: 'all',
+    lengthRange: 'all',
+  };
+  const [furnitureFilters, setFurnitureFilters] = useState<FurnitureFilterState>(initialFurnitureFilters);
+
+  // 4. Playground specific filter state
+  const initialPlaygroundFilters: PlaygroundFilterState = {
+    playgroundType: 'all',
+  };
+  const [playgroundFilters, setPlaygroundFilters] = useState<PlaygroundFilterState>(initialPlaygroundFilters);
+
+  // 5. Vat specific filter state
+  const initialVatFilters: VatFilterState = {
+    steelGrade: 'all',
+    thickness: 'all',
+    capacityCategory: 'all',
+    bowlShape: 'all',
+    mounting: 'all',
+    heating: 'all',
+    lighting: 'all',
+  };
+  const [vatFilters, setVatFilters] = useState<VatFilterState>(initialVatFilters);
+
+  // 6. Stainless steel specific filter state
+  const initialStainlessFilters: StainlessFilterState = {
+    stainlessType: 'all',
+  };
+  const [stainlessFilters, setStainlessFilters] = useState<StainlessFilterState>(initialStainlessFilters);
 
   // Scroll to top on mount
   useEffect(() => {
@@ -113,8 +153,29 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
     { id: 'metal-structures', label: 'Изделия из нержавеющей стали' },
   ];
 
+  // Raw category arrays
   const allSlides = useMemo(() => {
     return MAF_PRODUCTS.filter((p) => p.category === 'slides');
+  }, []);
+
+  const allBikes = useMemo(() => {
+    return MAF_PRODUCTS.filter((p) => normalizeCategory(p.category) === 'bike');
+  }, []);
+
+  const allFurniture = useMemo(() => {
+    return MAF_PRODUCTS.filter((p) => normalizeCategory(p.category) === 'furniture');
+  }, []);
+
+  const allPlaygrounds = useMemo(() => {
+    return MAF_PRODUCTS.filter((p) => normalizeCategory(p.category) === 'playgrounds');
+  }, []);
+
+  const allVats = useMemo(() => {
+    return MAF_PRODUCTS.filter((p) => normalizeCategory(p.category) === 'vats');
+  }, []);
+
+  const allStainless = useMemo(() => {
+    return MAF_PRODUCTS.filter((p) => normalizeCategory(p.category) === 'metal-structures');
   }, []);
 
   const categoryCounts = useMemo(() => {
@@ -167,17 +228,130 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
     }).length;
   }, [allSlides, slideFilters]);
 
+  // Filter bikes specifically for count matching
+  const matchingBikesCount = useMemo(() => {
+    return allBikes.filter((p) => {
+      if (bikeFilters.bikeType !== 'all' && p.bikeType && p.bikeType !== bikeFilters.bikeType) {
+        return false;
+      }
+      if (bikeFilters.capacityRange !== 'all') {
+        const cap = p.bikeCapacity || 4;
+        if (bikeFilters.capacityRange === '2-4' && (cap < 2 || cap > 4)) return false;
+        if (bikeFilters.capacityRange === '5-8' && (cap < 5 || cap > 8)) return false;
+        if (bikeFilters.capacityRange === '9-12' && (cap < 9 || cap > 12)) return false;
+        if (bikeFilters.capacityRange === '13+' && cap < 13) return false;
+      }
+      if (bikeFilters.bikeForm !== 'all' && p.bikeForm && p.bikeForm !== bikeFilters.bikeForm) {
+        return false;
+      }
+      return true;
+    }).length;
+  }, [allBikes, bikeFilters]);
+
+  // Filter furniture specifically for count matching
+  const matchingFurnitureCount = useMemo(() => {
+    return allFurniture.filter((p) => {
+      if (furnitureFilters.furnitureType !== 'all') {
+        const prodType = p.furnitureType || p.category;
+        if (furnitureFilters.furnitureType === 'benches' && prodType !== 'benches') return false;
+        if (furnitureFilters.furnitureType === 'tables' && prodType !== 'tables') return false;
+        if (furnitureFilters.furnitureType === 'loungers' && prodType !== 'loungers') return false;
+        if (furnitureFilters.furnitureType === 'pergolas' && !['pergolas', 'gazebos'].includes(prodType)) return false;
+        if (furnitureFilters.furnitureType === 'parklets' && prodType !== 'parklets') return false;
+        if (furnitureFilters.furnitureType === 'swings' && prodType !== 'swings') return false;
+      }
+      if (furnitureFilters.lengthRange !== 'all') {
+        const lenM = p.furnitureLengthM || (p.dimensions ? p.dimensions.length / 1000 : 2.0);
+        if (furnitureFilters.lengthRange === 'under-1.5' && lenM >= 1.5) return false;
+        if (furnitureFilters.lengthRange === '1.5-2.0' && (lenM < 1.5 || lenM > 2.05)) return false;
+        if (furnitureFilters.lengthRange === '2.0-2.5' && (lenM <= 2.05 || lenM > 2.55)) return false;
+        if (furnitureFilters.lengthRange === 'over-2.5' && lenM <= 2.55) return false;
+      }
+      return true;
+    }).length;
+  }, [allFurniture, furnitureFilters]);
+
+  // Filter playgrounds specifically for count matching
+  const matchingPlaygroundsCount = useMemo(() => {
+    return allPlaygrounds.filter((p) => {
+      if (playgroundFilters.playgroundType !== 'all') {
+        if (p.playgroundType && p.playgroundType !== playgroundFilters.playgroundType) {
+          return false;
+        }
+      }
+      return true;
+    }).length;
+  }, [allPlaygrounds, playgroundFilters]);
+
+  // Filter vats specifically for count matching
+  const matchingVatsCount = useMemo(() => {
+    return allVats.filter((p) => {
+      if (vatFilters.steelGrade !== 'all') {
+        const grade = p.vatSteelGrade || (p.material.includes('AISI 304') ? 'AISI 304' : undefined);
+        if (grade && grade !== vatFilters.steelGrade) return false;
+      }
+      if (vatFilters.thickness !== 'all') {
+        const th = p.vatThickness || '3 мм';
+        if (th !== vatFilters.thickness) return false;
+      }
+      if (vatFilters.capacityCategory !== 'all') {
+        const cap = p.vatCapacityPeople || 6;
+        if (vatFilters.capacityCategory === 'small' && cap > 4) return false;
+        if (vatFilters.capacityCategory === 'medium' && (cap < 5 || cap > 6)) return false;
+        if (vatFilters.capacityCategory === 'large' && cap < 7) return false;
+      }
+      if (vatFilters.bowlShape !== 'all') {
+        if (p.vatBowlShape && p.vatBowlShape !== vatFilters.bowlShape) return false;
+      }
+      if (vatFilters.mounting !== 'all') {
+        if (p.vatMounting && p.vatMounting !== vatFilters.mounting) return false;
+      }
+      if (vatFilters.heating !== 'all') {
+        if (p.vatHeating && p.vatHeating !== vatFilters.heating) return false;
+      }
+      if (vatFilters.lighting !== 'all') {
+        const hasLight = !!p.vatLighting;
+        if (vatFilters.lighting === 'yes' && !hasLight) return false;
+        if (vatFilters.lighting === 'no' && hasLight) return false;
+      }
+      return true;
+    }).length;
+  }, [allVats, vatFilters]);
+
+  // Filter stainless structures specifically for count matching
+  const matchingStainlessCount = useMemo(() => {
+    return allStainless.filter((p) => {
+      if (stainlessFilters.stainlessType !== 'all') {
+        if (p.stainlessType && p.stainlessType !== stainlessFilters.stainlessType) {
+          return false;
+        }
+      }
+      return true;
+    }).length;
+  }, [allStainless, stainlessFilters]);
+
+  const handleResetAllFilters = () => {
+    setSlideFilters(initialSlideFilters);
+    setBikeFilters(initialBikeFilters);
+    setFurnitureFilters(initialFurnitureFilters);
+    setPlaygroundFilters(initialPlaygroundFilters);
+    setVatFilters(initialVatFilters);
+    setStainlessFilters(initialStainlessFilters);
+    setSearchQuery('');
+  };
+
   const filteredAndSortedProducts = useMemo(() => {
     let result = MAF_PRODUCTS.filter((p) => {
       const isSlide = p.category === 'slides';
+      const catKey = normalizeCategory(p.category);
       const matchesCategory =
         selectedCategory === 'all' ||
-        normalizeCategory(p.category) === selectedCategory ||
+        catKey === selectedCategory ||
         p.category === selectedCategory;
 
       if (!matchesCategory) return false;
 
-      // Apply slide filters if user selected 'slides'
+      // 1. Slides filters
       if (isSlide && selectedCategory === 'slides') {
         if (slideFilters.slideType !== 'all' && p.slideType && p.slideType !== slideFilters.slideType) {
           return false;
@@ -211,6 +385,93 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
         }
       }
 
+      // 2. Bike filters
+      if (selectedCategory === 'bike') {
+        if (bikeFilters.bikeType !== 'all' && p.bikeType && p.bikeType !== bikeFilters.bikeType) {
+          return false;
+        }
+        if (bikeFilters.capacityRange !== 'all') {
+          const cap = p.bikeCapacity || 4;
+          if (bikeFilters.capacityRange === '2-4' && (cap < 2 || cap > 4)) return false;
+          if (bikeFilters.capacityRange === '5-8' && (cap < 5 || cap > 8)) return false;
+          if (bikeFilters.capacityRange === '9-12' && (cap < 9 || cap > 12)) return false;
+          if (bikeFilters.capacityRange === '13+' && cap < 13) return false;
+        }
+        if (bikeFilters.bikeForm !== 'all' && p.bikeForm && p.bikeForm !== bikeFilters.bikeForm) {
+          return false;
+        }
+      }
+
+      // 3. Furniture filters
+      if (selectedCategory === 'furniture') {
+        if (furnitureFilters.furnitureType !== 'all') {
+          const prodType = p.furnitureType || p.category;
+          if (furnitureFilters.furnitureType === 'benches' && prodType !== 'benches') return false;
+          if (furnitureFilters.furnitureType === 'tables' && prodType !== 'tables') return false;
+          if (furnitureFilters.furnitureType === 'loungers' && prodType !== 'loungers') return false;
+          if (furnitureFilters.furnitureType === 'pergolas' && !['pergolas', 'gazebos'].includes(prodType)) return false;
+          if (furnitureFilters.furnitureType === 'parklets' && prodType !== 'parklets') return false;
+          if (furnitureFilters.furnitureType === 'swings' && prodType !== 'swings') return false;
+        }
+        if (furnitureFilters.lengthRange !== 'all') {
+          const lenM = p.furnitureLengthM || (p.dimensions ? p.dimensions.length / 1000 : 2.0);
+          if (furnitureFilters.lengthRange === 'under-1.5' && lenM >= 1.5) return false;
+          if (furnitureFilters.lengthRange === '1.5-2.0' && (lenM < 1.5 || lenM > 2.05)) return false;
+          if (furnitureFilters.lengthRange === '2.0-2.5' && (lenM <= 2.05 || lenM > 2.55)) return false;
+          if (furnitureFilters.lengthRange === 'over-2.5' && lenM <= 2.55) return false;
+        }
+      }
+
+      // 4. Playground filters
+      if (selectedCategory === 'playgrounds') {
+        if (playgroundFilters.playgroundType !== 'all') {
+          if (p.playgroundType && p.playgroundType !== playgroundFilters.playgroundType) {
+            return false;
+          }
+        }
+      }
+
+      // 5. Vat filters
+      if (selectedCategory === 'vats') {
+        if (vatFilters.steelGrade !== 'all') {
+          const grade = p.vatSteelGrade || (p.material.includes('AISI 304') ? 'AISI 304' : undefined);
+          if (grade && grade !== vatFilters.steelGrade) return false;
+        }
+        if (vatFilters.thickness !== 'all') {
+          const th = p.vatThickness || '3 мм';
+          if (th !== vatFilters.thickness) return false;
+        }
+        if (vatFilters.capacityCategory !== 'all') {
+          const cap = p.vatCapacityPeople || 6;
+          if (vatFilters.capacityCategory === 'small' && cap > 4) return false;
+          if (vatFilters.capacityCategory === 'medium' && (cap < 5 || cap > 6)) return false;
+          if (vatFilters.capacityCategory === 'large' && cap < 7) return false;
+        }
+        if (vatFilters.bowlShape !== 'all') {
+          if (p.vatBowlShape && p.vatBowlShape !== vatFilters.bowlShape) return false;
+        }
+        if (vatFilters.mounting !== 'all') {
+          if (p.vatMounting && p.vatMounting !== vatFilters.mounting) return false;
+        }
+        if (vatFilters.heating !== 'all') {
+          if (p.vatHeating && p.vatHeating !== vatFilters.heating) return false;
+        }
+        if (vatFilters.lighting !== 'all') {
+          const hasLight = !!p.vatLighting;
+          if (vatFilters.lighting === 'yes' && !hasLight) return false;
+          if (vatFilters.lighting === 'no' && hasLight) return false;
+        }
+      }
+
+      // 6. Stainless metal structures filters
+      if (selectedCategory === 'metal-structures') {
+        if (stainlessFilters.stainlessType !== 'all') {
+          if (p.stainlessType && p.stainlessType !== stainlessFilters.stainlessType) {
+            return false;
+          }
+        }
+      }
+
       const q = searchQuery.toLowerCase().trim();
       if (!q) return true;
       const matchesQuery = 
@@ -220,7 +481,11 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
         p.material.toLowerCase().includes(q) ||
         p.categoryLabel.toLowerCase().includes(q) ||
         (p.slideTypeLabel && p.slideTypeLabel.toLowerCase().includes(q)) ||
-        (p.slideFormLabel && p.slideFormLabel.toLowerCase().includes(q));
+        (p.slideFormLabel && p.slideFormLabel.toLowerCase().includes(q)) ||
+        (p.bikeTypeLabel && p.bikeTypeLabel.toLowerCase().includes(q)) ||
+        (p.playgroundTypeLabel && p.playgroundTypeLabel.toLowerCase().includes(q)) ||
+        (p.vatSteelGrade && p.vatSteelGrade.toLowerCase().includes(q)) ||
+        (p.stainlessTypeLabel && p.stainlessTypeLabel.toLowerCase().includes(q));
       return matchesQuery;
     });
 
@@ -231,7 +496,17 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
     }
 
     return result;
-  }, [selectedCategory, searchQuery, sortBy, slideFilters]);
+  }, [
+    selectedCategory, 
+    searchQuery, 
+    sortBy, 
+    slideFilters, 
+    bikeFilters, 
+    furnitureFilters, 
+    playgroundFilters, 
+    vatFilters,
+    stainlessFilters
+  ]);
 
   return (
     <div className="bg-white min-h-screen">
@@ -246,11 +521,16 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
               Главная
             </button>
             <ChevronRight className="w-3.5 h-3.5 text-neutral-400" />
-            <span className="text-neutral-900 font-medium">Каталог МАФ</span>
+            <button
+              onClick={() => handleSelectCategory('all')}
+              className={`hover:text-black transition-colors cursor-pointer ${selectedCategory === 'all' ? 'text-neutral-900 font-medium' : ''}`}
+            >
+              Каталог МАФ
+            </button>
             {selectedCategory !== 'all' && (
               <>
                 <ChevronRight className="w-3.5 h-3.5 text-neutral-400" />
-                <span className="text-neutral-600">
+                <span className="text-neutral-900 font-medium">
                   {categories.find((c) => c.id === selectedCategory)?.label}
                 </span>
               </>
@@ -259,104 +539,92 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
 
           <button
             onClick={onBackToHome}
-            className="hidden sm:inline-flex items-center gap-1.5 text-neutral-600 hover:text-black transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-neutral-600 hover:text-black transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Вернуться на главную</span>
+            <span>На главную</span>
           </button>
         </div>
       </div>
 
-      {/* Page Header (Polestar Minimalist Header) */}
-      <div className="border-b border-neutral-200 py-12 sm:py-16 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-            <div className="max-w-3xl">
-              <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-400 mb-3">
-                [ 01 / Номенклатура завода «Стальное Дело» ]
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        {/* Page Header */}
+        <div className="border-b border-neutral-200 pb-8 mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+            <div>
+              <div className="font-mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">
+                [ Производственная номенклатура завода «Стальное Дело» ]
               </div>
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-light text-neutral-900 tracking-tight mb-4">
+              <h1 className="text-3xl sm:text-5xl font-light text-neutral-900 tracking-tight">
                 Каталог малых архитектурных форм
               </h1>
-              <p className="text-sm sm:text-base text-neutral-600 font-light leading-relaxed max-w-2xl">
-                Сертифицированное производство парковой мебели, навесов, пергол и ограждений для благоустройства общественных пространств, девелоперских комплексов и набережных Санкт-Петербурга.
+              <p className="mt-3 text-neutral-500 text-xs sm:text-sm font-light max-w-2xl leading-relaxed">
+                Серийные и индивидуальные МАФ из аустенитной нержавеющей стали AISI 304/316, горячеоцинкованного проката и термодревесины. Соответствие ТР ЕАЭС 042/2017 и ГОСТ Р 52169.
               </p>
             </div>
 
-            {/* Industrial Fast-Fact Metric Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-xs">
-              <div className="border border-neutral-200 bg-neutral-50 p-3.5">
-                <div className="text-xl font-normal text-neutral-900">6</div>
-                <div className="text-[10px] uppercase text-neutral-400 mt-0.5">Направлений продукции</div>
-              </div>
-              <div className="border border-neutral-200 bg-neutral-50 p-3.5">
-                <div className="text-xl font-normal text-neutral-900">140+</div>
-                <div className="text-[10px] uppercase text-neutral-400 mt-0.5">Серийных позиций</div>
-              </div>
-              <div className="border border-neutral-200 bg-neutral-50 p-3.5">
-                <div className="text-xl font-normal text-neutral-900">RAL</div>
-                <div className="text-[10px] uppercase text-neutral-400 mt-0.5">215+ цветов муара</div>
-              </div>
-              <div className="border border-neutral-200 bg-neutral-50 p-3.5">
-                <div className="text-xl font-normal text-neutral-900">от 5 дн</div>
-                <div className="text-[10px] uppercase text-neutral-400 mt-0.5">Срок изготовления</div>
-              </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                onClick={onOpenCalculator}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-black text-white text-xs font-mono uppercase tracking-wider hover:bg-neutral-800 transition-colors cursor-pointer"
+              >
+                <Calculator className="w-3.5 h-3.5" />
+                <span>Калькулятор сметы</span>
+              </button>
+
+              <button
+                onClick={onOpenMeasurerModal}
+                className="inline-flex items-center gap-2 px-4 py-2.5 border border-neutral-300 text-neutral-900 text-xs font-mono uppercase tracking-wider hover:border-black transition-colors cursor-pointer bg-white"
+              >
+                <Compass className="w-3.5 h-3.5" />
+                <span>Вызов замерщика</span>
+              </button>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Content Area: Controls, Filters & Products */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        {/* Search & Sort Controls Bar */}
-        <div className="pb-6 border-b border-neutral-200 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-          {/* Search Input */}
+        {/* Search, Sort and Summary Toolbar */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-neutral-200">
           <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Поиск по названию, артикулу, материалу..."
-              className="w-full pl-10 pr-9 py-2.5 bg-neutral-50 border border-neutral-200 text-xs text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:border-black transition-colors"
+              placeholder="Поиск по артикулу, названию или характеристикам..."
+              className="w-full pl-9 pr-8 py-2 bg-neutral-50 border border-neutral-200 text-xs placeholder:text-neutral-400 focus:outline-none focus:border-black transition-colors"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-black cursor-pointer"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-black cursor-pointer"
               >
-                <X className="w-4 h-4" />
+                <X className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
 
-          {/* Results Count & Sort Dropdown */}
-          <div className="flex items-center justify-between md:justify-end gap-4 text-xs font-mono">
-            <span className="text-neutral-400">
-              Найдено: <strong className="text-neutral-900 font-semibold">{filteredAndSortedProducts.length}</strong>
-            </span>
-
-            <div className="flex items-center gap-2">
-              <SlidersHorizontal className="w-3.5 h-3.5 text-neutral-400" />
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                className="px-3 py-2 bg-neutral-50 border border-neutral-200 text-xs text-neutral-900 focus:outline-none focus:border-black transition-colors cursor-pointer"
-              >
-                <option value="default">По умолчанию</option>
-                <option value="weight-desc">По массе изделия</option>
-                <option value="name-asc">По названию (А–Я)</option>
-              </select>
-            </div>
+          <div className="flex items-center gap-3 self-end md:self-auto text-xs font-mono">
+            <span className="text-neutral-400">Сортировка:</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="px-3 py-2 bg-white border border-neutral-200 text-neutral-700 text-xs focus:outline-none focus:border-black cursor-pointer"
+            >
+              <option value="default">По умолчанию</option>
+              <option value="name-asc">По названию (А–Я)</option>
+              <option value="weight-desc">По массе (сначала тяжелые)</option>
+            </select>
           </div>
         </div>
 
-        {/* Category Filter Tabs Bar */}
-        <div className="py-4 border-b border-neutral-200 overflow-x-auto scrollbar-none mb-6">
-          <div className="flex items-center gap-1.5 min-w-max">
+        {/* Category Selector Tabs */}
+        <div className="mb-6 overflow-x-auto pb-2 scrollbar-thin">
+          <div className="flex items-center gap-2">
             {categories.map((cat) => {
               const isActive = selectedCategory === cat.id;
               const count = categoryCounts[cat.id] || 0;
+
               return (
                 <button
                   key={cat.id}
@@ -377,7 +645,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
           </div>
         </div>
 
-        {/* Dedicated Slide Filter Bar when "Скаты для горок" category is active */}
+        {/* Category-Specific Filter Bars */}
         {selectedCategory === 'slides' && (
           <SlidesFilterBar
             slides={allSlides}
@@ -385,6 +653,56 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
             onChange={(newFilters) => setSlideFilters(newFilters)}
             onReset={() => setSlideFilters(initialSlideFilters)}
             totalMatching={matchingSlidesCount}
+          />
+        )}
+
+        {selectedCategory === 'bike' && (
+          <BikeFiltersBar
+            products={allBikes}
+            filters={bikeFilters}
+            onChange={(newFilters) => setBikeFilters(newFilters)}
+            onReset={() => setBikeFilters(initialBikeFilters)}
+            totalMatching={matchingBikesCount}
+          />
+        )}
+
+        {selectedCategory === 'furniture' && (
+          <FurnitureFiltersBar
+            products={allFurniture}
+            filters={furnitureFilters}
+            onChange={(newFilters) => setFurnitureFilters(newFilters)}
+            onReset={() => setFurnitureFilters(initialFurnitureFilters)}
+            totalMatching={matchingFurnitureCount}
+          />
+        )}
+
+        {selectedCategory === 'playgrounds' && (
+          <PlaygroundFiltersBar
+            products={allPlaygrounds}
+            filters={playgroundFilters}
+            onChange={(newFilters) => setPlaygroundFilters(newFilters)}
+            onReset={() => setPlaygroundFilters(initialPlaygroundFilters)}
+            totalMatching={matchingPlaygroundsCount}
+          />
+        )}
+
+        {selectedCategory === 'vats' && (
+          <VatFiltersBar
+            products={allVats}
+            filters={vatFilters}
+            onChange={(newFilters) => setVatFilters(newFilters)}
+            onReset={() => setVatFilters(initialVatFilters)}
+            totalMatching={matchingVatsCount}
+          />
+        )}
+
+        {selectedCategory === 'metal-structures' && (
+          <StainlessFiltersBar
+            products={allStainless}
+            filters={stainlessFilters}
+            onChange={(newFilters) => setStainlessFilters(newFilters)}
+            onReset={() => setStainlessFilters(initialStainlessFilters)}
+            totalMatching={matchingStainlessCount}
           />
         )}
 
@@ -401,11 +719,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
               Попробуйте изменить параметры поиска или сбросить активные фильтры.
             </p>
             <button
-              onClick={() => { 
-                setSelectedCategory('all'); 
-                setSearchQuery(''); 
-                setSlideFilters(initialSlideFilters);
-              }}
+              onClick={handleResetAllFilters}
               className="px-6 py-2.5 bg-black text-white text-xs font-mono uppercase tracking-wider hover:bg-neutral-800 transition-colors cursor-pointer"
             >
               Сбросить фильтры
@@ -417,20 +731,35 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-neutral-200 mt-2 border border-neutral-200">
           {filteredAndSortedProducts.map((product) => {
             const isSlide = product.category === 'slides';
+            const hasDetail = !!product.hasDetailPage;
 
             return (
               <div
                 key={product.id}
-                className="bg-white p-6 sm:p-8 flex flex-col justify-between hover:bg-neutral-50/50 transition-colors group"
+                className={`bg-white p-6 sm:p-8 flex flex-col justify-between transition-all group relative ${
+                  hasDetail 
+                    ? 'hover:bg-neutral-50/70 hover:shadow-sm cursor-pointer' 
+                    : 'hover:bg-neutral-50/40 cursor-default'
+                }`}
+                onClick={() => {
+                  if (hasDetail) {
+                    setSelectedProductForDetail(product);
+                  }
+                }}
               >
                 <div>
                   {/* Top Meta Bar */}
                   <div className="flex items-center justify-between text-[11px] font-mono text-neutral-400 mb-4">
                     <span className="font-semibold text-neutral-700">{product.article}</span>
                     <div className="flex items-center gap-1.5">
-                      {isSlide && (
-                        <span className="text-[10px] bg-neutral-900 text-white px-2 py-0.5 font-medium">
-                          AISI 304
+                      {hasDetail ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] bg-black text-white px-2 py-0.5 font-medium tracking-wide">
+                          <FileText className="w-2.5 h-2.5" />
+                          <span>Паспорт изделия</span>
+                        </span>
+                      ) : (
+                        <span className="text-[10px] bg-neutral-100 text-neutral-500 px-2 py-0.5">
+                          Базовые ТТХ
                         </span>
                       )}
                       <span className="uppercase tracking-wider text-[10px] bg-neutral-100 px-2 py-0.5 text-neutral-600">
@@ -445,7 +774,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
                       src={product.imageRender}
                       alt={product.name}
                       referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover grayscale-15 group-hover:grayscale-0 group-hover:scale-102 transition-all duration-700"
+                      className="w-full h-full object-cover grayscale-15 group-hover:grayscale-0 group-hover:scale-103 transition-all duration-700"
                       loading="lazy"
                     />
 
@@ -468,12 +797,27 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
                         h = {product.slideHeight} м
                       </div>
                     )}
+
+                    {/* Hover indicator on image when detailed page is available */}
+                    {hasDetail && (
+                      <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-neutral-900 text-xs font-mono font-medium shadow-md">
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>Открыть паспорт</span>
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Title & Description */}
-                  <h3 className="text-lg font-normal text-neutral-900 tracking-tight mb-2">
-                    {product.name}
-                  </h3>
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <h3 className="text-lg font-normal text-neutral-900 tracking-tight group-hover:text-black">
+                      {product.name}
+                    </h3>
+                    {hasDetail && (
+                      <ArrowUpRight className="w-4 h-4 text-neutral-400 group-hover:text-black shrink-0 transition-colors mt-1" />
+                    )}
+                  </div>
                   <p className="text-xs text-neutral-500 line-clamp-3 leading-relaxed mb-6 font-normal">
                     {product.description}
                   </p>
@@ -512,10 +856,6 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
                           <span className="text-neutral-400 font-sans">Материал:</span>
                           <span className="font-sans text-neutral-800 text-right">{product.material}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-neutral-400 font-sans">Безопасность:</span>
-                          <span className="font-sans text-neutral-800 text-right">ГОСТ Р 52169, ТР ЕАЭС 042</span>
-                        </div>
                       </>
                     ) : (
                       <>
@@ -531,11 +871,11 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
                         </div>
                         <div className="flex justify-between">
                           <span className="text-neutral-400 font-sans">Материал:</span>
-                          <span className="font-sans text-neutral-800 text-right">{product.material}</span>
+                          <span className="font-sans text-neutral-800 text-right truncate max-w-[200px]">{product.material}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-neutral-400 font-sans">Покрытие:</span>
-                          <span className="font-sans text-neutral-800 text-right">{product.coating}</span>
+                          <span className="font-sans text-neutral-800 text-right truncate max-w-[200px]">{product.coating}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-neutral-400 font-sans">Монтаж:</span>
@@ -546,9 +886,25 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
                   </div>
                 </div>
 
-                {/* Actions: Calculate Quote & Add to Batch Estimate */}
-                <div className="pt-4 border-t border-neutral-200 space-y-2">
+                {/* Actions: Calculate Quote, Details, and Add to Batch Estimate */}
+                <div 
+                  className="pt-4 border-t border-neutral-200 space-y-2"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {hasDetail && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedProductForDetail(product)}
+                      className="w-full py-2 px-3 bg-neutral-900 text-white text-xs font-mono uppercase tracking-wider hover:bg-black transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <FileText className="w-3.5 h-3.5" />
+                      <span>Паспорт изделия</span>
+                      <ArrowUpRight className="w-3 h-3 text-neutral-400" />
+                    </button>
+                  )}
+
                   <button
+                    type="button"
                     onClick={() => setCalculatingProduct(product)}
                     className="w-full py-2.5 px-3 bg-black text-white text-xs font-mono uppercase tracking-wider hover:bg-neutral-800 transition-colors flex items-center justify-center gap-2 cursor-pointer"
                   >
@@ -634,6 +990,25 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Product Detail Modal (Паспорт изделия) */}
+      <ProductDetailModal
+        product={selectedProductForDetail}
+        isOpen={!!selectedProductForDetail}
+        onClose={() => setSelectedProductForDetail(null)}
+        onOpenCalculator={() => {
+          if (selectedProductForDetail) {
+            setCalculatingProduct(selectedProductForDetail);
+          } else if (onOpenCalculator) {
+            onOpenCalculator();
+          }
+          setSelectedProductForDetail(null);
+        }}
+        onOpenMeasurerModal={() => {
+          if (onOpenMeasurerModal) onOpenMeasurerModal();
+          setSelectedProductForDetail(null);
+        }}
+      />
     </div>
   );
 };

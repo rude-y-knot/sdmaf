@@ -12,6 +12,7 @@ import { SiteMeasurerModal } from './components/SiteMeasurerModal';
 import { CatalogPage } from './pages/CatalogPage';
 import { ProductionPage } from './pages/ProductionPage';
 import { ProductionUnitDetailPage } from './pages/ProductionUnitDetailPage';
+import { EngineeringBureauPage } from './pages/EngineeringBureauPage';
 import { B2BTendersPage } from './pages/B2BTendersPage';
 import { ContactsPage } from './pages/ContactsPage';
 import { PortfolioPage } from './pages/PortfolioPage';
@@ -29,11 +30,21 @@ import { BitrixWebhookGuideModal } from './components/BitrixWebhookGuideModal';
 type PageType = 'home' | 'catalog' | 'production' | 'unit-detail' | 'b2b' | 'contacts' | 'portfolio' | 'requisites' | 'privacy' | 'offer';
 
 function ScrollToTop() {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-  }, [pathname]);
+    if (hash) {
+      setTimeout(() => {
+        const id = hash.replace('#', '');
+        const element = document.getElementById(id);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 120);
+    } else {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+  }, [pathname, hash]);
 
   return null;
 }
@@ -78,7 +89,17 @@ export default function App() {
   const getCurrentPageType = (): PageType => {
     const p = location.pathname.toLowerCase();
     if (p.startsWith('/catalog')) return 'catalog';
-    if (p === '/laser' || p.startsWith('/production') || p === '/bending' || p === '/rolling' || p === '/coating' || p === '/machining') {
+    if (
+      p === '/laser' || 
+      p.startsWith('/production') || 
+      p === '/bending' || 
+      p === '/rolling' || 
+      p === '/coating' || 
+      p === '/machining' || 
+      p === '/welding' || 
+      p === '/engineering' || 
+      p === '/kb'
+    ) {
       if (p === '/production') return 'production';
       return 'unit-detail';
     }
@@ -103,9 +124,19 @@ export default function App() {
         navigate('/catalog');
       }
     } else if (page === 'production') {
-      navigate('/production');
+      if (param) {
+        navigate(`/production#${param}`);
+        setTimeout(() => {
+          const el = document.getElementById(param);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 120);
+      } else {
+        navigate('/production');
+      }
     } else if (page === 'unit-detail') {
-      if (param === 'laser-22kw-6m' || param === 'laser') {
+      if (param === 'engineering-bureau' || param === 'engineering' || param === 'kb') {
+        navigate('/engineering');
+      } else if (param === 'laser-22kw-6m' || param === 'laser') {
         navigate('/laser');
       } else if (param) {
         navigate(`/production/${param}`);
@@ -255,6 +286,35 @@ export default function App() {
 
             {/* Direct machinery shortcuts */}
             <Route
+              path="/engineering"
+              element={
+                <EngineeringBureauPage
+                  onBackToProduction={() => navigate('/production')}
+                  onBackToHome={() => navigate('/')}
+                  onOpenCalculator={() => setIsCalculatorModalOpen(true)}
+                  onOpenMeasurerModal={() => setIsMeasurerModalOpen(true)}
+                  onNavigateToCatalog={() => navigate('/catalog')}
+                  onSelectUnit={(id) => {
+                    if (id === 'laser-22kw-6m' || id === 'laser') navigate('/laser');
+                    else if (id === 'engineering-bureau' || id === 'engineering') navigate('/engineering');
+                    else navigate(`/production/${id}`);
+                  }}
+                />
+              }
+            />
+            <Route
+              path="/kb"
+              element={<Navigate to="/engineering" replace />}
+            />
+            <Route
+              path="/production/engineering-bureau"
+              element={<Navigate to="/engineering" replace />}
+            />
+            <Route
+              path="/production/engineering"
+              element={<Navigate to="/engineering" replace />}
+            />
+            <Route
               path="/bending"
               element={
                 <ProductionUnitDetailPage
@@ -327,6 +387,8 @@ export default function App() {
                   onSelectUnit={(unitId) => {
                     if (unitId === 'laser-22kw-6m' || unitId === 'laser') {
                       navigate('/laser');
+                    } else if (unitId === 'engineering-bureau' || unitId === 'engineering') {
+                      navigate('/engineering');
                     } else {
                       navigate(`/production/${unitId}`);
                     }
@@ -343,6 +405,8 @@ export default function App() {
                   onSelectUnit={(unitId) => {
                     if (unitId === 'laser-22kw-6m' || unitId === 'laser') {
                       navigate('/laser');
+                    } else if (unitId === 'engineering-bureau' || unitId === 'engineering') {
+                      navigate('/engineering');
                     } else {
                       navigate(`/production/${unitId}`);
                     }

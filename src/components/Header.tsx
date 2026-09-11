@@ -297,48 +297,50 @@ export const Header: React.FC<HeaderProps> = ({
                     <div className="grid grid-cols-2 gap-3">
                       {[
                         { 
-                          label: 'Лазерный раскрой Knoppo KF 3 кВт (3м и 6м)', 
-                          desc: 'Волоконные комплексы 3 кВт, столы 1500х3000 и 1500х6000 мм, сталь до 20 мм, точность ±0.03 мм',
+                          label: 'Лазерный раскрой Кноппо (до 20 мм)', 
+                          desc: 'Комплексы 3 кВт, столы 1500х3000 и 1500х6000 мм, точность реза ±0.03 мм',
                           unitId: 'laser-22kw-6m'
                         },
                         { 
-                          label: 'Гибка металла', 
-                          desc: 'Прессы HACO (40т / 1.6м) и MAIHONG с ЧПУ ESA (160т / 3.2м), бомбирование Wila',
+                          label: 'Гибка металла с ЧПУ', 
+                          desc: 'Прессы HACO (40т / 1.6м) и MAIHONG (160т / 3.2м), бомбирование Wila',
                           unitId: 'bending-250t'
                         },
                         { 
-                          label: 'Вальцовка', 
-                          desc: '4-х валковый станок Keepler RME 1500×4 мм, обечайки от Ø140 мм и конусы',
+                          label: 'Вальцовка и обечайки', 
+                          desc: '4-х валковый Keepler RME 1500×4 мм, цилиндрические и конические обечайки',
                           unitId: 'rolling-faccin'
                         },
                         { 
-                          label: 'Порошковая окраска', 
-                          desc: 'Газовые термокамеры (3м и 6м), конвекция 16 575 м³/ч, палитра RAL Classic, муар и шагрень',
+                          label: 'Порошковая окраска RAL', 
+                          desc: 'Газовые термокамеры 3м и 6м, конвекция 16 575 м³/ч, палитра RAL, муар и шагрень',
                           unitId: 'coating-ral'
                         },
                         { 
-                          label: 'Сварочный участок', 
-                          desc: 'Продольная лазерная сварка, комплексы Maihong BWT20 и SUP23T, полуавтоматы Кедр и Fronius. Аттестованные мастера НАКС',
-                          unitId: 'welding-naks',
-                          colSpan: 'col-span-2'
+                          label: 'Сварочный участок НАКС', 
+                          desc: 'Продольная лазерная сварка BWT20/SUP23T, полуавтоматы Кедр и Fronius',
+                          unitId: 'welding-naks'
+                        },
+                        { 
+                          label: 'Конструкторское бюро завода', 
+                          desc: 'Разработка рабочей документации КМ/КМД, ТУ, карт раскроя и 3D-моделирование (ЕСКД)',
+                          unitId: 'engineering-bureau'
                         },
                       ].map((item, idx) => (
                         <button
                           key={idx}
                           onClick={() => handleUnitClick(item.unitId)}
-                          className={`group p-3.5 border border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50 transition-all text-left flex flex-col justify-between cursor-pointer rounded-none ${item.colSpan || ''}`}
+                          className="group p-3.5 h-[98px] border border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50 transition-all text-left flex flex-col justify-between cursor-pointer rounded-none"
                         >
-                          <div>
-                            <div className="flex items-center justify-between gap-2 mb-1.5">
-                              <span className="text-sm font-semibold text-neutral-900 group-hover:text-black transition-colors">
-                                {item.label}
-                              </span>
-                              <ArrowRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-black group-hover:translate-x-0.5 transition-all shrink-0" />
-                            </div>
-                            <p className="text-xs text-neutral-500 font-light leading-relaxed">
-                              {item.desc}
-                            </p>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-xs sm:text-sm font-semibold text-neutral-900 group-hover:text-black transition-colors truncate">
+                              {item.label}
+                            </span>
+                            <ArrowRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-black group-hover:translate-x-0.5 transition-all shrink-0" />
                           </div>
+                          <p className="text-[11px] text-neutral-500 font-light leading-relaxed line-clamp-2">
+                            {item.desc}
+                          </p>
                         </button>
                       ))}
                     </div>
@@ -449,19 +451,17 @@ export const Header: React.FC<HeaderProps> = ({
                         <button
                           key={idx}
                           onClick={() => handleCatalogCategory(item.cat)}
-                          className="group p-3.5 border border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50 transition-all text-left flex flex-col justify-between cursor-pointer rounded-none"
+                          className="group p-3.5 h-[98px] border border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50 transition-all text-left flex flex-col justify-between cursor-pointer rounded-none"
                         >
-                          <div>
-                            <div className="flex items-center justify-between gap-2 mb-1.5">
-                              <span className="text-sm font-semibold text-neutral-900 group-hover:text-black transition-colors">
-                                {item.label}
-                              </span>
-                              <ArrowRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-black group-hover:translate-x-0.5 transition-all shrink-0" />
-                            </div>
-                            <p className="text-xs text-neutral-500 font-light leading-relaxed">
-                              {item.desc}
-                            </p>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-xs sm:text-sm font-semibold text-neutral-900 group-hover:text-black transition-colors truncate">
+                              {item.label}
+                            </span>
+                            <ArrowRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-black group-hover:translate-x-0.5 transition-all shrink-0" />
                           </div>
+                          <p className="text-[11px] text-neutral-500 font-light leading-relaxed line-clamp-2">
+                            {item.desc}
+                          </p>
                         </button>
                       ))}
                     </div>
@@ -572,19 +572,17 @@ export const Header: React.FC<HeaderProps> = ({
                         <button
                           key={idx}
                           onClick={() => handleLinkClick('portfolio')}
-                          className="group p-3.5 border border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50 transition-all text-left flex flex-col justify-between cursor-pointer rounded-none"
+                          className="group p-3.5 h-[98px] border border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50 transition-all text-left flex flex-col justify-between cursor-pointer rounded-none"
                         >
-                          <div>
-                            <div className="flex items-center justify-between gap-2 mb-1.5">
-                              <span className="text-sm font-semibold text-neutral-900 group-hover:text-black transition-colors">
-                                {item.label}
-                              </span>
-                              <ArrowRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-black group-hover:translate-x-0.5 transition-all shrink-0" />
-                            </div>
-                            <p className="text-xs text-neutral-500 font-light leading-relaxed">
-                              {item.desc}
-                            </p>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-xs sm:text-sm font-semibold text-neutral-900 group-hover:text-black transition-colors truncate">
+                              {item.label}
+                            </span>
+                            <ArrowRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-black group-hover:translate-x-0.5 transition-all shrink-0" />
                           </div>
+                          <p className="text-[11px] text-neutral-500 font-light leading-relaxed line-clamp-2">
+                            {item.desc}
+                          </p>
                         </button>
                       ))}
                     </div>
@@ -659,6 +657,7 @@ export const Header: React.FC<HeaderProps> = ({
               {[
                 { label: 'Главная', section: 'hero' },
                 { label: 'Производство и цеха ЧПУ', section: 'production' },
+                { label: 'Конструкторское бюро завода (ЕСКД)', section: 'engineering-bureau' },
                 { label: 'Каталог продукции (6 направлений)', section: 'catalog' },
                 { label: 'Портфолио объектов', section: 'portfolio' },
                 { label: 'B2B и Госзаказ (44-ФЗ)', section: 'b2b' },
@@ -674,7 +673,13 @@ export const Header: React.FC<HeaderProps> = ({
                   <button
                     key={idx}
                     data-no-hover="true"
-                    onClick={() => handleLinkClick(item.section)}
+                    onClick={() => {
+                      if (item.section === 'engineering-bureau') {
+                        handleUnitClick('engineering-bureau');
+                      } else {
+                        handleLinkClick(item.section);
+                      }
+                    }}
                     className={`w-full text-left py-2.5 text-xs uppercase tracking-widest font-medium border-b border-neutral-100 last:border-0 cursor-pointer ${
                       isActive
                         ? 'text-black font-semibold'

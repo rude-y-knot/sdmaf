@@ -11,6 +11,7 @@ import {
   Compass, 
   ArrowUpRight,
   ArrowRight,
+  ArrowDown,
   Maximize2,
   Sparkles,
   FileCheck,
@@ -106,6 +107,7 @@ export const ProductionPage: React.FC<ProductionPageProps> = ({
     { id: 'bending', label: 'Гибка металла и вальцовка' },
     { id: 'welding', label: 'Сварочный участок' },
     { id: 'coating', label: 'Покраска RAL и дробеструй' },
+    { id: 'engineering', label: 'Конструкторское бюро (ЕСКД)' },
   ];
 
   const filteredUnits = activeCategory === 'all' 
@@ -228,20 +230,30 @@ export const ProductionPage: React.FC<ProductionPageProps> = ({
         </div>
 
         {/* Filter Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-none">
-          {filterTabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveCategory(tab.id)}
-              className={`px-4 py-2 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer whitespace-nowrap border ${
-                activeCategory === tab.id
-                  ? 'bg-black text-white border-black font-medium'
-                  : 'bg-neutral-50 text-neutral-600 border-neutral-200 hover:border-neutral-400'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-8 border-b border-neutral-100">
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none py-1">
+            {filterTabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveCategory(tab.id)}
+                className={`px-4 py-2 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer whitespace-nowrap border ${
+                  activeCategory === tab.id
+                    ? 'bg-black text-white border-black font-medium'
+                    : 'bg-neutral-50 text-neutral-600 border-neutral-200 hover:border-neutral-400'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => onSelectUnit && onSelectUnit('engineering-bureau')}
+            className="px-4 py-2 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap border border-neutral-300 bg-white text-neutral-900 hover:border-black hover:bg-neutral-50 flex items-center gap-2"
+          >
+            <span>Конструкторское бюро (ЕСКД)</span>
+            <ArrowRight className="w-3 h-3 text-neutral-500" />
+          </button>
         </div>
 
         {/* Machine Cards Grid */}
@@ -357,13 +369,13 @@ export const ProductionPage: React.FC<ProductionPageProps> = ({
         </div>
       </section>
 
-      {/* SECTION 2: 5-Step Technological Workflow */}
+      {/* SECTION 4: 5-Step Technological Workflow */}
       <section className="bg-[#FAFAFA] border-y border-neutral-200 py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-neutral-200 mb-12">
             <div>
               <div className="font-mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">
-                [ 03 / Технологический регламент ]
+                [ 04 / Технологический регламент ]
               </div>
               <h2 className="text-2xl sm:text-4xl font-light text-neutral-900 tracking-tight">
                 5 этапов производства и контроля качества
@@ -411,12 +423,12 @@ export const ProductionPage: React.FC<ProductionPageProps> = ({
         </div>
       </section>
 
-      {/* SECTION 3: Справочник марок стали и сплавов */}
+      {/* SECTION 5: Справочник марок стали и сплавов */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-neutral-200 mb-10">
           <div>
             <div className="font-mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">
-              [ 04 / Металлопрокат и сырье ]
+              [ 05 / Металлопрокат и сырье ]
             </div>
             <h2 className="text-2xl sm:text-4xl font-light text-neutral-900 tracking-tight">
               Справочник применяемых марок стали
@@ -467,13 +479,13 @@ export const ProductionPage: React.FC<ProductionPageProps> = ({
         </div>
       </section>
 
-      {/* SECTION 4: Таблица допусков и лимитов для проектировщиков */}
+      {/* SECTION 6: Таблица допусков и лимитов для проектировщиков */}
       <section className="bg-neutral-50 border-t border-neutral-200 py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-neutral-200 mb-8">
             <div>
               <div className="font-mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">
-                [ 05 / Проектировщикам и КБ ]
+                [ 06 / Проектировщикам и КБ ]
               </div>
               <h2 className="text-2xl sm:text-4xl font-light text-neutral-900 tracking-tight">
                 Технические лимиты и допуски

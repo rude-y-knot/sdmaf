@@ -74,6 +74,9 @@ export const ProductionUnitDetailPage: React.FC<ProductionUnitDetailPageProps> =
     if (cleanId === 'welding' || cleanId === 'weld' || cleanId === 'naks' || cleanId === 'laser-welding' || cleanId === 'fronius' || cleanId === 'kedr') {
       return 'welding-naks';
     }
+    if (cleanId === 'engineering' || cleanId === 'engineering-bureau' || cleanId === 'kb' || cleanId === 'bureau') {
+      return 'engineering-bureau';
+    }
     return id;
   };
 
