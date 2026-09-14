@@ -272,7 +272,7 @@ export const EngineeringBureauPage: React.FC<EngineeringBureauPageProps> = ({
               <div className="grid grid-cols-3 gap-2 mt-2">
                 <div className="border border-neutral-200 p-2 text-center bg-[#FAFAFA]">
                   <span className="block text-[10px] font-mono text-neutral-400">Точность ЧПУ</span>
-                  <span className="text-xs font-semibold text-neutral-900">±0.03 мм</span>
+                  <span className="text-xs font-semibold text-neutral-900">0,5 мм</span>
                 </div>
                 <div className="border border-neutral-200 p-2 text-center bg-[#FAFAFA]">
                   <span className="block text-[10px] font-mono text-neutral-400">Снижение веса</span>
@@ -498,7 +498,7 @@ export const EngineeringBureauPage: React.FC<EngineeringBureauPageProps> = ({
               { label: 'Соответствие стандартам', val: 'ЕСКД (ГОСТ 2.102, 2.106, 2.114), СП 16.13330.2017, ГОСТ Р 52169-2012', note: 'Гарантия прохождения КГА, КГИОП, Госэкспертизы' },
               { label: 'Поддерживаемые входные 3D-форматы', val: 'STEP, IGES, SLDPRT, IPT, SAT, XT, IFC, RVT, DWG 3D', note: 'Прямой импорт без потерь твердотельной геометрии' },
               { label: 'Поддерживаемые входные 2D-форматы', val: 'DWG, DXF, CDW, PDF, эскизы от руки, сканированные чертежи', note: 'Профессиональная векторизация и доработка по ЕСКД' },
-              { label: 'Точность расчетов разверток под ЧПУ', val: '±0.03 мм с адаптацией под радиусы гибки пуансонов HACO', note: 'Компенсация толщины нейтрального слоя К-фактором' },
+              { label: 'Точность расчетов разверток под ЧПУ', val: '0,5 мм с адаптацией под радиусы гибки пуансонов HACO', note: 'Компенсация толщины нейтрального слоя К-фактором' },
               { label: 'FEA-анализ и оптимизация металлоемкости', val: 'Моделирование ветровых, снеговых нагрузок и запаса прочности', note: 'Снижение себестоимости стали до 20% без потери жесткости' },
               { label: 'Разработка официальных ТУ', val: 'Разработка и регистрация ТУ по ГОСТ 2.114-2016', note: 'Присвоение каталожного номера Росстандарта' },
               { label: 'Сроки подготовки рабочей КД', val: 'Развертки: 24–48 ч. Полный комплект КМД: от 3 до 5 рабочих дней', note: 'Выдача прямо в цех завода в Колпино' },

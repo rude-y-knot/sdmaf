@@ -248,16 +248,7 @@ export const Footer: React.FC<FooterProps> = ({
                   onClick={() => onNavigateToCatalog ? onNavigateToCatalog('slides') : null}
                   className="hover:text-white transition-colors text-left cursor-pointer"
                 >
-                  Скаты для горок AISI 304
-                </button>
-              </li>
-              <li>
-                <button 
-                  data-no-hover="true"
-                  onClick={() => onNavigateToCatalog ? onNavigateToCatalog('bike') : null}
-                  className="hover:text-white transition-colors text-left cursor-pointer"
-                >
-                  Велосипедные парковки
+                  Детские горки, скаты и тоннели AISI 304
                 </button>
               </li>
               <li>
@@ -272,10 +263,10 @@ export const Footer: React.FC<FooterProps> = ({
               <li>
                 <button 
                   data-no-hover="true"
-                  onClick={() => onNavigateToCatalog ? onNavigateToCatalog('playgrounds') : null}
+                  onClick={() => onNavigateToCatalog ? onNavigateToCatalog('stainless') : null}
                   className="hover:text-white transition-colors text-left cursor-pointer"
                 >
-                  Оборудование детских площадок
+                  Изделия из нержавеющей стали
                 </button>
               </li>
               <li>
@@ -290,10 +281,10 @@ export const Footer: React.FC<FooterProps> = ({
               <li>
                 <button 
                   data-no-hover="true"
-                  onClick={() => onNavigateToCatalog ? onNavigateToCatalog('metal-structures') : null}
+                  onClick={() => onNavigateToCatalog ? onNavigateToCatalog('bike') : null}
                   className="hover:text-white transition-colors text-left cursor-pointer"
                 >
-                  Изделия из нержавеющей стали
+                  Велосипедные парковки и велобоксы
                 </button>
               </li>
             </ul>

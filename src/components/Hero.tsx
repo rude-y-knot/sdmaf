@@ -83,7 +83,7 @@ export const Hero: React.FC<HeroProps> = ({
                 className="inline-flex items-center gap-2 px-8 py-4 border border-neutral-300 text-neutral-900 text-[11px] uppercase tracking-[0.2em] font-medium hover:border-black transition-colors cursor-pointer"
               >
                 <Box className="w-4 h-4 text-neutral-500" />
-                <span>Каталог МАФ</span>
+                <span>Продукция завода</span>
                 <ArrowUpRight className="w-3.5 h-3.5 text-neutral-400" />
               </button>
             </div>

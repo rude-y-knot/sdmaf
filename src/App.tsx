@@ -442,14 +442,20 @@ export default function App() {
 
             {/* Catalog category shortcuts */}
             <Route path="/slides" element={<Navigate to="/catalog/slides" replace />} />
+            <Route path="/gorki" element={<Navigate to="/catalog/slides" replace />} />
             <Route path="/geon-slides" element={<Navigate to="/catalog/slides" replace />} />
             <Route path="/benches" element={<Navigate to="/catalog/furniture" replace />} />
             <Route path="/furniture" element={<Navigate to="/catalog/furniture" replace />} />
+            <Route path="/mebel" element={<Navigate to="/catalog/furniture" replace />} />
             <Route path="/bike" element={<Navigate to="/catalog/bike" replace />} />
             <Route path="/bike-racks" element={<Navigate to="/catalog/bike" replace />} />
-            <Route path="/playgrounds" element={<Navigate to="/catalog/playgrounds" replace />} />
+            <Route path="/veloparking" element={<Navigate to="/catalog/bike" replace />} />
+            <Route path="/playgrounds" element={<Navigate to="/catalog/slides" replace />} />
             <Route path="/vats" element={<Navigate to="/catalog/vats" replace />} />
-            <Route path="/metal-structures" element={<Navigate to="/catalog/metal-structures" replace />} />
+            <Route path="/chani" element={<Navigate to="/catalog/vats" replace />} />
+            <Route path="/metal-structures" element={<Navigate to="/catalog/stainless" replace />} />
+            <Route path="/stainless" element={<Navigate to="/catalog/stainless" replace />} />
+            <Route path="/artobj" element={<Navigate to="/catalog/stainless" replace />} />
 
             {/* 5. B2B & Tenders */}
             <Route

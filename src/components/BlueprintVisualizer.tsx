@@ -232,7 +232,7 @@ export const BlueprintVisualizer: React.FC<BlueprintVisualizerProps> = ({
           <span className="w-2 h-2 rounded-full" style={{ backgroundColor: ralColorHex }}></span>
           <span>Цвет покрытия: {ralColorHex}</span>
         </div>
-        <div>Точность геометрии: ±0.05 мм</div>
+        <div>Точность геометрии: 0,5 мм</div>
       </div>
     </div>
   );

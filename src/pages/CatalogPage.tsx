@@ -1,1014 +1,1152 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
-  Search, 
-  X, 
-  ArrowUpRight, 
   ArrowLeft,
-  Filter,
+  ArrowUpRight,
+  Calculator, 
+  Ruler, 
+  CheckCircle2, 
+  ShieldCheck, 
+  Layers, 
+  Sparkles,
+  Compass,
+  Hammer,
+  Send,
+  UploadCloud,
   Check,
   ChevronRight,
-  Calculator,
-  Compass,
-  FileText,
-  Eye,
-  Plus
+  Award,
+  Flame,
+  Bike,
+  Sparkle,
+  TreePine,
+  Maximize2
 } from 'lucide-react';
-import { MAF_PRODUCTS } from '../data/factoryData';
-import { MAFProduct } from '../types';
-import { SlidesFilterBar, SlidesFilterState } from '../components/SlidesFilterBar';
-import { BikeFiltersBar, BikeFilterState } from '../components/catalog/BikeFiltersBar';
-import { FurnitureFiltersBar, FurnitureFilterState } from '../components/catalog/FurnitureFiltersBar';
-import { PlaygroundFiltersBar, PlaygroundFilterState } from '../components/catalog/PlaygroundFiltersBar';
-import { VatFiltersBar, VatFilterState } from '../components/catalog/VatFiltersBar';
-import { StainlessFiltersBar, StainlessFilterState } from '../components/catalog/StainlessFiltersBar';
-import { ProductDetailModal } from '../components/ProductDetailModal';
-import { useEstimate } from '../context/EstimateContext';
+import { ConsentCheckbox } from '../components/ConsentCheckbox';
 
 interface CatalogPageProps {
-  initialCategory?: string;
   onBackToHome?: () => void;
   onOpenCalculator?: () => void;
   onOpenMeasurerModal?: () => void;
+  onOpenPrivacy?: () => void;
+  onOpenOffer?: () => void;
+}
+
+type ProductSectionId = 'slides' | 'furniture' | 'stainless' | 'vats' | 'bike';
+
+interface ProductSectionData {
+  id: ProductSectionId;
+  aliases: string[];
+  navLabel: string;
+  badge: string;
+  title: string;
+  lead: string;
+  image: string;
+  alt: string;
+  imageCaption: string;
+  imageSubtext: string;
+  nomenclature: {
+    title: string;
+    description: string;
+    specs: string;
+  }[];
+  turnkeyTitle: string;
+  turnkeyLead: string;
+  turnkeyPoints: string[];
+  framesTitle: string;
+  framesLead: string;
+  framesCards: {
+    title: string;
+    desc: string;
+  }[];
+  techSpecs: {
+    label: string;
+    val: string;
+    sub: string;
+  }[];
+  defaultFormCategory: string;
+  formCategoryOptions: string[];
+  defaultMaterial: string;
+  materialOptions: string[];
+}
+
+const PRODUCT_SECTIONS: Record<ProductSectionId, ProductSectionData> = {
+  furniture: {
+    id: 'furniture',
+    aliases: ['furniture', 'mebel', 'benches', 'street-furniture'],
+    navLabel: 'Уличная мебель',
+    badge: '[ ПРОДУКЦИЯ ЗАВОДА • 02 / УЛИЧНАЯ МЕБЕЛЬ И МАФ ]',
+    title: 'Уличная мебель и малые архитектурные формы',
+    lead: 'Завод «Стальное дело» (Санкт-Петербург, г. Колпино) осуществляет серийное и контрактное производство современной садово-парковой и городской мебели для благоустройства жилых комплексов, набережных, парков, скверов, террас и коммерческих пространств.',
+    image: '/images/mebel.jpg',
+    alt: 'Уличная мебель и малые архитектурные формы завода Стальное Дело',
+    imageCaption: 'г. Санкт-Петербург, Колпино • ГОСТ 23118-2019 / ГОСТ Р 52169',
+    imageSubtext: 'Серийное изготовление скамей, шезлонгов, столов, урн и пергол по индивидуальным проектам архитекторов, застройщиков и генподрядчиков.',
+    nomenclature: [
+      {
+        title: 'Скамьи и лавочки',
+        description: 'Парковые прямые, радиусные и модульные скамьи со спинками и без спинок, пристенные и консольные конструкции, утяжеленные антивандальные решения для скверов и бульваров.',
+        specs: 'Нержавеющая сталь / Ст3сп5 + брус лиственницы / термодерево'
+      },
+      {
+        title: 'Столы и группы для пикников',
+        description: 'Антивандальные уличные столы, монолитные комплекты «стол + скамьи», парковые обеденные зоны и барные стойки для открытых террас и набережных.',
+        specs: 'Усиленные рамы из профильной трубы, скрытый крепеж столешниц'
+      },
+      {
+        title: 'Шезлонги и лежаки',
+        description: 'Эргономичные волнообразные шезлонги с анатомическим изгибом, парные лежаки с поворотными столиками для набережных, пляжей, спа-отелей и открытых зон отдыха.',
+        specs: 'Цельносварные нержавеющие каркасы, стойкость к коррозии и влаге'
+      },
+      {
+        title: 'Беседки, перголы и навесы',
+        description: 'Модульные теневые перголы с лазерной художественной перфорацией, парковые беседки-ротонды, навесы от солнца и осадков с подготовкой под интеграцию подсветки.',
+        specs: 'Силовые стойки до 6 мм, фермы, расчет снеговых и ветровых нагрузок'
+      },
+      {
+        title: 'Парклеты и модульные системы',
+        description: 'Быстровозводимые городские платформы и оазисы отдыха со встроенными сиденьями, цветочными кашпо, велостойками и настилами из террасной доски.',
+        specs: 'Модульная сборка на объекте, регулируемые винтовые опоры'
+      },
+      {
+        title: 'Парковые качели',
+        description: 'Подвесные качели-диваны на цепях и жестких тягах, качели с индивидуальными перголами и крышами, усиленные необслуживаемые подшипниковые узлы качения.',
+        specs: 'Антивандальное исполнение, нагрузка до 600 кг на секцию'
+      },
+      {
+        title: 'Урны и раздельный сбор',
+        description: 'Уличные урны с поворотным и выкатным баком, встроенными пепельницами из нержавеющей стали, а также трех- и четырехсекционные модули для раздельного сбора ТКО.',
+        specs: 'Оцинковка + порошковое покрытие, защита от затекания осадков'
+      }
+    ],
+    turnkeyTitle: '1. Готовые изделия «под ключ» из нержавеющей и окрашенной стали',
+    turnkeyLead: 'Полностью укомплектованная продукция с финишной отделкой, готовая к установке на объекте:',
+    turnkeyPoints: [
+      'Нержавеющая сталь AISI 304 / AISI 316: шлифованная, зеркальная полировка, сатинирование, стеклоструйное матирование и кислотная пассивация сварных швов. Максимальная стойкость к агрессивной городской среде.',
+      'Полимерно-порошковое покрытие: двухслойное покрытие (цинконаполненный грунт + порошковая эмаль) в камерах полимеризации до 6 метров. Любой цвет шкалы RAL Classic (муар, глянец, шагрень).',
+      'Комплектация натуральным деревом: калиброванный брус из сибирской лиственницы, термоясеня, термососны, пропитанный защитными маслами европейского качества (Osmo, Tikkurila), настилы HPL и ДПК.'
+    ],
+    framesTitle: '2. Металлические каркасы, подстолья и основания для доработки (B2B)',
+    framesLead: 'Для столярных производств, строительных подрядчиков, девелоперов и мебельных компаний мы производим отдельные стальные элементы и полуфабрикаты:',
+    framesCards: [
+      {
+        title: 'Основания и боковины скамей',
+        desc: 'Лазерный раскрой из листа до 20 мм, ЧПУ гибка, готовые монтажные отверстия и закладные под бетонирование или анкеры.'
+      },
+      {
+        title: 'Подстолья и ножки столов',
+        desc: 'Пространственные сварные подстолья из профильных и круглых труб, Х-образные, трапециевидные и консольные рамы.'
+      },
+      {
+        title: 'Каркасы пергол и беседок',
+        desc: 'Силовые несущие стойки, балки с пазами под скрытый крепеж бруса, фермы и закладные опорные пластины.'
+      },
+      {
+        title: 'Кронштейны и закладные',
+        desc: 'Угловые ребра жесткости, фланцы, пластины крепления, подвесы и скрытый крепеж для монтажа дерева и композита.'
+      }
+    ],
+    techSpecs: [
+      { label: 'Лазер ЧПУ', val: 'до 20 мм', sub: 'точность 0,5 мм' },
+      { label: 'ЧПУ гибка', val: '160 тонн', sub: 'длина до 3000мм' },
+      { label: 'Сварка НАКС', val: 'MIG/MAG/TIG', sub: 'ВИК / УЗК контроль' },
+      { label: 'Порошок RAL', val: 'Камеры 3м & 6м', sub: 'Qualicoat Class 2' }
+    ],
+    defaultFormCategory: 'Скамьи и лавочки',
+    formCategoryOptions: [
+      'Скамьи и лавочки',
+      'Столы и группы для пикников',
+      'Шезлонги и лежаки',
+      'Беседки, перголы и навесы',
+      'Парклеты и модульные системы',
+      'Парковые качели',
+      'Урны и раздельный сбор',
+      'Индивидуальный проект по эскизу'
+    ],
+    defaultMaterial: 'Нержавеющая сталь AISI 304 (сатинирование)',
+    materialOptions: [
+      'Нержавеющая сталь AISI 304 (сатинирование)',
+      'Нержавеющая сталь AISI 304 (зеркальная полировка)',
+      'Сталь Ст3 / 09Г2С + Порошковая окраска RAL',
+      'Оцинкованная сталь + Порошковая окраска RAL',
+      'По рекомендации инженера завода'
+    ]
+  },
+
+  stainless: {
+    id: 'stainless',
+    aliases: ['stainless', 'metal-structures', 'artobj', 'stainless-steel', 'art'],
+    navLabel: 'Изделия из нержавеющей стали',
+    badge: '[ ПРОДУКЦИЯ ЗАВОДА • 03 / ИЗДЕЛИЯ ИЗ НЕРЖАВЕЮЩЕЙ СТАЛИ ]',
+    title: 'Изделия и арт-объекты из нержавеющей стали',
+    lead: 'Специализированный цех обработки нержавеющих сталей завода «Стальное дело» проектирует и изготавливает сложные пространственные металлоконструкции, зеркальные арт-объекты, входные порталы, набережные ограждения и декоративные элементы из сталей AISI 304, AISI 316 и AISI 321.',
+    image: '/images/artobj.jpg',
+    alt: 'Изделия и арт-объекты из нержавеющей стали завода Стальное Дело',
+    imageCaption: 'г. Санкт-Петербург, Колпино • AISI 304 / AISI 316 • Super Mirror №8',
+    imageSubtext: 'Высокоточная аргонодуговая сварка TIG с поддувом корня шва, зеркальная полировка без оптических искажений и стеклоструйное матирование.',
+    nomenclature: [
+      {
+        title: 'Парковые арт-объекты и городские скульптуры',
+        description: 'Монументальные зеркальные кольца, полированные капли и сферы, параметрические ленты Мебиуса, стелы и световые кинетические доминанты для общественных пространств.',
+        specs: 'Зеркальная полировка Super Mirror (№8), невидимые зашлифованные швы'
+      },
+      {
+        title: 'Входные порталы и декоративные арки',
+        description: 'Премиальные облицовочные порталы для входных групп жилых комплексов бизнес- и премиум-класса, торговых галерей и бизнес-центров со скрытым силовым каркасом.',
+        specs: 'Нержавеющая сталь AISI 304/316 толщиной 2–4 мм, интеграция подсветки'
+      },
+      {
+        title: 'Ограждения, парапеты и набережные перила',
+        description: 'Нержавеющие перила повышенной коррозионной стойкости, цельностеклянные ограждения на зажимном профиле AISI 316 для влажного, ветрового и приморского климата.',
+        specs: 'Стойкость к солевому туману, расчет ветровых нагрузок СП 20.13330'
+      },
+      {
+        title: 'Фасадные кассеты и перфорированные панели',
+        description: 'Облицовка колонн, радиусные пилоны, вентилируемые экраны, параметрическая лазерная перфорация с индивидуальным авторским геометрическим паттерном.',
+        specs: 'Прецизионный раскрой с точностью 0,5 мм, гибка на ЧПУ'
+      },
+      {
+        title: 'Щелевые лотки и решетки водоотведения',
+        description: 'Прецизионные лотки из пищевой нержавеющей стали AISI 304 для пешеходных променадов, террас, фонтанных чаш, спа-комплексов и спортивных объектов.',
+        specs: 'Толщина 2–3 мм, класс нагрузки A15–C250, идеальная геометрия'
+      },
+      {
+        title: 'Водные элементы, каскады и форсуночные чаши',
+        description: 'Нержавеющие водопады, изливы, коллекторы и напорные трубопроводы для сухих и классических фонтанов с чистотой полировки сварного шва Ra ≤ 0.4.',
+        specs: '100% герметичность, электрохимическая пассивация швов'
+      },
+      {
+        title: 'Технологические емкости и рамы оборудования',
+        description: 'Сварные баки, мерники, рамы и корпуса из нержавеющей стали для пищевой, фармацевтической, химической и коммунальной промышленности.',
+        specs: 'ГОСТ 08Х18Н10 / AISI 304 / AISI 316L, сертификаты на металл'
+      }
+    ],
+    turnkeyTitle: '1. Высокотехнологичная обработка и готовые нержавеющие конструкции',
+    turnkeyLead: 'Заводской цикл обработки аустенитных сталей с бескомпромиссным качеством финишной поверхности:',
+    turnkeyPoints: [
+      'Зеркальная полировка Super Mirror №8: ручная и механизированная доводка до идеального зеркального блеска без эффекта «апельсиновой корки» и оптических искажений.',
+      'Направленное сатинирование (Grit 240 / 320): равномерная благородная матовая риска с защитным гидрофобным покрытием против отпечатков пальцев.',
+      'Аргонодуговая сварка TIG с формирующим поддувом: предотвращение окисления обратной стороны шва, гарантированная защита от межкристаллитной коррозии и кислотная пассивация по ASTM A967.'
+    ],
+    framesTitle: '2. Внутренние силовые подконструкции и закладные узлы (B2B)',
+    framesLead: 'Изготавливаем скрытые несущие металлоконструкции для фасадных компаний, скульпторов и девелоперов:',
+    framesCards: [
+      {
+        title: 'Пространственные силовые фермы',
+        desc: 'Трубные и листовые каркасы жесткости, воспринимающие ветровые и динамические нагрузки монументальных скульптур.'
+      },
+      {
+        title: 'Юстировочные и опорные узлы',
+        desc: 'Регулируемые по трем осям монтажные базы для идеального выравнивания крупногабаритных арт-объектов на фундаменте.'
+      },
+      {
+        title: 'Закладные фланцы и анкерные группы',
+        desc: 'Толстолистовые фланцы из нержавеющей стали толщиной до 25 мм с прецизионной расточкой монтажных отверстий.'
+      },
+      {
+        title: 'Облицовочные элементы под подсистему',
+        desc: 'Гнутые кассеты с замковыми соединениями, скрытым крепежом и подготовкой под герметизацию стыков.'
+      }
+    ],
+    techSpecs: [
+      { label: 'Марки стали', val: 'AISI 304 / 316', sub: 'ГОСТ 08Х18Н10' },
+      { label: 'Чистота шва', val: 'Ra ≤ 0.4 мкм', sub: 'TIG с поддувом' },
+      { label: 'Полировка', val: 'Super Mirror', sub: 'Зеркало №8' },
+      { label: 'Пассивация', val: 'ASTM A967', sub: 'Защита от коррозии' }
+    ],
+    defaultFormCategory: 'Парковые арт-объекты и городские скульптуры',
+    formCategoryOptions: [
+      'Парковые арт-объекты и городские скульптуры',
+      'Входные порталы и декоративные арки',
+      'Ограждения, парапеты и набережные перила',
+      'Фасадные кассеты и перфорированные панели',
+      'Щелевые лотки и решетки водоотведения',
+      'Водные элементы и форсуночные чаши',
+      'Технологические емкости и рамы',
+      'Индивидуальный арт-объект по 3D-модели'
+    ],
+    defaultMaterial: 'Нержавеющая сталь AISI 304 (зеркальная полировка №8)',
+    materialOptions: [
+      'Нержавеющая сталь AISI 304 (зеркальная полировка №8)',
+      'Нержавеющая сталь AISI 304 (направленный сатин)',
+      'Нержавеющая сталь AISI 316L (кислотостойкая/морская)',
+      'Стеклоструйное матирование (Sa 2.5)',
+      'По согласованию с инженером завода'
+    ]
+  },
+
+  vats: {
+    id: 'vats',
+    aliases: ['vats', 'chani', 'baths', 'spa'],
+    navLabel: 'Чаны и купели',
+    badge: '[ ПРОДУКЦИЯ ЗАВОДА • 04 / БАННЫЕ ЧАНЫ И УЛИЧНЫЕ КУПЕЛИ ]',
+    title: 'Банные чаны на дровах и уличные купели',
+    lead: 'Завод «Стальное дело» производит сибирские банные чаны, спа-купели и чаны для парения на открытом воздухе. Изготавливаем чаши из нержавеющей стали AISI 304 толщиной 3–4 мм с водяной рубашкой, дровяными печами, гидромассажем и отделкой алтайским кедром или термолиственницей.',
+    image: '/images/chani.jpg',
+    alt: 'Банные чаны и уличные купели завода Стальное Дело',
+    imageCaption: 'г. Санкт-Петербург, Колпино • AISI 304 / AISI 430 • Гарантия до 10 лет',
+    imageSubtext: 'Серийные и заказные банные комплексы для загородных отелей, глэмпингов, спа-резортов и частных резиденций.',
+    nomenclature: [
+      {
+        title: 'Банные чаны со встроенной печью на дровах',
+        description: 'Эргономичная восьмигранная форма с интегрированной топкой из котловой стали и водяным контуром быстрого и равномерного прогрева воды за 1.5–2 часа.',
+        specs: 'Сталь AISI 304 толщиной 3–4 мм, печь с колосником и зольником'
+      },
+      {
+        title: 'Чаны на подвесе с цепями и треногой',
+        description: 'Традиционный сибирский подвесной чан на мощных кованых цепях и бревенчатых стойках над открытым костровищем для создания первозданной банной атмосферы.',
+        specs: 'Усиленные рым-гайки, цепи с разрывной нагрузкой до 5 тонн'
+      },
+      {
+        title: 'Чаны на нержавеющей опорной подставке',
+        description: 'Универсальные чаны для быстрой установки на террасу, бетонную плиту или деревянный подиум с удобным выводом слива и дымоходной трубы.',
+        specs: 'Жесткая пространственная опора, регулируемый наклон слива'
+      },
+      {
+        title: 'Уличные купели для контрастных процедур',
+        description: 'Компактные и просторные купели круглой и эллиптической формы для ледяной и теплой воды, устойчивые к промерзанию и зимней эксплуатации.',
+        specs: 'Пищевая нержавеющая сталь, безопасный нескользящий трап'
+      },
+      {
+        title: 'Промышленные СПА-чаны для глэмпингов и отелей',
+        description: 'Увеличенные чаши диаметром до 2.4 м на 8–12 человек с системами непрерывной фильтрации, дезинфекции и электроподогрева.',
+        specs: 'Толщина чаши 4 мм, подготовка под подключение спа-автоматики'
+      },
+      {
+        title: 'Премиальные аксессуары и комплектующие',
+        description: 'Приставные лестницы с перилами, защитные термокрышки с утеплителем, столики для напитков, системы аэромассажа и многоцветная LED-подсветка.',
+        specs: 'Алтайский кедр / термоясень, обработка натуральными маслами'
+      }
+    ],
+    turnkeyTitle: '1. Готовые банные комплексы «под ключ» с отделкой кедром',
+    turnkeyLead: 'Полный комплект заводской сборки, готовый к первой растопке сразу после установки:',
+    turnkeyPoints: [
+      'Нержавеющая сталь 3 мм или 4 мм: стойкость к коррозии и перепадам температур, срок службы металлической чаши — более 30 лет.',
+      '100% гидроиспытания каждого сварного шва: опрессовка чаши на заводском стенде с проверкой герметичности под давлением.',
+      'Отделка алтайским кедром или термолиственницей: эргономичные анатомические спинки, сиденья и настил на дно, защищенные от влаги и смоловыделения.'
+    ],
+    framesTitle: '2. Сварные чаши без обшивки для монтажников и столярных мастерских (B2B)',
+    framesLead: 'Поставляем необитые металлические чаны для самостоятельной кастомизации на объекте:',
+    framesCards: [
+      {
+        title: 'Сварная нержавеющая чаша',
+        desc: 'Полностью проваренная восьмигранная чаша с пассивированными швами и резьбовыми бобышками под слив.'
+      },
+      {
+        title: 'Дровяная печь с водяной рубашкой',
+        desc: 'Топка из котловой стали 09Г2С с колосниковой решеткой, зольным ящиком и дымоходным фланцем 115–150 мм.'
+      },
+      {
+        title: 'Опорная подставка / Тренога',
+        desc: 'Силовая нержавеющая подставка или комплект бревенчатой треноги с подвесными коваными цепями.'
+      },
+      {
+        title: 'Крепежные кронштейны под брус',
+        desc: 'Комплект скрытых нержавеющих кронштейнов для быстрого монтажа деревянных сидений и спинок.'
+      }
+    ],
+    techSpecs: [
+      { label: 'Толщина чаши', val: '3–4 мм', sub: 'AISI 304 / AISI 430' },
+      { label: 'Гидроконтроль', val: '100% швов', sub: 'Опрессовка на стенде' },
+      { label: 'Вместимость', val: 'от 4 до 12 чел', sub: 'Диаметр 1.6–2.4 м' },
+      { label: 'Время нагрева', val: '1.5–2 часа', sub: 'Энергоэффективная топка' }
+    ],
+    defaultFormCategory: 'Банные чаны со встроенной печью на дровах',
+    formCategoryOptions: [
+      'Банные чаны со встроенной печью на дровах',
+      'Чаны на подвесе с цепями и треногой',
+      'Чаны на нержавеющей опорной подставке',
+      'Уличные купели для контрастных процедур',
+      'Промышленные СПА-чаны для глэмпингов и отелей',
+      'Сварная чаша без обшивки (B2B)',
+      'Индивидуальный чан по спецразмерам'
+    ],
+    defaultMaterial: 'Нержавеющая сталь AISI 304 (толщина 3 мм)',
+    materialOptions: [
+      'Нержавеющая сталь AISI 304 (толщина 3 мм)',
+      'Нержавеющая сталь AISI 304 (толщина 4 мм, усиленная)',
+      'Нержавеющая сталь AISI 430 (бюджетная)',
+      'Нержавеющая сталь AISI 316L (для минеральной/морской воды)',
+      'По рекомендации инженера завода'
+    ]
+  },
+
+  slides: {
+    id: 'slides',
+    aliases: ['slides', 'gorki', 'playgrounds', 'geon-slides'],
+    navLabel: 'Детские горки и скаты',
+    badge: '[ ПРОДУКЦИЯ ЗАВОДА • 01 / ДЕТСКИЕ ГОРКИ И СКАТЫ ]',
+    title: 'Нержавеющие детские горки, скаты и тоннели',
+    lead: 'Производство травмобезопасных всесезонных скатов для детских горок из нержавеющей стали AISI 304 в строгом соответствии с ТР ЕАЭС 042/2017 и ГОСТ Р 52169-2012. Поставляем прямые, винтовые, холмовые и тоннельные скаты для благоустройства дворов ЖК, парков и игровых комплексов.',
+    image: '/images/gorki3.jpg',
+    alt: 'Детские нержавеющие горки и скаты завода Стальное Дело',
+    imageCaption: 'г. Санкт-Петербург, Колпино • Сертификат ТР ЕАЭС 042/2017 • ГОСТ Р 52169',
+    imageSubtext: 'Бесшовная полировка сварных стыков, травмобезопасные борта с завальцовкой, устойчивость к температурным перепадам и вандализму.',
+    nomenclature: [
+      {
+        title: 'Прямые скаты с бортами безопасности',
+        description: 'Скаты высотой старта от 0.6 до 3.0 м с закругленными верхними поручнями безопасности и пологой зоной торможения.',
+        specs: 'Нержавеющая сталь AISI 304 2.0–2.5 мм, зеркальное полотно скольжения'
+      },
+      {
+        title: 'Холмовые скаты для геопластики',
+        description: 'Скаты, повторяющие сложный рельеф искусственных холмов и насыпей игровых площадок, со скрытыми анкерными закладными.',
+        specs: 'Индивидуальная геометрия профиля склона, скрытый крепеж к грунту'
+      },
+      {
+        title: 'Винтовые (спиральные) нержавеющие горки',
+        description: 'Компактные динамичные горки со спуском по спирали вокруг центральной несущей колонны для стартовых высот от 2.0 до 6.0 м.',
+        specs: 'Выверенный угол наклона 30–35°, высокие защитные борта'
+      },
+      {
+        title: 'Закрытые тоннельные трубы-горки',
+        description: 'Тоннели диаметром 760 мм, 800 мм и 1000 мм с радиусными поворотами и прозрачными смотровыми иллюминаторами из монолитного поликарбоната.',
+        specs: 'Фланцевая герметичная сборка секций, травмобезопасный крепеж'
+      },
+      {
+        title: 'Широкие семейные скаты (до 1.6 м)',
+        description: 'Двухместные и трехместные скаты для одновременного безопасного спуска детей и родителей на общественных площадках.',
+        specs: 'Усиленные поперечные ребра жесткости, расчет нагрузок до 800 кг'
+      },
+      {
+        title: 'Каркасы стартовых площадок и башен',
+        description: 'Силовые металлоконструкции из толстостенных труб с нескользящими настилами, лестницами и защитными экранами с порошковым покрытием RAL.',
+        specs: 'Оцинковка + порошок RAL, соответствие зонам безопасности ГОСТ'
+      }
+    ],
+    turnkeyTitle: '1. Сертифицированные горки с гарантией безопасности',
+    turnkeyLead: 'Полный пакет разрешительной документации для сдачи объекта Госстройнадзору:',
+    turnkeyPoints: [
+      'Соответствие ТР ЕАЭС 042/2017: обязательные сертификаты соответствия, расчет зон безопасности и скоростей торможения.',
+      'Травмобезопасная конструкция: непрерывные завальцованные борта из трубы без острых кромок, скрытые крепежные элементы.',
+      'Зеркальная полировка полотна AISI 304: идеальное всесезонное скольжение, устойчивость к обледенению и реагентам.'
+    ],
+    framesTitle: '2. Скаты для производителей детских городков и игровых холмов (B2B)',
+    framesLead: 'Поставляем отдельные нержавеющие скаты для интеграции в деревянные городки из робинии и лиственницы:',
+    framesCards: [
+      {
+        title: 'Скаты с монтажными фланцами',
+        desc: 'Готовые скаты со стартовой планкой и отверстиями под крепление к деревянным балкам и настилам башен.'
+      },
+      {
+        title: 'Секции тоннельных горок',
+        desc: 'Прямые и радиусные сегменты труб с ответными фланцами для быстрой болтовой сборки на площадке.'
+      },
+      {
+        title: 'Опорные стойки под бетонирование',
+        desc: 'Нержавеющие и оцинкованные телескопические опоры для регулировки высоты зоны торможения.'
+      },
+      {
+        title: 'Комплекты крепежа и заглушек',
+        desc: 'Антивандальный крепеж с защитными колпачками из ударопрочного полиамида.'
+      }
+    ],
+    techSpecs: [
+      { label: 'Стандарт', val: 'ТР ЕАЭС 042/2017', sub: 'ГОСТ Р 52169-2012' },
+      { label: 'Сталь', val: 'AISI 304 (пищевая)', sub: 'Толщина 2.0–3.0 мм' },
+      { label: 'Высота старта', val: 'от 0.6 до 6.0 м', sub: 'Прямые, спираль, тоннель' },
+      { label: 'Ширина полотна', val: '500–1600 мм', sub: 'Одиночные и семейные' }
+    ],
+    defaultFormCategory: 'Прямые скаты с бортами безопасности',
+    formCategoryOptions: [
+      'Прямые скаты с бортами безопасности',
+      'Холмовые скаты для геопластики',
+      'Винтовые (спиральные) нержавеющие горки',
+      'Закрытые тоннельные трубы-горки',
+      'Широкие семейные скаты',
+      'Каркасы стартовых башен',
+      'Скат по индивидуальному чертежу'
+    ],
+    defaultMaterial: 'Нержавеющая сталь AISI 304 (полированное полотно)',
+    materialOptions: [
+      'Нержавеющая сталь AISI 304 (зеркальное полотно 2.0 мм)',
+      'Нержавеющая сталь AISI 304 (усиленное полотно 2.5–3.0 мм)',
+      'Нержавеющая сталь AISI 316L (для набережных и приморских зон)',
+      'По рекомендации инженера завода'
+    ]
+  },
+
+  bike: {
+    id: 'bike',
+    aliases: ['bike', 'veloparking', 'bike-racks', 'cycling'],
+    navLabel: 'Велопарковки',
+    badge: '[ ПРОДУКЦИЯ ЗАВОДА • 05 / ВЕЛОПАРКОВКИ И МОБИЛЬНОСТЬ ]',
+    title: 'Велопарковки, стойки и велобоксы',
+    lead: 'Завод «Стальное дело» производит современные городские велопарковки, стойки для велосипедов и электросамокатов, сервисные станции ремонта и защитные навесы. Оснащаем жилые комплексы, бизнес-центры, парки и транспортно-пересадочные узлы.',
+    image: '/images/veloparking.jpg',
+    alt: 'Велопарковки и велостойки завода Стальное Дело',
+    imageCaption: 'г. Санкт-Петербург, Колпино • AISI 304 / Ст3сп5 + RAL • Антивандал',
+    imageSubtext: 'Модульные и индивидуальные конструкции с надежной фиксацией рамы замком любого типа и защитой лакокрасочного покрытия велосипеда.',
+    nomenclature: [
+      {
+        title: 'Арочные и П-образные велостойки',
+        description: 'Одиночные стойки из полированной нержавеющей или толстостенной профильной трубы с порошковым окрасом для удобной двухсторонней парковки.',
+        specs: 'Труба 40–60 мм со стенкой 2.5–3.0 мм, фланец или бетонирование'
+      },
+      {
+        title: 'Спиральные и рядные парковки',
+        description: 'Компактные секционные парковки на 3, 5, 10 и 20 велосипедов с одновременной фиксацией колеса и рамы на общественных паркингах.',
+        specs: 'Модульная конструкция, антивандальное анкерное крепление'
+      },
+      {
+        title: 'Дизайнерские парковки с лазерной резкой',
+        description: 'Индивидуальные силуэты, лазерная гравировка логотипов застройщика или названия жилого комплекса на листовой стали до 8 мм.',
+        specs: 'Точный лазерный раскрой, индивидуальный брендинг ЖК'
+      },
+      {
+        title: 'Парковки для электросамокатов (кикшеринг)',
+        description: 'Специализированные упоры с фиксацией стойки руля и возможностью подведения электропитания для подзарядки микромобильного транспорта.',
+        specs: 'Усиленные замковые проушины, порошковый муар RAL'
+      },
+      {
+        title: 'Станции технического самообслуживания',
+        description: 'Уличные колонны со встроенным ручным/ножным насосом высокого давления, манометром и комплектом антивандального инструмента на нержавеющих тросиках.',
+        specs: 'Корпус из нержавеющей стали AISI 304, всепогодное исполнение'
+      },
+      {
+        title: 'Крытые велонавесы и закрытые велобоксы',
+        description: 'Навесы с защитой от осадков, светопрозрачной кровлей из монолитного поликарбоната, подготовкой под СКУД (электронные замки) и LED-освещение.',
+        specs: 'Силовой каркас из профильной трубы, порошковая покраска'
+      }
+    ],
+    turnkeyTitle: '1. Антивандальные городские велопарковки «под ключ»',
+    turnkeyLead: 'Надежное и долговечное решение для общественных пространств с высокой проходимостью:',
+    turnkeyPoints: [
+      'Материалы на выбор: полированная нержавеющая сталь AISI 304 или сталь Ст3сп с горячим цинкованием и порошковой эмалью по каталогу RAL Classic.',
+      'Безопасность для велосипеда: оптимальная геометрия стоек предотвращает падение велосипеда и появление царапин на раме.',
+      'Два способа монтажа: фланцевое крепление анкерами к бетонному основанию или удлиненные ножки под прямое бетонирование в грунт/мощение.'
+    ],
+    framesTitle: '2. Стойки, закладные и каркасы велонавесов для подрядчиков (B2B)',
+    framesLead: 'Изготавливаем металлоконструкции для интеграции в проекты благоустройства:',
+    framesCards: [
+      {
+        title: 'Стойки под бетонирование',
+        desc: 'Трубные стойки с приваренными анкерными усами для надежной монолитной фиксации в теле фундамента.'
+      },
+      {
+        title: 'Сборные секции велопарковок',
+        desc: 'Модули на 5–10 мест с готовыми отверстиями под скрытое болтовое соединение в непрерывные ряды.'
+      },
+      {
+        title: 'Каркасы крытых велобоксов',
+        desc: 'Сварные рамы из профильных труб 80×80 мм с фермами и узлами крепления монолитного поликарбоната.'
+      },
+      {
+        title: 'Декоративные защитные фланцы',
+        desc: 'Штампованные и лазерные колпаки из нержавейки, скрывающие анкерные болты от влаги и вандализма.'
+      }
+    ],
+    techSpecs: [
+      { label: 'Материал', val: 'AISI 304 / Ст3сп', sub: 'Оцинковка + порошок' },
+      { label: 'Толщина стенки', val: 'до 3.0 мм', sub: 'Антивандальный профиль' },
+      { label: 'Вместимость', val: 'от 1 до 50+ мест', sub: 'Модульное наращивание' },
+      { label: 'Монтаж', val: 'Анкер / Бетон', sub: 'Скрытый крепеж' }
+    ],
+    defaultFormCategory: 'Арочные и П-образные велостойки',
+    formCategoryOptions: [
+      'Арочные и П-образные велостойки',
+      'Спиральные и рядные парковки',
+      'Дизайнерские парковки с лазерной резкой',
+      'Парковки для электросамокатов',
+      'Станции технического самообслуживания',
+      'Крытые велонавесы и велобоксы',
+      'Индивидуальная стойка по эскизу'
+    ],
+    defaultMaterial: 'Сталь Ст3сп + Порошковая покраска RAL',
+    materialOptions: [
+      'Сталь Ст3сп + Порошковая покраска RAL (муар)',
+      'Нержавеющая сталь AISI 304 (сатинирование)',
+      'Нержавеющая сталь AISI 304 (полировка)',
+      'Горячее цинкование + Порошковая покраска',
+      'По рекомендации инженера завода'
+    ]
+  }
+};
+
+// Map URL parameter to section ID
+function resolveSectionId(param?: string): ProductSectionId {
+  if (!param) return 'slides';
+  const clean = param.toLowerCase().trim();
+  for (const key of Object.keys(PRODUCT_SECTIONS) as ProductSectionId[]) {
+    const sec = PRODUCT_SECTIONS[key];
+    if (sec.id === clean || sec.aliases.includes(clean)) {
+      return sec.id;
+    }
+  }
+  return 'slides';
 }
 
 export const CatalogPage: React.FC<CatalogPageProps> = ({
-  initialCategory,
   onBackToHome,
   onOpenCalculator,
   onOpenMeasurerModal,
+  onOpenPrivacy,
+  onOpenOffer,
 }) => {
-  const params = useParams<{ category?: string }>();
+  const { category: routeCategory } = useParams<{ category?: string }>();
   const navigate = useNavigate();
 
-  const normalizeCategory = (cat: string): string => {
-    if (cat === 'slides' || cat === 'geon-slides') return 'slides';
-    if (cat === 'bike' || cat === 'bike-racks') return 'bike';
-    if (['furniture', 'benches', 'urns', 'pergolas', 'gazebos', 'loungers', 'swings', 'tables'].includes(cat)) {
-      return 'furniture';
-    }
-    if (['playgrounds', 'sportPlay'].includes(cat)) {
-      return 'playgrounds';
-    }
-    if (cat === 'vats') return 'vats';
-    if (['metal-structures', 'fences', 'treeGrates', 'artObjects', 'lighting', 'stairs', 'planters', 'entrance-groups', 'art-objects', 'pergolas'].includes(cat)) {
-      return 'metal-structures';
-    }
-    return cat;
-  };
+  const [activeSectionId, setActiveSectionId] = useState<ProductSectionId>(() => resolveSectionId(routeCategory));
+  const [activeTab, setActiveTab] = useState<'all' | 'turnkey' | 'frames'>('all');
 
-  const activeCategoryParam = params.category || initialCategory || 'all';
-
-  const [selectedCategory, setSelectedCategory] = useState<string>(
-    normalizeCategory(activeCategoryParam)
-  );
-
+  // Update section when route changes
   useEffect(() => {
-    if (params.category) {
-      setSelectedCategory(normalizeCategory(params.category));
-    } else if (initialCategory) {
-      setSelectedCategory(normalizeCategory(initialCategory));
+    if (routeCategory) {
+      const resolved = resolveSectionId(routeCategory);
+      setActiveSectionId(resolved);
     }
-  }, [params.category, initialCategory]);
+  }, [routeCategory]);
 
-  const handleSelectCategory = (catId: string) => {
-    setSelectedCategory(catId);
-    if (catId === 'all') {
-      navigate('/catalog');
-    } else {
-      navigate(`/catalog/${catId}`);
-    }
-  };
+  const currentSection = PRODUCT_SECTIONS[activeSectionId];
 
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [sortBy, setSortBy] = useState<'default' | 'weight-desc' | 'name-asc'>('default');
+  // Quick inquiry form state
+  const [furnitureType, setFurnitureType] = useState(currentSection.defaultFormCategory);
+  const [executionType, setExecutionType] = useState('Готовое изделие «под ключ»');
+  const [materialType, setMaterialType] = useState(currentSection.defaultMaterial);
+  const [quantity, setQuantity] = useState('10');
+  const [clientName, setClientName] = useState('');
+  const [clientPhone, setClientPhone] = useState('');
+  const [clientComment, setClientComment] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [consentAccepted, setConsentAccepted] = useState(false);
 
-  // Product detail passport modal state
-  const [selectedProductForDetail, setSelectedProductForDetail] = useState<MAFProduct | null>(null);
-
-  const { addItem, isInEstimate, getItemQuantity, setCalculatingProduct } = useEstimate();
-
-  // 1. Slide specific filter state
-  const initialSlideFilters: SlidesFilterState = {
-    slideType: 'all',
-    slideForm: 'all',
-    heightPreset: 'all',
-    exactHeight: 'all',
-    lengthPreset: 'all',
-    exactLength: 'all',
-  };
-  const [slideFilters, setSlideFilters] = useState<SlidesFilterState>(initialSlideFilters);
-
-  // 2. Bike specific filter state
-  const initialBikeFilters: BikeFilterState = {
-    bikeType: 'all',
-    capacityRange: 'all',
-    bikeForm: 'all',
-  };
-  const [bikeFilters, setBikeFilters] = useState<BikeFilterState>(initialBikeFilters);
-
-  // 3. Furniture specific filter state
-  const initialFurnitureFilters: FurnitureFilterState = {
-    furnitureType: 'all',
-    lengthRange: 'all',
-  };
-  const [furnitureFilters, setFurnitureFilters] = useState<FurnitureFilterState>(initialFurnitureFilters);
-
-  // 4. Playground specific filter state
-  const initialPlaygroundFilters: PlaygroundFilterState = {
-    playgroundType: 'all',
-  };
-  const [playgroundFilters, setPlaygroundFilters] = useState<PlaygroundFilterState>(initialPlaygroundFilters);
-
-  // 5. Vat specific filter state
-  const initialVatFilters: VatFilterState = {
-    steelGrade: 'all',
-    thickness: 'all',
-    capacityCategory: 'all',
-    bowlShape: 'all',
-    mounting: 'all',
-    heating: 'all',
-    lighting: 'all',
-  };
-  const [vatFilters, setVatFilters] = useState<VatFilterState>(initialVatFilters);
-
-  // 6. Stainless steel specific filter state
-  const initialStainlessFilters: StainlessFilterState = {
-    stainlessType: 'all',
-  };
-  const [stainlessFilters, setStainlessFilters] = useState<StainlessFilterState>(initialStainlessFilters);
-
-  // Scroll to top on mount
+  // Update form defaults when section changes
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }, []);
+    setFurnitureType(currentSection.defaultFormCategory);
+    setMaterialType(currentSection.defaultMaterial);
+  }, [activeSectionId, currentSection]);
 
-  const categories = [
-    { id: 'all', label: 'Все изделия' },
-    { id: 'slides', label: 'Скаты для горок' },
-    { id: 'bike', label: 'Парковки для велосипедов' },
-    { id: 'furniture', label: 'Уличная мебель' },
-    { id: 'playgrounds', label: 'Оборудование для детских площадок' },
-    { id: 'vats', label: 'Чаны и купели' },
-    { id: 'metal-structures', label: 'Изделия из нержавеющей стали' },
-  ];
-
-  // Raw category arrays
-  const allSlides = useMemo(() => {
-    return MAF_PRODUCTS.filter((p) => p.category === 'slides');
-  }, []);
-
-  const allBikes = useMemo(() => {
-    return MAF_PRODUCTS.filter((p) => normalizeCategory(p.category) === 'bike');
-  }, []);
-
-  const allFurniture = useMemo(() => {
-    return MAF_PRODUCTS.filter((p) => normalizeCategory(p.category) === 'furniture');
-  }, []);
-
-  const allPlaygrounds = useMemo(() => {
-    return MAF_PRODUCTS.filter((p) => normalizeCategory(p.category) === 'playgrounds');
-  }, []);
-
-  const allVats = useMemo(() => {
-    return MAF_PRODUCTS.filter((p) => normalizeCategory(p.category) === 'vats');
-  }, []);
-
-  const allStainless = useMemo(() => {
-    return MAF_PRODUCTS.filter((p) => normalizeCategory(p.category) === 'metal-structures');
-  }, []);
-
-  const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: MAF_PRODUCTS.length };
-    categories.forEach((c) => {
-      counts[c.id] = 0;
-    });
-    counts['all'] = MAF_PRODUCTS.length;
-    MAF_PRODUCTS.forEach((p) => {
-      const prim = normalizeCategory(p.category);
-      counts[prim] = (counts[prim] || 0) + 1;
-    });
-    return counts;
-  }, []);
-
-  // Filter slides specifically for count matching
-  const matchingSlidesCount = useMemo(() => {
-    return allSlides.filter((p) => {
-      if (slideFilters.slideType !== 'all' && p.slideType && p.slideType !== slideFilters.slideType) {
-        return false;
-      }
-      if (slideFilters.slideForm !== 'all' && p.slideForm && p.slideForm !== slideFilters.slideForm) {
-        return false;
-      }
-      // Height filter
-      if (slideFilters.exactHeight !== 'all') {
-        const targetH = parseFloat(slideFilters.exactHeight);
-        const h = p.slideHeight || (p.dimensions.height / 1000);
-        if (Math.abs(h - targetH) > 0.05) return false;
-      } else if (slideFilters.heightPreset !== 'all') {
-        const h = p.slideHeight || (p.dimensions.height / 1000);
-        if (slideFilters.heightPreset === 'low' && h > 1.05) return false;
-        if (slideFilters.heightPreset === 'mid' && (h < 1.05 || h > 1.95)) return false;
-        if (slideFilters.heightPreset === 'high' && (h < 1.95 || h > 3.05)) return false;
-        if (slideFilters.heightPreset === 'tower' && h <= 3.05) return false;
-      }
-      // Length filter
-      if (slideFilters.exactLength !== 'all') {
-        const targetL = parseFloat(slideFilters.exactLength);
-        const l = p.slideLength || (p.dimensions.length / 1000);
-        if (Math.abs(l - targetL) > 0.1) return false;
-      } else if (slideFilters.lengthPreset !== 'all') {
-        const l = p.slideLength || (p.dimensions.length / 1000);
-        if (slideFilters.lengthPreset === 'short' && l > 2.5) return false;
-        if (slideFilters.lengthPreset === 'mid' && (l < 2.5 || l > 4.5)) return false;
-        if (slideFilters.lengthPreset === 'long' && (l < 4.5 || l > 7.0)) return false;
-        if (slideFilters.lengthPreset === 'extra' && l <= 7.0) return false;
-      }
-      return true;
-    }).length;
-  }, [allSlides, slideFilters]);
-
-  // Filter bikes specifically for count matching
-  const matchingBikesCount = useMemo(() => {
-    return allBikes.filter((p) => {
-      if (bikeFilters.bikeType !== 'all' && p.bikeType && p.bikeType !== bikeFilters.bikeType) {
-        return false;
-      }
-      if (bikeFilters.capacityRange !== 'all') {
-        const cap = p.bikeCapacity || 4;
-        if (bikeFilters.capacityRange === '2-4' && (cap < 2 || cap > 4)) return false;
-        if (bikeFilters.capacityRange === '5-8' && (cap < 5 || cap > 8)) return false;
-        if (bikeFilters.capacityRange === '9-12' && (cap < 9 || cap > 12)) return false;
-        if (bikeFilters.capacityRange === '13+' && cap < 13) return false;
-      }
-      if (bikeFilters.bikeForm !== 'all' && p.bikeForm && p.bikeForm !== bikeFilters.bikeForm) {
-        return false;
-      }
-      return true;
-    }).length;
-  }, [allBikes, bikeFilters]);
-
-  // Filter furniture specifically for count matching
-  const matchingFurnitureCount = useMemo(() => {
-    return allFurniture.filter((p) => {
-      if (furnitureFilters.furnitureType !== 'all') {
-        const prodType = p.furnitureType || p.category;
-        if (furnitureFilters.furnitureType === 'benches' && prodType !== 'benches') return false;
-        if (furnitureFilters.furnitureType === 'tables' && prodType !== 'tables') return false;
-        if (furnitureFilters.furnitureType === 'loungers' && prodType !== 'loungers') return false;
-        if (furnitureFilters.furnitureType === 'pergolas' && !['pergolas', 'gazebos'].includes(prodType)) return false;
-        if (furnitureFilters.furnitureType === 'parklets' && prodType !== 'parklets') return false;
-        if (furnitureFilters.furnitureType === 'swings' && prodType !== 'swings') return false;
-      }
-      if (furnitureFilters.lengthRange !== 'all') {
-        const lenM = p.furnitureLengthM || (p.dimensions ? p.dimensions.length / 1000 : 2.0);
-        if (furnitureFilters.lengthRange === 'under-1.5' && lenM >= 1.5) return false;
-        if (furnitureFilters.lengthRange === '1.5-2.0' && (lenM < 1.5 || lenM > 2.05)) return false;
-        if (furnitureFilters.lengthRange === '2.0-2.5' && (lenM <= 2.05 || lenM > 2.55)) return false;
-        if (furnitureFilters.lengthRange === 'over-2.5' && lenM <= 2.55) return false;
-      }
-      return true;
-    }).length;
-  }, [allFurniture, furnitureFilters]);
-
-  // Filter playgrounds specifically for count matching
-  const matchingPlaygroundsCount = useMemo(() => {
-    return allPlaygrounds.filter((p) => {
-      if (playgroundFilters.playgroundType !== 'all') {
-        if (p.playgroundType && p.playgroundType !== playgroundFilters.playgroundType) {
-          return false;
-        }
-      }
-      return true;
-    }).length;
-  }, [allPlaygrounds, playgroundFilters]);
-
-  // Filter vats specifically for count matching
-  const matchingVatsCount = useMemo(() => {
-    return allVats.filter((p) => {
-      if (vatFilters.steelGrade !== 'all') {
-        const grade = p.vatSteelGrade || (p.material.includes('AISI 304') ? 'AISI 304' : undefined);
-        if (grade && grade !== vatFilters.steelGrade) return false;
-      }
-      if (vatFilters.thickness !== 'all') {
-        const th = p.vatThickness || '3 мм';
-        if (th !== vatFilters.thickness) return false;
-      }
-      if (vatFilters.capacityCategory !== 'all') {
-        const cap = p.vatCapacityPeople || 6;
-        if (vatFilters.capacityCategory === 'small' && cap > 4) return false;
-        if (vatFilters.capacityCategory === 'medium' && (cap < 5 || cap > 6)) return false;
-        if (vatFilters.capacityCategory === 'large' && cap < 7) return false;
-      }
-      if (vatFilters.bowlShape !== 'all') {
-        if (p.vatBowlShape && p.vatBowlShape !== vatFilters.bowlShape) return false;
-      }
-      if (vatFilters.mounting !== 'all') {
-        if (p.vatMounting && p.vatMounting !== vatFilters.mounting) return false;
-      }
-      if (vatFilters.heating !== 'all') {
-        if (p.vatHeating && p.vatHeating !== vatFilters.heating) return false;
-      }
-      if (vatFilters.lighting !== 'all') {
-        const hasLight = !!p.vatLighting;
-        if (vatFilters.lighting === 'yes' && !hasLight) return false;
-        if (vatFilters.lighting === 'no' && hasLight) return false;
-      }
-      return true;
-    }).length;
-  }, [allVats, vatFilters]);
-
-  // Filter stainless structures specifically for count matching
-  const matchingStainlessCount = useMemo(() => {
-    return allStainless.filter((p) => {
-      if (stainlessFilters.stainlessType !== 'all') {
-        if (p.stainlessType && p.stainlessType !== stainlessFilters.stainlessType) {
-          return false;
-        }
-      }
-      return true;
-    }).length;
-  }, [allStainless, stainlessFilters]);
-
-  const handleResetAllFilters = () => {
-    setSlideFilters(initialSlideFilters);
-    setBikeFilters(initialBikeFilters);
-    setFurnitureFilters(initialFurnitureFilters);
-    setPlaygroundFilters(initialPlaygroundFilters);
-    setVatFilters(initialVatFilters);
-    setStainlessFilters(initialStainlessFilters);
-    setSearchQuery('');
+  const handleSelectSection = (id: ProductSectionId) => {
+    setActiveSectionId(id);
+    navigate(`/catalog/${id}`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const filteredAndSortedProducts = useMemo(() => {
-    let result = MAF_PRODUCTS.filter((p) => {
-      const isSlide = p.category === 'slides';
-      const catKey = normalizeCategory(p.category);
-      const matchesCategory =
-        selectedCategory === 'all' ||
-        catKey === selectedCategory ||
-        p.category === selectedCategory;
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!consentAccepted) return;
+    setIsSubmitting(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+    }, 800);
+  };
 
-      if (!matchesCategory) return false;
-
-      // 1. Slides filters
-      if (isSlide && selectedCategory === 'slides') {
-        if (slideFilters.slideType !== 'all' && p.slideType && p.slideType !== slideFilters.slideType) {
-          return false;
-        }
-        if (slideFilters.slideForm !== 'all' && p.slideForm && p.slideForm !== slideFilters.slideForm) {
-          return false;
-        }
-        // Height filter
-        if (slideFilters.exactHeight !== 'all') {
-          const targetH = parseFloat(slideFilters.exactHeight);
-          const h = p.slideHeight || (p.dimensions.height / 1000);
-          if (Math.abs(h - targetH) > 0.05) return false;
-        } else if (slideFilters.heightPreset !== 'all') {
-          const h = p.slideHeight || (p.dimensions.height / 1000);
-          if (slideFilters.heightPreset === 'low' && h > 1.05) return false;
-          if (slideFilters.heightPreset === 'mid' && (h < 1.05 || h > 1.95)) return false;
-          if (slideFilters.heightPreset === 'high' && (h < 1.95 || h > 3.05)) return false;
-          if (slideFilters.heightPreset === 'tower' && h <= 3.05) return false;
-        }
-        // Length filter
-        if (slideFilters.exactLength !== 'all') {
-          const targetL = parseFloat(slideFilters.exactLength);
-          const l = p.slideLength || (p.dimensions.length / 1000);
-          if (Math.abs(l - targetL) > 0.1) return false;
-        } else if (slideFilters.lengthPreset !== 'all') {
-          const l = p.slideLength || (p.dimensions.length / 1000);
-          if (slideFilters.lengthPreset === 'short' && l > 2.5) return false;
-          if (slideFilters.lengthPreset === 'mid' && (l < 2.5 || l > 4.5)) return false;
-          if (slideFilters.lengthPreset === 'long' && (l < 4.5 || l > 7.0)) return false;
-          if (slideFilters.lengthPreset === 'extra' && l <= 7.0) return false;
-        }
-      }
-
-      // 2. Bike filters
-      if (selectedCategory === 'bike') {
-        if (bikeFilters.bikeType !== 'all' && p.bikeType && p.bikeType !== bikeFilters.bikeType) {
-          return false;
-        }
-        if (bikeFilters.capacityRange !== 'all') {
-          const cap = p.bikeCapacity || 4;
-          if (bikeFilters.capacityRange === '2-4' && (cap < 2 || cap > 4)) return false;
-          if (bikeFilters.capacityRange === '5-8' && (cap < 5 || cap > 8)) return false;
-          if (bikeFilters.capacityRange === '9-12' && (cap < 9 || cap > 12)) return false;
-          if (bikeFilters.capacityRange === '13+' && cap < 13) return false;
-        }
-        if (bikeFilters.bikeForm !== 'all' && p.bikeForm && p.bikeForm !== bikeFilters.bikeForm) {
-          return false;
-        }
-      }
-
-      // 3. Furniture filters
-      if (selectedCategory === 'furniture') {
-        if (furnitureFilters.furnitureType !== 'all') {
-          const prodType = p.furnitureType || p.category;
-          if (furnitureFilters.furnitureType === 'benches' && prodType !== 'benches') return false;
-          if (furnitureFilters.furnitureType === 'tables' && prodType !== 'tables') return false;
-          if (furnitureFilters.furnitureType === 'loungers' && prodType !== 'loungers') return false;
-          if (furnitureFilters.furnitureType === 'pergolas' && !['pergolas', 'gazebos'].includes(prodType)) return false;
-          if (furnitureFilters.furnitureType === 'parklets' && prodType !== 'parklets') return false;
-          if (furnitureFilters.furnitureType === 'swings' && prodType !== 'swings') return false;
-        }
-        if (furnitureFilters.lengthRange !== 'all') {
-          const lenM = p.furnitureLengthM || (p.dimensions ? p.dimensions.length / 1000 : 2.0);
-          if (furnitureFilters.lengthRange === 'under-1.5' && lenM >= 1.5) return false;
-          if (furnitureFilters.lengthRange === '1.5-2.0' && (lenM < 1.5 || lenM > 2.05)) return false;
-          if (furnitureFilters.lengthRange === '2.0-2.5' && (lenM <= 2.05 || lenM > 2.55)) return false;
-          if (furnitureFilters.lengthRange === 'over-2.5' && lenM <= 2.55) return false;
-        }
-      }
-
-      // 4. Playground filters
-      if (selectedCategory === 'playgrounds') {
-        if (playgroundFilters.playgroundType !== 'all') {
-          if (p.playgroundType && p.playgroundType !== playgroundFilters.playgroundType) {
-            return false;
-          }
-        }
-      }
-
-      // 5. Vat filters
-      if (selectedCategory === 'vats') {
-        if (vatFilters.steelGrade !== 'all') {
-          const grade = p.vatSteelGrade || (p.material.includes('AISI 304') ? 'AISI 304' : undefined);
-          if (grade && grade !== vatFilters.steelGrade) return false;
-        }
-        if (vatFilters.thickness !== 'all') {
-          const th = p.vatThickness || '3 мм';
-          if (th !== vatFilters.thickness) return false;
-        }
-        if (vatFilters.capacityCategory !== 'all') {
-          const cap = p.vatCapacityPeople || 6;
-          if (vatFilters.capacityCategory === 'small' && cap > 4) return false;
-          if (vatFilters.capacityCategory === 'medium' && (cap < 5 || cap > 6)) return false;
-          if (vatFilters.capacityCategory === 'large' && cap < 7) return false;
-        }
-        if (vatFilters.bowlShape !== 'all') {
-          if (p.vatBowlShape && p.vatBowlShape !== vatFilters.bowlShape) return false;
-        }
-        if (vatFilters.mounting !== 'all') {
-          if (p.vatMounting && p.vatMounting !== vatFilters.mounting) return false;
-        }
-        if (vatFilters.heating !== 'all') {
-          if (p.vatHeating && p.vatHeating !== vatFilters.heating) return false;
-        }
-        if (vatFilters.lighting !== 'all') {
-          const hasLight = !!p.vatLighting;
-          if (vatFilters.lighting === 'yes' && !hasLight) return false;
-          if (vatFilters.lighting === 'no' && hasLight) return false;
-        }
-      }
-
-      // 6. Stainless metal structures filters
-      if (selectedCategory === 'metal-structures') {
-        if (stainlessFilters.stainlessType !== 'all') {
-          if (p.stainlessType && p.stainlessType !== stainlessFilters.stainlessType) {
-            return false;
-          }
-        }
-      }
-
-      const q = searchQuery.toLowerCase().trim();
-      if (!q) return true;
-      const matchesQuery = 
-        p.name.toLowerCase().includes(q) ||
-        p.article.toLowerCase().includes(q) ||
-        p.description.toLowerCase().includes(q) ||
-        p.material.toLowerCase().includes(q) ||
-        p.categoryLabel.toLowerCase().includes(q) ||
-        (p.slideTypeLabel && p.slideTypeLabel.toLowerCase().includes(q)) ||
-        (p.slideFormLabel && p.slideFormLabel.toLowerCase().includes(q)) ||
-        (p.bikeTypeLabel && p.bikeTypeLabel.toLowerCase().includes(q)) ||
-        (p.playgroundTypeLabel && p.playgroundTypeLabel.toLowerCase().includes(q)) ||
-        (p.vatSteelGrade && p.vatSteelGrade.toLowerCase().includes(q)) ||
-        (p.stainlessTypeLabel && p.stainlessTypeLabel.toLowerCase().includes(q));
-      return matchesQuery;
-    });
-
-    if (sortBy === 'weight-desc') {
-      result = [...result].sort((a, b) => b.weight - a.weight);
-    } else if (sortBy === 'name-asc') {
-      result = [...result].sort((a, b) => a.name.localeCompare(b.name, 'ru'));
-    }
-
-    return result;
-  }, [
-    selectedCategory, 
-    searchQuery, 
-    sortBy, 
-    slideFilters, 
-    bikeFilters, 
-    furnitureFilters, 
-    playgroundFilters, 
-    vatFilters,
-    stainlessFilters
-  ]);
+  const sectionKeys: ProductSectionId[] = ['slides', 'furniture', 'stainless', 'vats', 'bike'];
 
   return (
-    <div className="bg-white min-h-screen">
-      {/* Top Breadcrumbs Bar */}
-      <div className="border-b border-neutral-200 bg-[#FAFAFA]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between text-xs font-mono">
-          <div className="flex items-center gap-2 text-neutral-500">
+    <div className="min-h-screen bg-white text-neutral-900 selection:bg-neutral-900 selection:text-white pb-20">
+      {/* 1. TOP BREADCRUMB & CONTEXT STRIP */}
+      <div className="border-b border-neutral-200 bg-neutral-50/70">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-xs font-mono">
             <button
               onClick={onBackToHome}
-              className="hover:text-black transition-colors cursor-pointer"
+              className="text-neutral-500 hover:text-black flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              Главная
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Главная</span>
             </button>
-            <ChevronRight className="w-3.5 h-3.5 text-neutral-400" />
-            <button
-              onClick={() => handleSelectCategory('all')}
-              className={`hover:text-black transition-colors cursor-pointer ${selectedCategory === 'all' ? 'text-neutral-900 font-medium' : ''}`}
-            >
-              Каталог МАФ
-            </button>
-            {selectedCategory !== 'all' && (
-              <>
-                <ChevronRight className="w-3.5 h-3.5 text-neutral-400" />
-                <span className="text-neutral-900 font-medium">
-                  {categories.find((c) => c.id === selectedCategory)?.label}
-                </span>
-              </>
-            )}
+            <span className="text-neutral-300">/</span>
+            <span className="text-neutral-600 font-medium">Продукция завода</span>
+            <span className="text-neutral-300">/</span>
+            <span className="text-neutral-900 font-semibold uppercase tracking-wider">{currentSection.navLabel}</span>
           </div>
 
-          <button
-            onClick={onBackToHome}
-            className="inline-flex items-center gap-1.5 text-neutral-600 hover:text-black transition-colors cursor-pointer"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>На главную</span>
-          </button>
+          <div className="flex items-center gap-3">
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-white border border-neutral-200 text-[11px] font-mono text-neutral-600">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>Прием заказов на сезон 2025–2026</span>
+            </div>
+            <button
+              onClick={onOpenCalculator}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 bg-black text-white text-[11px] font-mono uppercase tracking-wider hover:bg-neutral-800 transition-colors cursor-pointer"
+            >
+              <Calculator className="w-3.5 h-3.5" />
+              <span>Рассчитать смету</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        {/* Page Header */}
-        <div className="border-b border-neutral-200 pb-8 mb-8">
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
-            <div>
-              <div className="font-mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">
-                [ Производственная номенклатура завода «Стальное Дело» ]
-              </div>
-              <h1 className="text-3xl sm:text-5xl font-light text-neutral-900 tracking-tight">
-                Каталог малых архитектурных форм
-              </h1>
-              <p className="mt-3 text-neutral-500 text-xs sm:text-sm font-light max-w-2xl leading-relaxed">
-                Серийные и индивидуальные МАФ из аустенитной нержавеющей стали AISI 304/316, горячеоцинкованного проката и термодревесины. Соответствие ТР ЕАЭС 042/2017 и ГОСТ Р 52169.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3">
-              <button
-                onClick={onOpenCalculator}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-black text-white text-xs font-mono uppercase tracking-wider hover:bg-neutral-800 transition-colors cursor-pointer"
-              >
-                <Calculator className="w-3.5 h-3.5" />
-                <span>Калькулятор сметы</span>
-              </button>
-
-              <button
-                onClick={onOpenMeasurerModal}
-                className="inline-flex items-center gap-2 px-4 py-2.5 border border-neutral-300 text-neutral-900 text-xs font-mono uppercase tracking-wider hover:border-black transition-colors cursor-pointer bg-white"
-              >
-                <Compass className="w-3.5 h-3.5" />
-                <span>Вызов замерщика</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Search, Sort and Summary Toolbar */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-6 border-b border-neutral-200">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Поиск по артикулу, названию или характеристикам..."
-              className="w-full pl-9 pr-8 py-2 bg-neutral-50 border border-neutral-200 text-xs placeholder:text-neutral-400 focus:outline-none focus:border-black transition-colors"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-black cursor-pointer"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-
-          <div className="flex items-center gap-3 self-end md:self-auto text-xs font-mono">
-            <span className="text-neutral-400">Сортировка:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
-              className="px-3 py-2 bg-white border border-neutral-200 text-neutral-700 text-xs focus:outline-none focus:border-black cursor-pointer"
-            >
-              <option value="default">По умолчанию</option>
-              <option value="name-asc">По названию (А–Я)</option>
-              <option value="weight-desc">По массе (сначала тяжелые)</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Category Selector Tabs */}
-        <div className="mb-6 overflow-x-auto pb-2 scrollbar-thin">
-          <div className="flex items-center gap-2">
-            {categories.map((cat) => {
-              const isActive = selectedCategory === cat.id;
-              const count = categoryCounts[cat.id] || 0;
-
+      {/* 2. CATEGORY TABS BAR */}
+      <div className="border-b border-neutral-200 bg-white sticky top-16 z-30 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2 overflow-x-auto py-2.5 scrollbar-none no-scrollbar">
+            {sectionKeys.map((secKey, idx) => {
+              const sec = PRODUCT_SECTIONS[secKey];
+              const isActive = activeSectionId === secKey;
               return (
                 <button
-                  key={cat.id}
-                  onClick={() => handleSelectCategory(cat.id)}
-                  className={`inline-flex items-center gap-2 px-3.5 py-2 text-xs transition-colors cursor-pointer whitespace-nowrap ${
+                  key={secKey}
+                  onClick={() => handleSelectSection(secKey)}
+                  className={`px-4 py-2 text-xs font-mono uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer flex items-center gap-2 border ${
                     isActive
-                      ? 'bg-black text-white font-medium'
-                      : 'bg-neutral-50 text-neutral-600 border border-neutral-200 hover:border-neutral-400'
+                      ? 'bg-black text-white border-black font-semibold'
+                      : 'bg-neutral-50 text-neutral-600 border-neutral-200 hover:border-neutral-400 hover:text-black hover:bg-neutral-100'
                   }`}
                 >
-                  <span>{cat.label}</span>
-                  <span className={`font-mono text-[10px] ${isActive ? 'text-neutral-300' : 'text-neutral-400'}`}>
-                    {count}
+                  <span className={`text-[10px] ${isActive ? 'text-neutral-300' : 'text-neutral-400'}`}>
+                    0{idx + 1}
                   </span>
+                  <span>{sec.navLabel}</span>
                 </button>
               );
             })}
           </div>
         </div>
-
-        {/* Category-Specific Filter Bars */}
-        {selectedCategory === 'slides' && (
-          <SlidesFilterBar
-            slides={allSlides}
-            filters={slideFilters}
-            onChange={(newFilters) => setSlideFilters(newFilters)}
-            onReset={() => setSlideFilters(initialSlideFilters)}
-            totalMatching={matchingSlidesCount}
-          />
-        )}
-
-        {selectedCategory === 'bike' && (
-          <BikeFiltersBar
-            products={allBikes}
-            filters={bikeFilters}
-            onChange={(newFilters) => setBikeFilters(newFilters)}
-            onReset={() => setBikeFilters(initialBikeFilters)}
-            totalMatching={matchingBikesCount}
-          />
-        )}
-
-        {selectedCategory === 'furniture' && (
-          <FurnitureFiltersBar
-            products={allFurniture}
-            filters={furnitureFilters}
-            onChange={(newFilters) => setFurnitureFilters(newFilters)}
-            onReset={() => setFurnitureFilters(initialFurnitureFilters)}
-            totalMatching={matchingFurnitureCount}
-          />
-        )}
-
-        {selectedCategory === 'playgrounds' && (
-          <PlaygroundFiltersBar
-            products={allPlaygrounds}
-            filters={playgroundFilters}
-            onChange={(newFilters) => setPlaygroundFilters(newFilters)}
-            onReset={() => setPlaygroundFilters(initialPlaygroundFilters)}
-            totalMatching={matchingPlaygroundsCount}
-          />
-        )}
-
-        {selectedCategory === 'vats' && (
-          <VatFiltersBar
-            products={allVats}
-            filters={vatFilters}
-            onChange={(newFilters) => setVatFilters(newFilters)}
-            onReset={() => setVatFilters(initialVatFilters)}
-            totalMatching={matchingVatsCount}
-          />
-        )}
-
-        {selectedCategory === 'metal-structures' && (
-          <StainlessFiltersBar
-            products={allStainless}
-            filters={stainlessFilters}
-            onChange={(newFilters) => setStainlessFilters(newFilters)}
-            onReset={() => setStainlessFilters(initialStainlessFilters)}
-            totalMatching={matchingStainlessCount}
-          />
-        )}
-
-        {/* Empty State when no results */}
-        {filteredAndSortedProducts.length === 0 && (
-          <div className="py-24 text-center border-b border-neutral-200">
-            <div className="w-12 h-12 border border-neutral-300 flex items-center justify-center mx-auto mb-4 text-neutral-400">
-              <Filter className="w-6 h-6" />
-            </div>
-            <p className="text-neutral-800 text-base font-medium mb-1">
-              По вашему запросу ничего не найдено
-            </p>
-            <p className="text-neutral-500 text-xs mb-6 max-w-sm mx-auto font-light">
-              Попробуйте изменить параметры поиска или сбросить активные фильтры.
-            </p>
-            <button
-              onClick={handleResetAllFilters}
-              className="px-6 py-2.5 bg-black text-white text-xs font-mono uppercase tracking-wider hover:bg-neutral-800 transition-colors cursor-pointer"
-            >
-              Сбросить фильтры
-            </button>
-          </div>
-        )}
-
-        {/* Minimalist Grid of Products */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-neutral-200 mt-2 border border-neutral-200">
-          {filteredAndSortedProducts.map((product) => {
-            const isSlide = product.category === 'slides';
-            const hasDetail = !!product.hasDetailPage;
-
-            return (
-              <div
-                key={product.id}
-                className={`bg-white p-6 sm:p-8 flex flex-col justify-between transition-all group relative ${
-                  hasDetail 
-                    ? 'hover:bg-neutral-50/70 hover:shadow-sm cursor-pointer' 
-                    : 'hover:bg-neutral-50/40 cursor-default'
-                }`}
-                onClick={() => {
-                  if (hasDetail) {
-                    setSelectedProductForDetail(product);
-                  }
-                }}
-              >
-                <div>
-                  {/* Top Meta Bar */}
-                  <div className="flex items-center justify-between text-[11px] font-mono text-neutral-400 mb-4">
-                    <span className="font-semibold text-neutral-700">{product.article}</span>
-                    <div className="flex items-center gap-1.5">
-                      {hasDetail ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] bg-black text-white px-2 py-0.5 font-medium tracking-wide">
-                          <FileText className="w-2.5 h-2.5" />
-                          <span>Паспорт изделия</span>
-                        </span>
-                      ) : (
-                        <span className="text-[10px] bg-neutral-100 text-neutral-500 px-2 py-0.5">
-                          Базовые ТТХ
-                        </span>
-                      )}
-                      <span className="uppercase tracking-wider text-[10px] bg-neutral-100 px-2 py-0.5 text-neutral-600">
-                        {product.categoryLabel}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Clean Visual Representation */}
-                  <div className="relative aspect-4/3 w-full bg-neutral-100 overflow-hidden mb-6 border border-neutral-100">
-                    <img
-                      src={product.imageRender}
-                      alt={product.name}
-                      referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover grayscale-15 group-hover:grayscale-0 group-hover:scale-103 transition-all duration-700"
-                      loading="lazy"
-                    />
-
-                    {/* Slide badges overlay */}
-                    {isSlide && (
-                      <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1.5 pointer-events-none">
-                        <span className="px-2 py-1 bg-black/85 backdrop-blur-xs text-white text-[10px] font-mono tracking-wider uppercase">
-                          {product.slideType === 'open' ? 'Открытый скат' : 'Тоннель Ø800'}
-                        </span>
-                        {product.slideFormLabel && (
-                          <span className="px-2 py-1 bg-white/90 backdrop-blur-xs text-neutral-900 text-[10px] font-mono border border-neutral-300">
-                            {product.slideFormLabel}
-                          </span>
-                        )}
-                      </div>
-                    )}
-
-                    {isSlide && product.slideHeight && (
-                      <div className="absolute bottom-2.5 right-2.5 bg-black/80 text-white px-2 py-0.5 text-[10px] font-mono">
-                        h = {product.slideHeight} м
-                      </div>
-                    )}
-
-                    {/* Hover indicator on image when detailed page is available */}
-                    {hasDetail && (
-                      <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white text-neutral-900 text-xs font-mono font-medium shadow-md">
-                          <Eye className="w-3.5 h-3.5" />
-                          <span>Открыть паспорт</span>
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Title & Description */}
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className="text-lg font-normal text-neutral-900 tracking-tight group-hover:text-black">
-                      {product.name}
-                    </h3>
-                    {hasDetail && (
-                      <ArrowUpRight className="w-4 h-4 text-neutral-400 group-hover:text-black shrink-0 transition-colors mt-1" />
-                    )}
-                  </div>
-                  <p className="text-xs text-neutral-500 line-clamp-3 leading-relaxed mb-6 font-normal">
-                    {product.description}
-                  </p>
-
-                  {/* Technical Specifications */}
-                  <div className="border-t border-neutral-200 pt-3 pb-3 space-y-1.5 text-[11px] mb-6 font-mono text-neutral-600">
-                    {isSlide ? (
-                      <>
-                        <div className="flex justify-between">
-                          <span className="text-neutral-400 font-sans">Высота старта (h):</span>
-                          <span className="text-neutral-900 font-medium">
-                            {product.slideHeight ? `${product.slideHeight} м (${product.dimensions.height} мм)` : `${product.dimensions.height} мм`}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-neutral-400 font-sans">Длина ската (L):</span>
-                          <span className="text-neutral-900 font-medium">
-                            {product.slideLength ? `${product.slideLength} м (${product.dimensions.length} мм)` : `${product.dimensions.length} мм`}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-neutral-400 font-sans">Ширина / диаметр:</span>
-                          <span className="text-neutral-900">{product.dimensions.width} мм</span>
-                        </div>
-                        {product.slideAngle && (
-                          <div className="flex justify-between">
-                            <span className="text-neutral-400 font-sans">Угол поворота:</span>
-                            <span className="text-neutral-900">{product.slideAngle}°</span>
-                          </div>
-                        )}
-                        <div className="flex justify-between">
-                          <span className="text-neutral-400 font-sans">Масса:</span>
-                          <span className="text-neutral-900">{product.weight} кг</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-neutral-400 font-sans">Материал:</span>
-                          <span className="font-sans text-neutral-800 text-right">{product.material}</span>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="flex justify-between">
-                          <span className="text-neutral-400 font-sans">Габариты (Д×Ш×В):</span>
-                          <span className="text-neutral-900 font-medium">
-                            {product.dimensions.length} × {product.dimensions.width} × {product.dimensions.height} мм
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-neutral-400 font-sans">Масса:</span>
-                          <span className="text-neutral-900">{product.weight} кг</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-neutral-400 font-sans">Материал:</span>
-                          <span className="font-sans text-neutral-800 text-right truncate max-w-[200px]">{product.material}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-neutral-400 font-sans">Покрытие:</span>
-                          <span className="font-sans text-neutral-800 text-right truncate max-w-[200px]">{product.coating}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-neutral-400 font-sans">Монтаж:</span>
-                          <span className="font-sans text-neutral-800 text-right">{product.mountingType}</span>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                {/* Actions: Calculate Quote, Details, and Add to Batch Estimate */}
-                <div 
-                  className="pt-4 border-t border-neutral-200 space-y-2"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {hasDetail && (
-                    <button
-                      type="button"
-                      onClick={() => setSelectedProductForDetail(product)}
-                      className="w-full py-2 px-3 bg-neutral-900 text-white text-xs font-mono uppercase tracking-wider hover:bg-black transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                    >
-                      <FileText className="w-3.5 h-3.5" />
-                      <span>Паспорт изделия</span>
-                      <ArrowUpRight className="w-3 h-3 text-neutral-400" />
-                    </button>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={() => setCalculatingProduct(product)}
-                    className="w-full py-2.5 px-3 bg-black text-white text-xs font-mono uppercase tracking-wider hover:bg-neutral-800 transition-colors flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <Calculator className="w-3.5 h-3.5" />
-                    <span>Рассчитать смету</span>
-                    <ArrowUpRight className="w-3.5 h-3.5 text-neutral-400" />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => addItem(product, 1)}
-                    className={`w-full py-2 px-3 border text-xs font-mono uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                      isInEstimate(product.id)
-                        ? 'bg-neutral-100 text-neutral-900 border-neutral-400 hover:bg-neutral-200'
-                        : 'bg-white text-neutral-700 border-neutral-200 hover:border-black hover:text-black'
-                    }`}
-                  >
-                    {isInEstimate(product.id) ? (
-                      <>
-                        <Check className="w-3.5 h-3.5 text-emerald-600" />
-                        <span>В расчёте сметы ({getItemQuantity(product.id)} шт.)</span>
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="w-3.5 h-3.5 text-neutral-400" />
-                        <span>Добавить к расчёту сметы</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Custom Engineering & CAD Consultation Banner */}
-        <div className="border border-neutral-200 bg-[#FAFAFA] p-8 sm:p-12 mt-16">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            <div className="lg:col-span-8 space-y-4">
-              <div className="font-mono text-[11px] uppercase tracking-widest text-neutral-400">
-                [ Индивидуальное производство ]
-              </div>
-              <h3 className="text-2xl sm:text-4xl font-light text-neutral-900 tracking-tight">
-                Не нашли нужное изделие? Изготовим по вашему проекту
-              </h3>
-              <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed font-light max-w-2xl">
-                Конструкторское бюро завода «Стальное Дело» адаптирует архитектурные концепции, 3D-модели и эскизы под серийное производство. Выполняем раскрой стали до 25 мм, гибку, точную сварку НАКС и покраску в любой оттенок RAL.
-              </p>
-
-              <div className="flex flex-wrap gap-4 pt-2 text-xs font-mono text-neutral-600">
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-neutral-900" />
-                  <span>Принимаем файлы DWG, DXF, STEP, PDF</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-neutral-900" />
-                  <span>Оперативный расчет сметы</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-neutral-900" />
-                  <span>Соответствие СП 16.13330 и ГОСТ</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="lg:col-span-4 flex flex-col gap-3">
-              <button
-                onClick={onOpenCalculator}
-                className="w-full py-3.5 px-6 bg-black text-white text-xs font-mono uppercase tracking-wider hover:bg-neutral-800 transition-colors flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <Calculator className="w-4 h-4" />
-                <span>Загрузить чертеж в калькулятор</span>
-              </button>
-
-              <button
-                onClick={onOpenMeasurerModal}
-                className="w-full py-3.5 px-6 border border-neutral-300 text-neutral-900 text-xs font-mono uppercase tracking-wider hover:border-black transition-colors flex items-center justify-center gap-2 cursor-pointer bg-white"
-              >
-                <Compass className="w-4 h-4" />
-                <span>Вызов конструктора на замер</span>
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
 
-      {/* Product Detail Modal (Паспорт изделия) */}
-      <ProductDetailModal
-        product={selectedProductForDetail}
-        isOpen={!!selectedProductForDetail}
-        onClose={() => setSelectedProductForDetail(null)}
-        onOpenCalculator={() => {
-          if (selectedProductForDetail) {
-            setCalculatingProduct(selectedProductForDetail);
-          } else if (onOpenCalculator) {
-            onOpenCalculator();
-          }
-          setSelectedProductForDetail(null);
-        }}
-        onOpenMeasurerModal={() => {
-          if (onOpenMeasurerModal) onOpenMeasurerModal();
-          setSelectedProductForDetail(null);
-        }}
-      />
+      {/* 3. HERO / MAIN SPLIT SHOWCASE */}
+      <section className="pt-10 sm:pt-14 pb-16 px-4 sm:px-6 lg:px-8 border-b border-neutral-200">
+        <div className="max-w-7xl mx-auto">
+          {/* Section Header Micro-badge */}
+          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-neutral-500 mb-3">
+            <Layers className="w-4 h-4 text-neutral-900" />
+            <span>{currentSection.badge}</span>
+          </div>
+
+          {/* Main Grid: Left Content (60%) / Right Image (40%) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start mt-2">
+            {/* LEFT COLUMN: Deep description, categories list, turnkey vs frames info */}
+            <div className="lg:col-span-7 space-y-8">
+              <div>
+                <h1 className="text-3xl sm:text-5xl font-light text-neutral-900 tracking-tight leading-[1.15]">
+                  {currentSection.title}
+                </h1>
+                <p className="mt-4 text-base sm:text-lg text-neutral-600 leading-relaxed font-normal">
+                  {currentSection.lead}
+                </p>
+              </div>
+
+              {/* CORE NOMENCLATURE LIST */}
+              <div className="border border-neutral-200 bg-neutral-50/50 p-6 sm:p-7">
+                <div className="flex items-center justify-between pb-3 mb-5 border-b border-neutral-200">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-neutral-900" />
+                    <h2 className="text-xs uppercase font-mono font-medium tracking-wider text-neutral-900">
+                      Номенклатура производимой продукции
+                    </h2>
+                  </div>
+                  <span className="text-[11px] font-mono text-neutral-400">{currentSection.nomenclature.length} ключевых групп</span>
+                </div>
+
+                <div className="space-y-4">
+                  {currentSection.nomenclature.map((cat, idx) => (
+                    <div 
+                      key={idx} 
+                      className="group bg-white border border-neutral-200/80 p-4 hover:border-black transition-colors"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex items-center gap-2.5">
+                          <span className="w-5 h-5 rounded-full bg-neutral-100 flex items-center justify-center text-[10px] font-mono font-semibold text-neutral-700">
+                            0{idx + 1}
+                          </span>
+                          <h3 className="text-sm font-semibold text-neutral-900 group-hover:text-black">
+                            {cat.title}
+                          </h3>
+                        </div>
+                        <span className="text-[10px] font-mono text-neutral-400 shrink-0">ГОСТ / ТУ</span>
+                      </div>
+                      <p className="text-xs text-neutral-600 mt-2 leading-relaxed font-normal pl-7">
+                        {cat.description}
+                      </p>
+                      <div className="mt-2.5 pl-7 flex items-center gap-2 text-[11px] font-mono text-neutral-500">
+                        <Check className="w-3 h-3 text-neutral-700 shrink-0" />
+                        <span>{cat.specs}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* EXPANDED SECTION: TURNKEY VS INDIVIDUAL FRAMES/ELEMENTS */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-neutral-200">
+                  <h2 className="text-sm uppercase font-mono font-semibold tracking-wider text-neutral-900">
+                    Форматы производства и поставки
+                  </h2>
+                  <div className="flex gap-1 text-[11px] font-mono">
+                    <button
+                      onClick={() => setActiveTab('all')}
+                      className={`px-2.5 py-1 transition-colors cursor-pointer ${activeTab === 'all' ? 'bg-black text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
+                    >
+                      Все форматы
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('turnkey')}
+                      className={`px-2.5 py-1 transition-colors cursor-pointer ${activeTab === 'turnkey' ? 'bg-black text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
+                    >
+                      Под ключ
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('frames')}
+                      className={`px-2.5 py-1 transition-colors cursor-pointer ${activeTab === 'frames' ? 'bg-black text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'}`}
+                    >
+                      Полуфабрикаты / B2B
+                    </button>
+                  </div>
+                </div>
+
+                {/* TAB 1: TURNKEY */}
+                {(activeTab === 'all' || activeTab === 'turnkey') && (
+                  <div className="border border-neutral-200 p-6 bg-white space-y-3">
+                    <div className="flex items-center gap-2 text-neutral-900 font-semibold text-sm">
+                      <ShieldCheck className="w-4 h-4 text-neutral-900" />
+                      <span>{currentSection.turnkeyTitle}</span>
+                    </div>
+                    <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed font-normal">
+                      {currentSection.turnkeyLead}
+                    </p>
+                    <ul className="space-y-2 text-xs text-neutral-700 font-mono">
+                      {currentSection.turnkeyPoints.map((pt, pidx) => (
+                        <li key={pidx} className="flex items-start gap-2">
+                          <span className="text-neutral-400 font-bold">•</span>
+                          <span>{pt}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* TAB 2: FRAMES & SUBSTRUCTURES */}
+                {(activeTab === 'all' || activeTab === 'frames') && (
+                  <div className="border border-neutral-200 p-6 bg-neutral-50/70 space-y-3">
+                    <div className="flex items-center gap-2 text-neutral-900 font-semibold text-sm">
+                      <Hammer className="w-4 h-4 text-neutral-900" />
+                      <span>{currentSection.framesTitle}</span>
+                    </div>
+                    <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed font-normal">
+                      {currentSection.framesLead}
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                      {currentSection.framesCards.map((card, cidx) => (
+                        <div key={cidx} className="bg-white p-3.5 border border-neutral-200 text-xs">
+                          <div className="font-semibold text-neutral-900 mb-1">{card.title}</div>
+                          <p className="text-neutral-600 leading-normal">
+                            {card.desc}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* TECHNICAL CAPABILITIES HIGHLIGHTS */}
+              <div className="pt-2">
+                <div className="border-t border-neutral-200 pt-6">
+                  <h2 className="text-xs uppercase font-mono font-semibold tracking-wider text-neutral-900 mb-3">
+                    [ Производственные возможности завода «Стальное дело» ]
+                  </h2>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+                    {currentSection.techSpecs.map((spec, sidx) => (
+                      <div key={sidx} className="p-3 bg-neutral-100/70 border border-neutral-200">
+                        <div className="text-[10px] text-neutral-500 uppercase">{spec.label}</div>
+                        <div className="font-semibold text-neutral-900 mt-0.5">{spec.val}</div>
+                        <div className="text-[10px] text-neutral-500">{spec.sub}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* PRIMARY ACTION BUTTONS */}
+              <div className="flex flex-wrap items-center gap-3 pt-4">
+                <button
+                  id="catalog-calc-estimate-btn"
+                  onClick={onOpenCalculator}
+                  className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-black text-white text-xs font-mono uppercase tracking-wider hover:bg-neutral-800 transition-colors cursor-pointer"
+                >
+                  <Calculator className="w-4 h-4" />
+                  <span>Рассчитать смету по чертежу</span>
+                </button>
+
+                <button
+                  id="catalog-measurer-btn"
+                  onClick={onOpenMeasurerModal}
+                  className="inline-flex items-center gap-2 px-6 py-3.5 border border-neutral-300 text-neutral-900 text-xs font-mono uppercase tracking-wider hover:border-black transition-colors cursor-pointer bg-white"
+                >
+                  <Ruler className="w-4 h-4 text-neutral-600" />
+                  <span>Выезд замерщика СПб и ЛО</span>
+                </button>
+              </div>
+            </div>
+
+            {/* RIGHT COLUMN: Image Showcase, Full-width static container */}
+            <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-6">
+              {/* IMAGE CONTAINER */}
+              <div className="border border-neutral-200 bg-white p-2 sm:p-3 shadow-xs">
+                <div className="overflow-hidden bg-neutral-100 w-full border border-neutral-100">
+                  <img
+                    src={currentSection.image}
+                    alt={currentSection.alt}
+                    className="w-full h-auto object-cover select-none pointer-events-none block"
+                    loading="eager"
+                  />
+                </div>
+
+                {/* Image caption and quick metadata */}
+                <div className="pt-3 px-1 space-y-2">
+                  <div className="flex items-center justify-between text-[11px] font-mono text-neutral-500 border-b border-neutral-100 pb-2">
+                    <span>{currentSection.imageCaption}</span>
+                  </div>
+                  <p className="text-xs text-neutral-700 font-normal leading-relaxed">
+                    {currentSection.imageSubtext}
+                  </p>
+                </div>
+              </div>
+
+              {/* HIGHLIGHT BOX: CUSTOM BLUEPRINT SPEC */}
+              <div className="border border-neutral-200 bg-neutral-50 p-5 space-y-3 font-mono text-xs">
+                <div className="flex items-center gap-2 text-neutral-900 font-semibold uppercase tracking-wider text-[11px]">
+                  <Compass className="w-4 h-4 text-neutral-900" />
+                  <span>Работаем по вашим чертежам</span>
+                </div>
+                <p className="text-neutral-600 font-sans text-xs leading-relaxed">
+                  Принимаем чертежи и 3D-модели в форматах <strong>DWG, DXF, STEP, STP, PDF, CDR</strong>. Штатное Конструкторское бюро адаптирует эскизы и модели под технологические возможности ЧПУ-оборудования с сохранением авторской концепции.
+                </p>
+                <div className="pt-2 border-t border-neutral-200 grid grid-cols-2 gap-2 text-[11px] text-neutral-700">
+                  <div>• Срок КП: <strong>от 2 часов</strong></div>
+                  <div>• Партии: <strong>от 1 шт до серий</strong></div>
+                  <div>• НДС 20% / УСН</div>
+                  <div>• 44-ФЗ / 223-ФЗ</div>
+                </div>
+              </div>
+
+              {/* CONTACT QUICK CALLOUT */}
+              <div className="border border-neutral-900 bg-black text-white p-5 space-y-3">
+                <div className="text-[11px] font-mono text-neutral-400 uppercase tracking-widest">
+                  [ ПРЯМАЯ СВЯЗЬ С ИНЖЕНЕРОМ КБ ]
+                </div>
+                <div className="text-sm font-light">
+                  Нужна консультация по узлам крепления или выбор сечения металлокаркаса?
+                </div>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2">
+                  <a 
+                    href="tel:+78122007706" 
+                    className="text-base font-semibold text-white hover:text-neutral-300 transition-colors"
+                  >
+                    +7 (812) 200-77-06
+                  </a>
+                  <a 
+                    href="mailto:zakaz@sdmaf.ru" 
+                    className="text-xs font-mono text-neutral-400 hover:text-white underline transition-colors"
+                  >
+                    zakaz@sdmaf.ru
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. INTERACTIVE INQUIRY & SPECIFICATION FORM SECTION */}
+      <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-neutral-50 border-b border-neutral-200">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <div className="font-mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">
+              [ ОНЛАЙН-ЗАЯВКА НА ПРОИЗВОДСТВО ]
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-light text-neutral-900 tracking-tight">
+              Заказать расчет: {currentSection.navLabel}
+            </h2>
+            <p className="mt-3 text-xs sm:text-sm text-neutral-600 font-normal leading-relaxed">
+              Заполните параметры или прикрепите готовое техническое задание (ТЗ) / файл чертежа. Инженер завода рассчитает точную смету с детализацией материалов и сроков.
+            </p>
+          </div>
+
+          <div className="bg-white border border-neutral-200 p-6 sm:p-10 shadow-xs">
+            {isSubmitted ? (
+              <div className="py-12 text-center space-y-4">
+                <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-medium text-neutral-900">Заявка успешно принята в работу</h3>
+                <p className="text-sm text-neutral-600 max-w-md mx-auto">
+                  Инженер конструкторского отдела завода «Стальное дело» свяжется с вами в течение 1–2 часов для согласования чертежей и передачи сметного расчета.
+                </p>
+                <button
+                  onClick={() => setIsSubmitted(false)}
+                  className="mt-4 px-6 py-2.5 border border-neutral-300 text-neutral-900 text-xs font-mono uppercase tracking-wider hover:border-black transition-colors cursor-pointer"
+                >
+                  Отправить еще одну спецификацию
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleFormSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  {/* Category Type */}
+                  <div>
+                    <label className="block text-xs font-mono uppercase tracking-wider text-neutral-700 mb-2">
+                      Категория изделия
+                    </label>
+                    <select
+                      value={furnitureType}
+                      onChange={(e) => setFurnitureType(e.target.value)}
+                      className="w-full px-3.5 py-2.5 border border-neutral-300 text-sm focus:border-black focus:outline-none bg-white text-neutral-900"
+                    >
+                      {currentSection.formCategoryOptions.map((opt, oidx) => (
+                        <option key={oidx} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Execution Option */}
+                  <div>
+                    <label className="block text-xs font-mono uppercase tracking-wider text-neutral-700 mb-2">
+                      Формат производства
+                    </label>
+                    <select
+                      value={executionType}
+                      onChange={(e) => setExecutionType(e.target.value)}
+                      className="w-full px-3.5 py-2.5 border border-neutral-300 text-sm focus:border-black focus:outline-none bg-white text-neutral-900"
+                    >
+                      <option value="Готовое изделие «под ключ»">Готовое изделие «под ключ»</option>
+                      <option value="Только металлический каркас / полуфабрикат">Только металлический каркас / полуфабрикат</option>
+                      <option value="Серийная партия деталей с лазерной резкой и гибкой">Серийная партия деталей с лазерной резкой и гибкой</option>
+                      <option value="Индивидуальный арт-объект / изделие по ТЗ">Индивидуальный арт-объект / изделие по ТЗ</option>
+                    </select>
+                  </div>
+
+                  {/* Metal Alloy */}
+                  <div>
+                    <label className="block text-xs font-mono uppercase tracking-wider text-neutral-700 mb-2">
+                      Материал металлоконструкции
+                    </label>
+                    <select
+                      value={materialType}
+                      onChange={(e) => setMaterialType(e.target.value)}
+                      className="w-full px-3.5 py-2.5 border border-neutral-300 text-sm focus:border-black focus:outline-none bg-white text-neutral-900"
+                    >
+                      {currentSection.materialOptions.map((mOpt, midx) => (
+                        <option key={midx} value={mOpt}>{mOpt}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Quantity */}
+                  <div>
+                    <label className="block text-xs font-mono uppercase tracking-wider text-neutral-700 mb-2">
+                      Ориентировочное количество (шт)
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={quantity}
+                      onChange={(e) => setQuantity(e.target.value)}
+                      className="w-full px-3.5 py-2.5 border border-neutral-300 text-sm focus:border-black focus:outline-none bg-white text-neutral-900"
+                      placeholder="Например: 10"
+                    />
+                  </div>
+                </div>
+
+                {/* File Upload Box */}
+                <div>
+                  <label className="block text-xs font-mono uppercase tracking-wider text-neutral-700 mb-2">
+                    Прикрепить чертеж, эскиз или ТЗ (DWG, DXF, STEP, PDF, ZIP)
+                  </label>
+                  <label className="border-2 border-dashed border-neutral-300 hover:border-neutral-500 p-5 flex flex-col items-center justify-center cursor-pointer transition-colors bg-neutral-50/50">
+                    <input
+                      type="file"
+                      accept=".dwg,.dxf,.step,.stp,.pdf,.zip,.rar,.png,.jpg,.jpeg"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          setSelectedFile(e.target.files[0]);
+                        }
+                      }}
+                      className="hidden"
+                    />
+                    <UploadCloud className="w-6 h-6 text-neutral-400 mb-2" />
+                    <span className="text-xs text-neutral-700 font-medium">
+                      {selectedFile ? selectedFile.name : 'Нажмите для выбора файла или перетащите сюда'}
+                    </span>
+                    <span className="text-[11px] text-neutral-400 font-mono mt-1">
+                      Форматы DWG, DXF, STEP, PDF до 50 Мб
+                    </span>
+                  </label>
+                </div>
+
+                {/* Contact Fields */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-2">
+                  <div>
+                    <label className="block text-xs font-mono uppercase tracking-wider text-neutral-700 mb-2">
+                      Ваше имя или организация *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={clientName}
+                      onChange={(e) => setClientName(e.target.value)}
+                      placeholder="Иван / ООО «СпецСтрой»"
+                      className="w-full px-3.5 py-2.5 border border-neutral-300 text-sm focus:border-black focus:outline-none bg-white text-neutral-900"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-mono uppercase tracking-wider text-neutral-700 mb-2">
+                      Телефон для связи *
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      value={clientPhone}
+                      onChange={(e) => setClientPhone(e.target.value)}
+                      placeholder="+7 (___) ___-__-__"
+                      className="w-full px-3.5 py-2.5 border border-neutral-300 text-sm focus:border-black focus:outline-none bg-white text-neutral-900"
+                    />
+                  </div>
+                </div>
+
+                {/* Comment */}
+                <div>
+                  <label className="block text-xs font-mono uppercase tracking-wider text-neutral-700 mb-2">
+                    Комментарий / Особые требования к геометрии и монтажу
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={clientComment}
+                    onChange={(e) => setClientComment(e.target.value)}
+                    placeholder="Укажите размеры, особенности благоустройства территории или требования к закладным деталям..."
+                    className="w-full px-3.5 py-2.5 border border-neutral-300 text-sm focus:border-black focus:outline-none bg-white text-neutral-900 resize-none"
+                  ></textarea>
+                </div>
+
+                {/* Consent */}
+                <div>
+                  <ConsentCheckbox
+                    id="catalog-furniture-consent"
+                    checked={consentAccepted}
+                    onChange={setConsentAccepted}
+                    onOpenPrivacy={onOpenPrivacy}
+                    onOpenOffer={onOpenOffer}
+                  />
+                </div>
+
+                {/* Submit button */}
+                <div className="pt-2">
+                  <button
+                    type="submit"
+                    disabled={!consentAccepted || isSubmitting}
+                    className="w-full sm:w-auto px-10 py-4 bg-black text-white text-xs font-mono uppercase tracking-widest hover:bg-neutral-800 disabled:bg-neutral-300 disabled:cursor-not-allowed transition-colors cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    {isSubmitting ? (
+                      <span>Отправка в КБ...</span>
+                    ) : (
+                      <>
+                        <Send className="w-3.5 h-3.5" />
+                        <span>Отправить техническое задание на расчет</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

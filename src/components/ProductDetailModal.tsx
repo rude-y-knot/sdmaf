@@ -421,7 +421,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs font-mono text-neutral-700">
               <div className="flex items-start gap-2 p-2.5 border border-neutral-200 bg-white">
                 <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                <span>Прецизионный лазерный раскрой ЧПУ с точностью ±0.03 мм</span>
+                <span>Прецизионный лазерный раскрой ЧПУ с точностью 0,5 мм</span>
               </div>
               <div className="flex items-start gap-2 p-2.5 border border-neutral-200 bg-white">
                 <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />

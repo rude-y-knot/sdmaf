@@ -10,45 +10,38 @@ export const CatalogTeaser: React.FC<CatalogTeaserProps> = ({ onNavigateToCatalo
   const teaserCategories = [
     {
       id: 'slides',
-      title: 'Скаты для горок',
-      desc: 'Прямые, винтовые и тоннельные скаты из полированной нержавеющей стали AISI 304 по ГОСТ Р 52169-2012 для детских городков и геопластики.',
-      count: '77 моделей',
-      image: MAF_PRODUCTS.find((p) => p.category === 'slides')?.imageRender || 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=800&q=80',
-    },
-    {
-      id: 'bike',
-      title: 'Парковки для велосипедов',
-      desc: 'Лаконичные антивандальные велопарковки из нержавеющей и окрашенной стали с порошковым полимерным покрытием по каталогу RAL.',
-      count: '6 моделей',
-      image: MAF_PRODUCTS.find((p) => p.category === 'bike')?.imageRender || 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=800&q=80',
+      title: 'Детские горки и скаты',
+      desc: 'Прямые, винтовые, холмовые и тоннельные скаты из полированной нержавеющей стали AISI 304 по ТР ЕАЭС 042/2017.',
+      count: 'Сертификат ГОСТ',
+      image: '/images/gorki3.jpg',
     },
     {
       id: 'furniture',
       title: 'Уличная мебель',
-      desc: 'Скамейки, урны, перголы, шезлонги, столы и теневые качели из конструкционной стали, лиственницы и термоясеня.',
-      count: '28 моделей',
-      image: MAF_PRODUCTS.find((p) => p.category === 'benches')?.imageRender || 'https://images.unsplash.com/photo-1519331379826-f10be5486c6f?auto=format&fit=crop&w=800&q=80',
+      desc: 'Скамейки, урны, перголы, шезлонги, парковые столы и качели из конструкционной стали, лиственницы и термоясеня.',
+      count: 'Серии и B2B',
+      image: '/images/mebel.jpg',
     },
     {
-      id: 'playgrounds',
-      title: 'Оборудование для детских площадок',
-      desc: 'Канатные 3D-пирамиды, карусели с нержавеющим штурвалом, качели-гнезда, пружинные балансиры и интерактивные песочницы.',
-      count: '6 моделей',
-      image: MAF_PRODUCTS.find((p) => p.category === 'playgrounds')?.imageRender || 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=800&q=80',
+      id: 'stainless',
+      title: 'Изделия из нержавеющей стали',
+      desc: 'Зеркальные арт-объекты, входные порталы, парапетные ограждения, решетки и перголы AISI 304/316.',
+      count: 'Super Mirror №8',
+      image: '/images/artobj.jpg',
     },
     {
       id: 'vats',
       title: 'Чаны и купели',
-      desc: 'Банные чаны на дровах из пищевой нержавейки AISI 304 с отделкой алтайским кедром, уличные всесезонные купели с гидромассажем.',
-      count: '5 моделей',
-      image: MAF_PRODUCTS.find((p) => p.category === 'vats')?.imageRender || 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80',
+      desc: 'Сибирские банные чаны на дровах из стали AISI 304 толщиной 3–4 мм с отделкой алтайским кедром и уличные купели.',
+      count: '100% гидроконтроль',
+      image: '/images/chani.jpg',
     },
     {
-      id: 'metal-structures',
-      title: 'Изделия из нержавеющей стали',
-      desc: 'Архитектурные зеркальные порталы, набережные ограждения, дизайнерские перголы с лазерной резкой и арт-объекты из нержавеющей стали AISI 304/316.',
-      count: '17 моделей',
-      image: MAF_PRODUCTS.find((p) => p.category === 'metal-structures')?.imageRender || 'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80',
+      id: 'bike',
+      title: 'Велопарковки и мобильность',
+      desc: 'Арочные, спиральные и дизайнерские антивандальные велостойки, станции ремонта и крытые велонавесы.',
+      count: 'Антивандал',
+      image: '/images/veloparking.jpg',
     },
   ];
 
@@ -59,7 +52,7 @@ export const CatalogTeaser: React.FC<CatalogTeaserProps> = ({ onNavigateToCatalo
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-10 border-b border-neutral-200">
           <div>
             <div className="font-mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">
-              [ 02 / Каталог продукции завода ]
+              [ 02 / Продукция завода ]
             </div>
             <h2 className="text-3xl sm:text-5xl font-light text-neutral-900 tracking-tight">
               Линейка продукции
@@ -67,13 +60,13 @@ export const CatalogTeaser: React.FC<CatalogTeaserProps> = ({ onNavigateToCatalo
           </div>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <p className="text-sm text-neutral-500 max-w-md font-normal leading-relaxed">
-              6 ключевых направлений производства: от сертифицированных горок и детских площадок до нержавеющих МАФ, уличной мебели и банных чанов. Собственное производство в Колпино (СПб).
+              Ключевые направления производства: от уличной мебели и парковых элементов до нержавеющих МАФ, горок и банных чанов. Собственное производство в Колпино (СПб).
             </p>
             <button
-              onClick={() => onNavigateToCatalog('all')}
+              onClick={() => onNavigateToCatalog('furniture')}
               className="px-6 py-3 bg-black text-white text-xs font-mono uppercase tracking-wider hover:bg-neutral-800 transition-colors flex items-center gap-2 shrink-0 cursor-pointer whitespace-nowrap"
             >
-              <span>Полный каталог</span>
+              <span>Продукция завода</span>
               <ArrowUpRight className="w-4 h-4" />
             </button>
           </div>

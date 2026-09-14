@@ -205,7 +205,7 @@ export const Header: React.FC<HeaderProps> = ({
                   : 'text-neutral-600 hover:text-black'
               }`}
             >
-              <span>Каталог МАФ</span>
+              <span>Продукция завода</span>
               <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${activeMegaTab === 'maf' ? 'rotate-180 text-black' : 'text-neutral-400'}`} />
             </button>
 
@@ -298,7 +298,7 @@ export const Header: React.FC<HeaderProps> = ({
                       {[
                         { 
                           label: 'Лазерный раскрой Кноппо (до 20 мм)', 
-                          desc: 'Комплексы 3 кВт, столы 1500х3000 и 1500х6000 мм, точность реза ±0.03 мм',
+                          desc: 'Комплексы 3 кВт, столы 1500х3000 и 1500х6000 мм, точность реза 0,5 мм',
                           unitId: 'laser-22kw-6m'
                         },
                         { 
@@ -411,21 +411,16 @@ export const Header: React.FC<HeaderProps> = ({
                         </h4>
                       </div>
                       <span className="text-[11px] font-mono text-neutral-400">
-                        6 основных направлений
+                        5 основных направлений
                       </span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       {[
                         { 
-                          label: 'Скаты для горок', 
-                          desc: 'Прямые, винтовые и тоннельные скаты AISI 304 по ГОСТ Р 52169',
+                          label: 'Детские горки и скаты', 
+                          desc: 'Прямые, винтовые и тоннельные скаты AISI 304 по ТР ЕАЭС 042/2017',
                           cat: 'slides' 
-                        },
-                        { 
-                          label: 'Парковки для велосипедов', 
-                          desc: 'Модульные, спиральные и арочные антивандальные стойки',
-                          cat: 'bike' 
                         },
                         { 
                           label: 'Уличная мебель', 
@@ -433,19 +428,19 @@ export const Header: React.FC<HeaderProps> = ({
                           cat: 'furniture' 
                         },
                         { 
-                          label: 'Оборудование для детских площадок', 
-                          desc: 'Канатные пирамиды, карусели, качели «Гнездо», балансиры',
-                          cat: 'playgrounds' 
+                          label: 'Изделия из нержавеющей стали', 
+                          desc: 'Зеркальные арт-объекты, входные порталы, ограждения, кассеты AISI 304/316',
+                          cat: 'stainless' 
                         },
                         { 
                           label: 'Чаны и купели', 
-                          desc: 'Банные чаны на дровах из стали AISI 304, уличные спа-купели',
+                          desc: 'Банные чаны на дровах из стали AISI 304, уличные спа-купели с кедром',
                           cat: 'vats' 
                         },
                         { 
-                          label: 'Изделия из нержавеющей стали', 
-                          desc: 'Зеркальные арт-порталы, ограждения, перголы, навесы AISI 304/316',
-                          cat: 'metal-structures' 
+                          label: 'Велопарковки и мобильность', 
+                          desc: 'Арочные, спиральные и дизайнерские антивандальные стойки, велобоксы',
+                          cat: 'bike' 
                         },
                       ].map((item, idx) => (
                         <button
@@ -658,7 +653,7 @@ export const Header: React.FC<HeaderProps> = ({
                 { label: 'Главная', section: 'hero' },
                 { label: 'Производство и цеха ЧПУ', section: 'production' },
                 { label: 'Конструкторское бюро завода (ЕСКД)', section: 'engineering-bureau' },
-                { label: 'Каталог продукции (6 направлений)', section: 'catalog' },
+                { label: 'Продукция завода (Уличная мебель)', section: 'catalog' },
                 { label: 'Портфолио объектов', section: 'portfolio' },
                 { label: 'B2B и Госзаказ (44-ФЗ)', section: 'b2b' },
                 { label: 'Контакты завода в Колпино', section: 'contacts' },

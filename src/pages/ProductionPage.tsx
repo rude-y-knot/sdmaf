@@ -85,7 +85,7 @@ const TECHNICAL_LIMITS = [
   { param: 'Диаметр вальцуемых обечаек', val: 'от Ø140 до Ø1500 мм', desc: '4-х валковый станок Keepler RME 1500×4 мм' },
   { param: 'Габариты изделий для порошковой окраски', val: 'до 6 000 × 1 800 × 2 100 мм', desc: 'Газовые термокамеры 3м и 6м, конвекция 16 575 м³/ч' },
   { param: 'Грузоподъемность мостовых кран-балок цеха', val: '10.0 тонн', desc: 'Сборка крупногабаритных металлоконструкций' },
-  { param: 'Точность позиционирования и допуски', val: '±0.03 – ±0.05 мм', desc: 'Соответствие ГОСТ 14792-80 и ГОСТ 23118-2019' },
+  { param: 'Точность позиционирования и допуски', val: '0,5 мм', desc: 'Соответствие ГОСТ 14792-80 и ГОСТ 23118-2019' },
 ];
 
 export const ProductionPage: React.FC<ProductionPageProps> = ({
@@ -201,7 +201,7 @@ export const ProductionPage: React.FC<ProductionPageProps> = ({
               <div className="text-[10px] text-neutral-500 uppercase mt-1">Аттестация сварщиков</div>
             </div>
             <div className="border border-neutral-200 bg-neutral-50 p-4">
-              <div className="text-2xl font-light text-neutral-900">±0.03 мм</div>
+              <div className="text-2xl font-light text-neutral-900">0,5 мм</div>
               <div className="text-[10px] text-neutral-500 uppercase mt-1">Точность лазерного реза</div>
             </div>
           </div>

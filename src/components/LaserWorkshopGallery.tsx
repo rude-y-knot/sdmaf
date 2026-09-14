@@ -76,8 +76,8 @@ export const LaserWorkshopGallery: React.FC<LaserWorkshopGalleryProps> = ({
     },
     {
       param: 'Точность позиционирования (X/Y)',
-      machine1: '±0.03 мм',
-      machine2: '±0.03 мм',
+      machine1: '0,5 мм',
+      machine2: '0,5 мм',
       highlight: false
     },
     {
@@ -227,7 +227,7 @@ export const LaserWorkshopGallery: React.FC<LaserWorkshopGalleryProps> = ({
             Общие технологические особенности серии Knoppo KF (3 кВт)
           </h4>
           <p className="text-xs sm:text-sm text-neutral-600 font-light mb-6">
-            Ключевые конструктивные решения и европейско-японские комплектующие, обеспечивающие стабильную промышленную точность ±0.03 мм при многосменной работе.
+            Ключевые конструктивные решения и европейско-японские комплектующие, обеспечивающие стабильную промышленную точность 0,5 мм при многосменной работе.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">

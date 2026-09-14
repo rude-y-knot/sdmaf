@@ -43,7 +43,7 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
   const [taskType, setTaskType] = useState<string>('parts');
   const [alloyType, setAlloyType] = useState<string>('stainless-304');
   const [thickness, setThickness] = useState<number>(4);
-  const [selectedOps, setSelectedOps] = useState<string[]>(['cutting', 'bending', 'painting']);
+  const [selectedOps, setSelectedOps] = useState<string[]>(['cutting', 'bending', 'powder_painting']);
   const [estimatedQuantity, setEstimatedQuantity] = useState<number>(20); // шт
   
   // File upload state
@@ -180,13 +180,13 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
   ];
 
   const operations = [
-    { id: 'cutting', title: 'Лазерный раскрой ЧПУ (до 25 мм)', badge: 'Точность 0.05 мм' },
-    { id: 'bending', title: 'Гибка на листогибочных прессах с ЧПУ', badge: 'HACO & MAIHONG 160т' },
-    { id: 'milling', title: 'Фрезеровка', badge: 'ЧПУ обработка' },
-    { id: 'welding', title: 'Сварка MIG/MAG/TIG', badge: 'УЗК контроль' },
-    { id: 'rolling', title: 'Вальцовка', badge: 'Обечайки и конусы' },
-    { id: 'shot_blasting', title: 'Дробеструйная обработка', badge: 'Sa 2.5 / Sa 3' },
-    { id: 'painting', title: 'Порошковая окраска (камеры 3м и 6м)', badge: 'Горелка 200 ккал' },
+    { id: 'cutting', title: 'Лазерный раскрой ЧПУ (до 20 мм)', badge: 'Точность 0,5 мм' },
+    { id: 'bending', title: 'Гибка на листогибочных прессах', badge: 'ЧПУ 160т' },
+    { id: 'welding', title: 'Сварочные и сборочные работы', badge: 'НАКС / TIG/MIG' },
+    { id: 'rolling', title: 'Вальцовка обечаек и конусов', badge: 'До 1500 мм' },
+    { id: 'sand_blasting', title: 'Пескоструйная / стеклоструйная обработка', badge: 'Sa 2.5 / Sa 3' },
+    { id: 'powder_painting', title: 'Порошковая окраска RAL', badge: 'Камеры 3м и 6м' },
+    { id: 'airless_painting', title: 'Безвоздушная окраска', badge: 'Антикорр защита' },
   ];
 
   const content = (
@@ -414,23 +414,23 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
           {/* STEP 3: Технологические операции */}
           {currentStep === 3 && (
             <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
-              <div className="text-xs font-mono uppercase tracking-widest text-neutral-400 mb-4">
-                Шаг 3 из 4 — Операции
+              <div className="text-xs font-mono uppercase tracking-widest text-neutral-400 mb-3">
+                Шаг 3 из 4 — Выбор технологических операций
               </div>
-              <div className="space-y-2 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-5">
                 {operations.map((op) => {
                   const isChecked = selectedOps.includes(op.id);
                   return (
                     <div
                       key={op.id}
                       onClick={() => handleToggleOp(op.id)}
-                      className={`p-4 border cursor-pointer transition-colors flex items-center justify-between ${
+                      className={`p-3 border cursor-pointer transition-all flex items-center justify-between ${
                         isChecked
-                          ? 'border-black bg-neutral-50'
+                          ? 'border-black bg-neutral-50 shadow-xs'
                           : 'border-neutral-200 hover:border-neutral-400 bg-white'
                       }`}
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2.5 min-w-0 pr-2">
                         <div
                           className={`w-4 h-4 border flex items-center justify-center shrink-0 ${
                             isChecked ? 'border-black bg-black text-white' : 'border-neutral-300'
@@ -438,25 +438,25 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
                         >
                           {isChecked && <Check className="w-2.5 h-2.5" />}
                         </div>
-                        <div>
-                          <span className="text-sm font-medium text-black">{op.title}</span>
-                          <span className="ml-3 text-[10px] font-mono text-neutral-500 uppercase tracking-wider">
-                            [{op.badge}]
-                          </span>
+                        <div className="min-w-0">
+                          <div className="text-xs sm:text-sm font-medium text-black truncate">{op.title}</div>
                         </div>
                       </div>
+                      <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider shrink-0 bg-neutral-100 px-1.5 py-0.5 border border-neutral-200">
+                        {op.badge}
+                      </span>
                     </div>
                   );
                 })}
               </div>
 
               {/* Quantity in Pieces Slider */}
-              <div className="border border-neutral-200 p-5 mb-8 bg-neutral-50">
-                <div className="flex items-center justify-between text-xs font-mono text-black mb-3">
+              <div className="border border-neutral-200 p-4 mb-6 bg-neutral-50">
+                <div className="flex items-center justify-between text-xs font-mono text-black mb-2">
                   <span className="uppercase tracking-wider font-semibold">Ориентировочная партия: {estimatedQuantity} шт.</span>
-                  <span className="text-neutral-500 font-mono">
+                  <span className="text-neutral-500 font-mono text-[11px]">
                     {estimatedQuantity === 1
-                      ? 'Единичный образец / прототип'
+                      ? 'Единичный образец'
                       : estimatedQuantity <= 10
                       ? 'Мелкосерийная партия'
                       : estimatedQuantity <= 100
@@ -471,10 +471,10 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
                   step={1}
                   value={estimatedQuantity}
                   onChange={(e) => setEstimatedQuantity(Number(e.target.value))}
-                  className="w-full accent-black cursor-pointer"
+                  className="w-full accent-black cursor-pointer h-1.5"
                 />
-                <div className="flex justify-between text-[10px] text-neutral-400 font-mono mt-2">
-                  <span>1 шт. (прототип)</span>
+                <div className="flex justify-between text-[10px] text-neutral-400 font-mono mt-1.5">
+                  <span>1 шт. (образец)</span>
                   <span>25 шт.</span>
                   <span>100 шт. (серия)</span>
                   <span>500+ шт.</span>
