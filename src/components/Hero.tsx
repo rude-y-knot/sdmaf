@@ -44,7 +44,7 @@ export const Hero: React.FC<HeroProps> = ({
             <div className="block lg:hidden my-6">
               <div className="w-full max-w-[340px] sm:max-w-[420px] mx-auto flex justify-center">
                 <img
-                  src="/images/yard3.svg"
+                  src="/images/yard2.svg"
                   alt="Архитектурный чертеж благоустройства и малых архитектурных форм"
                   className="w-full h-auto object-contain max-h-[280px] sm:max-h-[340px]"
                   loading="eager"
@@ -114,7 +114,7 @@ export const Hero: React.FC<HeroProps> = ({
               className="w-full max-w-[480px] xl:max-w-[540px] flex justify-end"
             >
               <img
-                src="/images/yard3.svg"
+                src="/images/yard2.svg"
                 alt="Архитектурный чертеж благоустройства и малых архитектурных форм"
                 className="w-full h-auto object-contain max-h-[460px] xl:max-h-[520px] select-none pointer-events-none"
                 loading="eager"
