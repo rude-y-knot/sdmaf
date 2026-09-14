@@ -58,28 +58,14 @@ export const MachineryAndTech: React.FC<MachineryProps> = ({
               key={service.id}
               className="bg-white p-6 sm:p-7 flex flex-col justify-between hover:bg-neutral-50/70 transition-colors group relative overflow-hidden"
             >
-              {/* Top-Right Machine Preview for Laser Cutting block */}
-              {service.id === 'cutting' && (
-                <div className="absolute top-3 right-3 w-20 h-16 sm:w-24 sm:h-20 pointer-events-none transition-transform duration-500 group-hover:scale-105 z-10">
-                  <img
-                    src="/laser-cutting-plotter.svg"
-                    alt="Станок лазерного раскроя ЧПУ"
-                    className="w-full h-full object-contain drop-shadow-sm"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-              )}
-
               <div>
-                <div className="flex items-center justify-between mb-5 pr-14">
+                <div className="flex items-center justify-between mb-5">
                   <span className="font-mono text-[10px] tracking-wider uppercase text-neutral-500 bg-neutral-100 px-2 py-0.5 font-medium">
                     {service.badge}
                   </span>
-                  {service.id !== 'cutting' && (
-                    <span className="font-mono text-[11px] text-neutral-300">
-                      #{service.id.toUpperCase()}
-                    </span>
-                  )}
+                  <span className="font-mono text-[11px] text-neutral-300">
+                    #{service.id.toUpperCase()}
+                  </span>
                 </div>
 
                 <h3 className="text-lg font-normal text-neutral-900 mb-2.5 tracking-tight group-hover:text-black">

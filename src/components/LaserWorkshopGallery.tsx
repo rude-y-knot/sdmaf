@@ -138,28 +138,18 @@ export const LaserWorkshopGallery: React.FC<LaserWorkshopGalleryProps> = ({
       {/* Header Bar */}
       <div className="p-6 sm:p-8 border-b border-neutral-200 bg-[#FAFAFA] relative overflow-hidden">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-          <div className="flex items-start sm:items-center gap-4">
-            <div className="w-16 h-14 shrink-0 bg-white border border-neutral-200 p-1 shadow-xs hidden sm:flex items-center justify-center">
-              <img
-                src="/laser-cutting-plotter.svg"
-                alt="Knoppo KF Series"
-                className="w-full h-full object-contain"
-                referrerPolicy="no-referrer"
-              />
+          <div>
+            <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-neutral-500 mb-1.5">
+              <span className="bg-neutral-200/80 px-2 py-0.5 text-neutral-800 font-medium">Knoppo KF Series</span>
+              <span>•</span>
+              <span>Волоконные лазерные комплексы (Fiber Laser)</span>
             </div>
-            <div>
-              <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-neutral-500 mb-1.5">
-                <span className="bg-neutral-200/80 px-2 py-0.5 text-neutral-800 font-medium">Knoppo KF Series</span>
-                <span>•</span>
-                <span>Волоконные лазерные комплексы (Fiber Laser)</span>
-              </div>
-              <h3 className="text-xl sm:text-2xl font-light text-neutral-900 tracking-tight">
-                Knoppo KF Series Single Table Fiber Laser Cutting Machine (3 кВт)
-              </h3>
-              <p className="text-xs sm:text-sm text-neutral-600 font-light mt-1 max-w-3xl leading-relaxed">
-                Оба станка относятся к классу открытых одностоловых комплексов прецизионного раскроя листового металла на оптоволоконных излучателях мощностью 3 кВт (3000 Вт).
-              </p>
-            </div>
+            <h3 className="text-xl sm:text-2xl font-light text-neutral-900 tracking-tight">
+              Knoppo KF Series Single Table Fiber Laser Cutting Machine (3 кВт)
+            </h3>
+            <p className="text-xs sm:text-sm text-neutral-600 font-light mt-1 max-w-3xl leading-relaxed">
+              Оба станка относятся к классу открытых одностоловых комплексов прецизионного раскроя листового металла на оптоволоконных излучателях мощностью 3 кВт (3000 Вт).
+            </p>
           </div>
 
           {onOpenCalculator && (

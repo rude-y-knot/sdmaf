@@ -272,7 +272,7 @@ export const ProductionPage: React.FC<ProductionPageProps> = ({
                   <img
                     src={unit.image}
                     alt={unit.title}
-                    className={`w-full h-full ${unit.category === 'laser' ? 'object-contain pl-[25px] pr-4 py-3 bg-neutral-50' : 'object-cover'} grayscale-20 group-hover:grayscale-0 group-hover:scale-102 transition-all duration-500`}
+                    className="w-full h-full object-cover grayscale-20 group-hover:grayscale-0 group-hover:scale-102 transition-all duration-500"
                     loading="lazy"
                   />
                   <div className="absolute top-3 left-3 flex gap-2">
@@ -283,18 +283,6 @@ export const ProductionPage: React.FC<ProductionPageProps> = ({
                       {unit.categoryLabel}
                     </span>
                   </div>
-
-                  {/* Top-Right Machine Preview for Laser Cutting category */}
-                  {unit.category === 'laser' && (
-                    <div className="absolute top-3 right-3 w-16 h-12 sm:w-20 sm:h-14 bg-white/95 backdrop-blur-xs p-1 border border-neutral-300 shadow-xs pointer-events-none z-10 transition-transform group-hover:scale-105">
-                      <img
-                        src="/laser-cutting-plotter.svg"
-                        alt="ЧПУ станок раскроя"
-                        className="w-full h-full object-contain"
-                        referrerPolicy="no-referrer"
-                      />
-                    </div>
-                  )}
 
                   <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-black text-white px-3 py-1.5 text-xs font-mono flex items-center gap-1.5">
                     <span>Открыть паспорт станка</span>

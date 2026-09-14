@@ -445,17 +445,6 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
                           </span>
                         </div>
                       </div>
-
-                      {op.id === 'cutting' && (
-                        <div className="w-12 h-9 sm:w-16 sm:h-11 shrink-0 p-0.5 bg-neutral-100 border border-neutral-200 rounded-none ml-2">
-                          <img
-                            src="/laser-cutting-plotter.svg"
-                            alt="Лазерный раскрой ЧПУ"
-                            className="w-full h-full object-contain"
-                            referrerPolicy="no-referrer"
-                          />
-                        </div>
-                      )}
                     </div>
                   );
                 })}

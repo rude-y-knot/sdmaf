@@ -251,17 +251,6 @@ export const ProductionUnitDetailPage: React.FC<ProductionUnitDetailPageProps> =
                   <span className="text-neutral-500">Страна сборки:</span>
                   <span className="text-neutral-900 font-medium">{unit.country}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-neutral-500">Статус в цехе:</span>
-                  <span className="text-[#55AA53] font-medium flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-[#55AA53] inline-block animate-pulse"></span>
-                    Введен в эксплуатацию
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-neutral-500">Соответствие ГОСТ:</span>
-                  <span className="text-neutral-900">{unit.standards[0]}</span>
-                </div>
               </div>
             </div>
           </div>
