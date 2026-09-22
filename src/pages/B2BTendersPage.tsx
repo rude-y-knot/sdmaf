@@ -248,7 +248,7 @@ export const B2BTendersPage: React.FC<B2BTendersPageProps> = ({
     <div className="bg-white min-h-screen text-neutral-900 pb-20">
       <SEOHead
         title="B2B, Девелоперы и Госзаказ (44-ФЗ / 223-ФЗ) | Завод «Стальное Дело»"
-        description="Прямой производитель металлоконструкций и МАФ для девелоперов, генподрядчиков и госучреждений. Спецсчета, казначейское сопровождение, НДС 20%, поставка по РФ."
+        description="Прямой производитель металлоконструкций и МАФ для девелоперов, генподрядчиков и госучреждений. Спецсчета, казначейское сопровождение, НДС 22%, поставка по РФ."
         keywords="госзакупки 44-фз металлоконструкции, 223-фз благоустройство, поставщик маф для застройщиков, завод стальное дело тендеры"
         canonicalPath="/b2b"
       />
@@ -272,7 +272,7 @@ export const B2BTendersPage: React.FC<B2BTendersPageProps> = ({
               <span>44-ФЗ / 223-ФЗ / ЕИС</span>
             </span>
             <span>•</span>
-            <span className="text-neutral-600">НДС 20%</span>
+            <span className="text-neutral-600">НДС 22%</span>
             <span>•</span>
             <span className="text-neutral-600">СПб, Колпино</span>
           </div>
@@ -791,7 +791,7 @@ export const B2BTendersPage: React.FC<B2BTendersPageProps> = ({
                   <CheckCircle2 className="w-12 h-12 text-[#55AA53] mx-auto mb-4" />
                   <h3 className="text-xl font-light text-white mb-2">Техническое задание принято в обработку</h3>
                   <p className="text-xs text-neutral-400 max-w-md mx-auto leading-relaxed mb-4">
-                    Инженер тендерного отдела свяжется с вами по указанному телефону/email и направит официальный расчет сметы с НДС 20%.
+                    Инженер тендерного отдела свяжется с вами по указанному телефону/email и направит официальный расчет сметы с НДС 22%.
                   </p>
 
                   {createdLeadId && (

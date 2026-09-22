@@ -172,7 +172,7 @@ export const FAQPage: React.FC<FAQPageProps> = ({
       {/* SEO Engine Integration */}
       <SEOHead
         title="Частые вопросы и регламенты (FAQ) — Завод «Стальное Дело» СПб"
-        description="Ответы на ключевые вопросы заказчиков: сроки производства металлоконструкций (от 24ч), доставка по СПб и регионам РФ, гарантия до 10 лет, требования ГОСТ и ТР ЕАЭС 042, форматы чертежей DWG/STEP, оплата с НДС 20% и 44-ФЗ."
+        description="Ответы на ключевые вопросы заказчиков: сроки производства металлоконструкций (от 24ч), доставка по СПб и регионам РФ, гарантия до 10 лет, требования ГОСТ и ТР ЕАЭС 042, форматы чертежей DWG/STEP, оплата с НДС 22% и 44-ФЗ."
         keywords="сроки изготовления металлоконструкций, доставка маф спб, гарантия на маф гост, тр еаэс 042 2017 горки, чертежи step dwg лазерная резка, завод стальное дело колпино частые вопросы faq"
         canonicalPath="/faq"
         jsonLd={[faqSchema, breadcrumbSchema]}
@@ -236,7 +236,7 @@ export const FAQPage: React.FC<FAQPageProps> = ({
             <div className="p-4 bg-[#FAFAFA] border border-neutral-200">
               <div className="text-[10px] font-mono text-neutral-500 uppercase">Госзаказ и девелопмент</div>
               <div className="text-xl sm:text-2xl font-light text-neutral-900 mt-1">44 / 223-ФЗ</div>
-              <div className="text-[11px] text-neutral-500 mt-0.5">НДС 20%, акты КС-2/КС-3</div>
+              <div className="text-[11px] text-neutral-500 mt-0.5">НДС 22%, акты КС-2/КС-3</div>
             </div>
           </div>
         </div>

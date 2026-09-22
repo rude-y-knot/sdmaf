@@ -64,7 +64,7 @@ export const RequisitesPage: React.FC<RequisitesPageProps> = ({
     { label: 'Расчетный счет (р/с)', value: '40702810790230000685', key: 'rs' },
     { label: 'Корреспондентский счет (к/с)', value: '30101810900000000790', key: 'ks' },
     { label: 'БИК', value: '044030790', key: 'bik' },
-    { label: 'Система налогообложения', value: 'ОСНО (Общая система с НДС 20%)', key: 'tax' },
+    { label: 'Система налогообложения', value: 'ОСНО (Общая система с НДС 22%)', key: 'tax' },
     { label: 'Email', value: 'info@sdmaf.ru', key: 'email' },
     { label: 'Телефоны отдела продаж', value: 'СПб: +7 (812) 642-88-90 | Мск: +7 (495) 106-62-24', key: 'phone' },
     { label: 'Основной вид деятельности (ОКВЭД)', value: '25.62 Обработка металлических изделий механическая, 25.11 Производство строительных металлических конструкций', key: 'okved' },
@@ -124,7 +124,7 @@ Email: info@sdmaf.ru
             <span>•</span>
             <span className="text-neutral-600">ОГРН 1157847040482</span>
             <span>•</span>
-            <span className="text-neutral-600">НДС 20%</span>
+            <span className="text-neutral-600">НДС 22%</span>
           </div>
         </div>
       </div>

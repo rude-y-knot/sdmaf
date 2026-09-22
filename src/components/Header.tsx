@@ -561,9 +561,9 @@ export const Header: React.FC<HeaderProps> = ({
                         },
                         { 
                           title: 'Чертежи, CAD и оплата', 
-                          desc: 'Прием STEP, DWG, DXF, разработка КМД, безналичный расчет с НДС 20%, 44-ФЗ',
+                          desc: 'Прием STEP, DWG, DXF, разработка КМД, безналичный расчет с НДС 22%, 44-ФЗ',
                           icon: CreditCard,
-                          tag: 'НДС 20% / 44-ФЗ'
+                          tag: 'НДС 22% / 44-ФЗ'
                         },
                       ].map((item, idx) => {
                         const Icon = item.icon;

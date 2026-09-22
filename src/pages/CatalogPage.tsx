@@ -1039,7 +1039,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
                 <div className="pt-2 border-t border-neutral-200 grid grid-cols-2 gap-2 text-[11px] text-neutral-700">
                   <div>• Срок КП: <strong>от 2 часов</strong></div>
                   <div>• Партии: <strong>от 1 шт до серий</strong></div>
-                  <div>• НДС 20% / УСН</div>
+                  <div>• НДС 22% / УСН</div>
                   <div>• 44-ФЗ / 223-ФЗ</div>
                 </div>
               </div>

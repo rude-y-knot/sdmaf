@@ -300,7 +300,7 @@ export const BitrixWebhookGuideModal: React.FC<BitrixWebhookGuideModalProps> = (
                   </div>
                   <div className="text-xs text-neutral-600 space-y-1 font-mono">
                     <div>• <strong>Формат заголовка:</strong> [Проектная смета] Спецификация на N позиций (~X ₽)</div>
-                    <div>• <strong>Уникальные поля:</strong> Полный табличный состав сметы, 3D BIM модели (Revit/IFC), паспорта изделий, тип шаланды/манипулятора, реквизиты компании с НДС 20%.</div>
+                    <div>• <strong>Уникальные поля:</strong> Полный табличный состав сметы, 3D BIM модели (Revit/IFC), паспорта изделий, тип шаланды/манипулятора, реквизиты компании с НДС 22%.</div>
                   </div>
                 </div>
 

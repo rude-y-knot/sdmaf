@@ -215,7 +215,7 @@ export const ProductQuoteModal: React.FC<ProductQuoteModalProps> = ({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-neutral-500">Расчет сметы:</span>
-                  <span className="text-neutral-900 font-medium text-right">По котировке металла на дату заявки (с НДС 20%)</span>
+                  <span className="text-neutral-900 font-medium text-right">По котировке металла на дату заявки (с НДС 22%)</span>
                 </div>
                 {createdLeadId && (
                   <div className="flex justify-between pt-2 border-t border-neutral-200">
@@ -507,7 +507,7 @@ export const ProductQuoteModal: React.FC<ProductQuoteModalProps> = ({
                       Спецификация к расчёту сметы
                     </span>
                     <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800 px-1.5 py-0.5">
-                      НДС 20%
+                      НДС 22%
                     </span>
                   </div>
 

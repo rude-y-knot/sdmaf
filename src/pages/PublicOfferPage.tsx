@@ -68,7 +68,7 @@ export const PublicOfferPage: React.FC<PublicOfferPageProps> = ({
       content: (
         <div className="space-y-3 text-xs sm:text-sm text-neutral-700 leading-relaxed font-light">
           <p>
-            3.1. Все расчеты осуществляются в безналичном порядке в рублях Российской Федерации (с учетом НДС 20%).
+            3.1. Все расчеты осуществляются в безналичном порядке в рублях Российской Федерации (с учетом НДС 22%).
           </p>
           <p>
             3.2. Стандартный порядок оплаты для юридических лиц и индивидуальных предпринимателей:
@@ -243,7 +243,7 @@ export const PublicOfferPage: React.FC<PublicOfferPageProps> = ({
         <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="p-4 bg-white border border-neutral-200">
             <CreditCard className="w-5 h-5 text-neutral-900 mb-2" />
-            <div className="text-xs font-mono uppercase text-neutral-500 mb-1">Оплата с НДС 20%</div>
+            <div className="text-xs font-mono uppercase text-neutral-500 mb-1">Оплата с НДС 22%</div>
             <div className="text-xs text-neutral-700 font-light">
               Безналичный расчет по договору, спецсчета для 44/223-ФЗ и ГОЗ.
             </div>
