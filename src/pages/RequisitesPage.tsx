@@ -15,6 +15,7 @@ import {
   Landmark,
   UserCheck
 } from 'lucide-react';
+import { SEOHead } from '../components/SEOHead';
 
 interface RequisitesPageProps {
   onBackToHome: () => void;
@@ -98,6 +99,12 @@ Email: info@sdmaf.ru
 
   return (
     <div className="bg-white min-h-screen text-neutral-900 pb-20">
+      <SEOHead
+        title="Реквизиты и сведения об организации | Завод «Стальное Дело» (ООО «Кадет СПб»)"
+        description="Официальные реквизиты ООО «Кадет СПб»: ИНН 7805305625, ОГРН 1157847040482, банковские счета, юридический адрес и контакты для договоров и госзакупок."
+        keywords="реквизиты ооо кадет спб, инн 7805305625, завод стальное дело реквизиты, расчетный счет, генеральный директор"
+        canonicalPath="/requisites"
+      />
       {/* Top Breadcrumbs */}
       <div className="border-b border-neutral-200 bg-neutral-50/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between text-xs font-mono text-neutral-500">

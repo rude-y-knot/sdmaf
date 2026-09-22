@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { 
   ChevronRight, 
   ArrowLeft, 
@@ -22,6 +22,7 @@ import { LaserWorkshopGallery } from '../components/LaserWorkshopGallery';
 import { BendingWorkshopGallery } from '../components/BendingWorkshopGallery';
 import { CoatingWorkshopGallery } from '../components/CoatingWorkshopGallery';
 import { WeldingWorkshopGallery } from '../components/WeldingWorkshopGallery';
+import { SEOHead } from '../components/SEOHead';
 
 interface ProductionUnitDetailPageProps {
   unitId?: string;
@@ -42,6 +43,7 @@ export const ProductionUnitDetailPage: React.FC<ProductionUnitDetailPageProps> =
   onOpenMeasurerModal,
   onNavigateToCatalog,
 }) => {
+  const location = useLocation();
   const params = useParams<{ unitId?: string }>();
   const rawUnitId = propUnitId || params.unitId || 'laser-22kw-6m';
 
@@ -94,6 +96,22 @@ export const ProductionUnitDetailPage: React.FC<ProductionUnitDetailPageProps> =
 
   return (
     <div className="bg-white min-h-screen selection:bg-black selection:text-white">
+      <SEOHead
+        title={`${unit.title} | Завод «Стальное Дело» Колпино (СПб)`}
+        description={unit.description.slice(0, 160)}
+        keywords={`${unit.shortTitle.toLowerCase()}, ${unit.brand.toLowerCase()}, металлообработка спб, колпино, завод стальное дело, станки чпу`}
+        canonicalPath={location.pathname || `/production/${unit.id}`}
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'Service',
+          'name': unit.title,
+          'description': unit.description,
+          'provider': {
+            '@type': 'LocalBusiness',
+            'name': 'Завод металлоконструкций и МАФ «Стальное Дело»'
+          }
+        }}
+      />
       {/* Breadcrumb Navigation */}
       <div className="border-b border-neutral-200 bg-[#FAFAFA]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between text-xs font-mono">

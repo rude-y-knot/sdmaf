@@ -23,6 +23,7 @@ import {
 import { TECH_STEPS } from '../data/factoryData';
 import { PRODUCTION_UNITS, ProductionUnit } from '../data/productionUnitsData';
 import { LaserWorkshopGallery } from '../components/LaserWorkshopGallery';
+import { SEOHead } from '../components/SEOHead';
 
 interface ProductionPageProps {
   onBackToHome: () => void;
@@ -116,6 +117,12 @@ export const ProductionPage: React.FC<ProductionPageProps> = ({
 
   return (
     <div className="bg-white min-h-screen selection:bg-black selection:text-white">
+      <SEOHead
+        title="Производственные мощности и цеха ЧПУ | Завод «Стальное Дело» Колпино"
+        description="Парк оборудования завода металлоконструкций в Санкт-Петербурге: 2 волоконных лазера 22 кВт, прессы ЧПУ 170т, сварка НАКС, камера порошковой покраски 7.5м."
+        keywords="производство металлоконструкций спб, лазерный раскрой колпино, гибка металла чпу, порошковая покраска спб, завод стальное дело"
+        canonicalPath="/production"
+      />
       {/* Top Breadcrumbs Bar */}
       <div className="border-b border-neutral-200 bg-[#FAFAFA]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between text-xs font-mono">

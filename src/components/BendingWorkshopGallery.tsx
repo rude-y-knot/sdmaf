@@ -169,7 +169,7 @@ export const BendingWorkshopGallery: React.FC<BendingWorkshopGalleryProps> = ({
             <div className="w-16 h-14 shrink-0 bg-white border border-neutral-200 p-1 shadow-xs hidden sm:flex items-center justify-center">
               <img
                 src="/images/bending.png"
-                alt="HACO & MAIHONG"
+                alt="Гидравлические листогибочные прессы ЧПУ HACO и MAIHONG — гибочный цех завода"
                 className="w-full h-full object-contain"
                 referrerPolicy="no-referrer"
               />

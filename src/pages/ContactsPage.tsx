@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { ConsentCheckbox } from '../components/ConsentCheckbox';
 import { sendLeadToBitrix24 } from '../services/bitrixService';
+import { SEOHead } from '../components/SEOHead';
 
 interface ContactsPageProps {
   onBackToHome: () => void;
@@ -180,6 +181,31 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
 
   return (
     <div className="bg-white min-h-screen text-neutral-900 pb-20">
+      <SEOHead
+        title="Контакты завода «Стальное Дело» | Производство в Колпино (СПб)"
+        description="Контакты завода металлоконструкций: Санкт-Петербург, г. Колпино, ул. Финляндская, 3. Телефон: +7 (812) 200-77-06. Почта: info@sdmaf.ru. Запись на аудит производства."
+        keywords="контакты завод металлоконструкций спб, завод стальное дело колпино адрес, телефон отдела продаж маф, реквизиты стальное дело"
+        canonicalPath="/contacts"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'ContactPage',
+          'name': 'Контакты завода «Стальное Дело»',
+          'url': 'https://sdmaf.ru/contacts',
+          'mainEntity': {
+            '@type': 'LocalBusiness',
+            'name': 'Завод металлоконструкций и МАФ «Стальное Дело»',
+            'telephone': '+7-812-200-77-06',
+            'email': 'info@sdmaf.ru',
+            'address': {
+              '@type': 'PostalAddress',
+              'streetAddress': 'ул. Финляндская, д. 3',
+              'addressLocality': 'Колпино, г. Санкт-Петербург',
+              'postalCode': '196650',
+              'addressCountry': 'RU'
+            }
+          }
+        }}
+      />
       {/* Top Header / Breadcrumbs */}
       <div className="border-b border-neutral-200 bg-neutral-50/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between text-xs font-mono text-neutral-500">

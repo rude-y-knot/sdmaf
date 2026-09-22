@@ -28,6 +28,7 @@ import {
 import { ConsentCheckbox } from '../components/ConsentCheckbox';
 import { sendLeadToBitrix24 } from '../services/bitrixService';
 import { uploadFilesToServer } from '../services/uploadService';
+import { SEOHead } from '../components/SEOHead';
 
 interface B2BTendersPageProps {
   onBackToHome: () => void;
@@ -245,6 +246,12 @@ export const B2BTendersPage: React.FC<B2BTendersPageProps> = ({
 
   return (
     <div className="bg-white min-h-screen text-neutral-900 pb-20">
+      <SEOHead
+        title="B2B, Девелоперы и Госзаказ (44-ФЗ / 223-ФЗ) | Завод «Стальное Дело»"
+        description="Прямой производитель металлоконструкций и МАФ для девелоперов, генподрядчиков и госучреждений. Спецсчета, казначейское сопровождение, НДС 20%, поставка по РФ."
+        keywords="госзакупки 44-фз металлоконструкции, 223-фз благоустройство, поставщик маф для застройщиков, завод стальное дело тендеры"
+        canonicalPath="/b2b"
+      />
       {/* Top Header / Breadcrumbs Bar */}
       <div className="border-b border-neutral-200 bg-neutral-50/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between text-xs font-mono text-neutral-500">

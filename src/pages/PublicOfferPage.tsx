@@ -10,6 +10,7 @@ import {
   RotateCcw,
   Scale
 } from 'lucide-react';
+import { SEOHead } from '../components/SEOHead';
 
 interface PublicOfferPageProps {
   onBackToHome: () => void;
@@ -167,6 +168,12 @@ export const PublicOfferPage: React.FC<PublicOfferPageProps> = ({
 
   return (
     <div className="bg-white min-h-screen text-neutral-900 pb-20">
+      <SEOHead
+        title="Публичная оферта и условия поставки | Завод «Стальное Дело»"
+        description="Условия поставки металлоконструкций и МАФ, регламент согласования чертежей КМД, гарантийные обязательства и порядок оплаты (ст. 437 ГК РФ)."
+        keywords="публичная оферта ст 437 гк рф, условия поставки металлоконструкций, завод стальное дело договор"
+        canonicalPath="/offer"
+      />
       {/* Top Breadcrumbs */}
       <div className="border-b border-neutral-200 bg-neutral-50/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between text-xs font-mono text-neutral-500">

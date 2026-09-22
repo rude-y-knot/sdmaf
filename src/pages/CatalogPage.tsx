@@ -23,6 +23,7 @@ import {
   Maximize2
 } from 'lucide-react';
 import { ConsentCheckbox } from '../components/ConsentCheckbox';
+import { SEOHead } from '../components/SEOHead';
 
 interface CatalogPageProps {
   onBackToHome?: () => void;
@@ -638,6 +639,41 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
 
   return (
     <div className="min-h-screen bg-white text-neutral-900 selection:bg-neutral-900 selection:text-white pb-20">
+      <SEOHead
+        title={
+          routeCategory
+            ? `${currentSection.title} — Каталог завода «Стальное Дело» СПб`
+            : 'Каталог продукции и МАФ от производителя | Завод «Стальное Дело» СПб'
+        }
+        description={
+          routeCategory
+            ? currentSection.lead.slice(0, 160)
+            : 'Каталог сертифицированной продукции завода «Стальное Дело» (СПб, Колпино): уличная мебель, детские горки из нержавеющей стали AISI 304, банные чаны, перголы, урны и велопарковки.'
+        }
+        keywords={
+          routeCategory
+            ? `${currentSection.title.toLowerCase()}, ${currentSection.navLabel.toLowerCase()}, производство маф спб, купить от завода, aisi 304, гост, стальное дело колпино`
+            : 'каталог маф спб, производство уличной мебели, горки из нержавейки, банные чаны спб, парковые скамьи, завод стальное дело колпино'
+        }
+        canonicalPath={routeCategory ? `/catalog/${currentSection.id}` : '/catalog'}
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          'name': currentSection.title,
+          'description': currentSection.lead,
+          'image': `https://sdmaf.ru${currentSection.image}`,
+          'offers': {
+            '@type': 'AggregateOffer',
+            'priceCurrency': 'RUB',
+            'availability': 'https://schema.org/InStock',
+            'seller': {
+              '@type': 'Organization',
+              'name': 'Завод металлоконструкций и МАФ «Стальное Дело»'
+            }
+          }
+        }}
+      />
+
       {/* 1. TOP BREADCRUMB & CONTEXT STRIP */}
       <div className="border-b border-neutral-200 bg-neutral-50/70">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
@@ -656,13 +692,9 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-white border border-neutral-200 text-[11px] font-mono text-neutral-600">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span>Прием заказов на сезон 2025–2026</span>
-            </div>
             <button
               onClick={onOpenCalculator}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 bg-black text-white text-[11px] font-mono uppercase tracking-wider hover:bg-neutral-800 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1 bg-black text-white text-[11px] font-mono uppercase tracking-wider hover:bg-neutral-800 transition-colors cursor-pointer"
             >
               <Calculator className="w-3.5 h-3.5" />
               <span>Рассчитать смету</span>

@@ -17,7 +17,10 @@ import {
   Compass, 
   Calculator,
   ArrowRight,
-  CheckCircle2
+  CheckCircle2,
+  HelpCircle,
+  Truck,
+  CreditCard
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BrandLogo } from './BrandLogo';
@@ -26,11 +29,11 @@ interface HeaderProps {
   onOpenCalculator: (service?: string) => void;
   onOpenMeasurerModal: () => void;
   onNavigateSection?: (sectionId: string) => void;
-  currentPage?: 'home' | 'catalog' | 'production' | 'unit-detail' | 'b2b' | 'contacts' | 'portfolio';
-  onNavigatePage?: (page: 'home' | 'catalog' | 'production' | 'unit-detail' | 'b2b' | 'contacts' | 'portfolio', categoryOrUnitId?: string) => void;
+  currentPage?: 'home' | 'catalog' | 'production' | 'unit-detail' | 'b2b' | 'contacts' | 'faq';
+  onNavigatePage?: (page: 'home' | 'catalog' | 'production' | 'unit-detail' | 'b2b' | 'contacts' | 'faq', categoryOrUnitId?: string) => void;
 }
 
-type ActiveMegaTab = 'metall' | 'maf' | 'portfolio' | null;
+type ActiveMegaTab = 'metall' | 'maf' | 'faq' | null;
 
 export const Header: React.FC<HeaderProps> = ({
   onOpenCalculator,
@@ -66,9 +69,9 @@ export const Header: React.FC<HeaderProps> = ({
         return;
       }
     }
-    if (sectionId === 'portfolio') {
+    if (sectionId === 'faq') {
       if (onNavigatePage) {
-        onNavigatePage('portfolio');
+        onNavigatePage('faq');
         return;
       }
     }
@@ -211,18 +214,18 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               data-no-hover="true"
-              onMouseEnter={() => setActiveMegaTab('portfolio')}
-              onClick={() => handleLinkClick('portfolio')}
+              onMouseEnter={() => setActiveMegaTab('faq')}
+              onClick={() => handleLinkClick('faq')}
               className={`flex items-center gap-1.5 py-2 text-[12px] uppercase tracking-[0.14em] font-medium transition-colors cursor-pointer ${
-                currentPage === 'portfolio'
+                currentPage === 'faq'
                   ? 'text-black font-semibold border-b-2 border-black -mb-[2px]'
-                  : activeMegaTab === 'portfolio'
+                  : activeMegaTab === 'faq'
                   ? 'text-black font-semibold'
                   : 'text-neutral-600 hover:text-black'
               }`}
             >
-              <span>Портфолио</span>
-              <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${activeMegaTab === 'portfolio' ? 'rotate-180 text-black' : 'text-neutral-400'}`} />
+              <span>Частые вопросы</span>
+              <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${activeMegaTab === 'faq' ? 'rotate-180 text-black' : 'text-neutral-400'}`} />
             </button>
 
             <button
@@ -514,86 +517,88 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
               )}
 
-              {/* TAB 3: Реализованные объекты */}
-              {activeMegaTab === 'portfolio' && (
+              {/* TAB 3: Частые вопросы (FAQ) */}
+              {activeMegaTab === 'faq' && (
                 <div className="grid grid-cols-12 gap-8">
-                  {/* Col 1 & 2: Направления объектов (6 карточек) */}
+                  {/* Col 1 & 2: 4 ключевых блока FAQ */}
                   <div className="col-span-7">
                     <div className="flex items-center justify-between pb-3 mb-4 border-b border-neutral-200">
                       <div className="flex items-center gap-2">
-                        <Building2 className="w-4 h-4 text-neutral-900" />
+                        <HelpCircle className="w-4 h-4 text-neutral-900" />
                         <h4 className="text-xs uppercase font-mono font-medium tracking-wider text-neutral-900">
-                          География и типы объектов
+                          Частые вопросы заказчиков
                         </h4>
                       </div>
                       <span className="text-[11px] font-mono text-neutral-400">
-                        СПб, Ленобласть и регионы
+                        Сроки • Доставка • Гарантия • ГОСТ
                       </span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       {[
                         { 
-                          label: 'Жилые комплексы девелоперов', 
-                          desc: 'ЖК Setl Group, Группы ЛСР, ПИК, ЦДС — дворовые перголы, скамьи, освещение',
-                          filter: 'development'
+                          title: 'Сроки производства', 
+                          desc: 'ЧПУ раскрой от 24ч, серийные МАФ 5–12 дней, индивидуальные конструкции 10–20 дней',
+                          icon: Clock,
+                          tag: 'от 24 часов'
                         },
                         { 
-                          label: 'Городские парки и набережные', 
-                          desc: 'Комитет по благоустройству, набережная Ижоры, скверы, амфитеатры и шезлонги',
-                          filter: 'urban'
+                          title: 'Доставка и самовывоз', 
+                          desc: 'По СПб и ЛО в день готовности, доставка фурами по РФ и СНГ, самовывоз из Колпино',
+                          icon: Truck,
+                          tag: 'СПб, РФ и СНГ'
                         },
                         { 
-                          label: 'Бизнес-парки и отели', 
-                          desc: 'Входные группы, видовые террасы, арт-объекты, стелы и дизайнерские навесы',
-                          filter: 'commercial'
+                          title: 'Гарантия до 10 лет и ГОСТ', 
+                          desc: 'Нержавеющая сталь 10 лет, RAL 5 лет, сертификаты ТР ЕАЭС 042/2017 и НАКС',
+                          icon: ShieldCheck,
+                          tag: 'ТР ЕАЭС 042'
                         },
                         { 
-                          label: 'Детские и спортивные кластеры', 
-                          desc: 'Скаты AISI 304 (ГОСТ 34614), воркаут-зоны, канатные комплексы и трибуны',
-                          filter: 'play'
+                          title: 'Чертежи, CAD и оплата', 
+                          desc: 'Прием STEP, DWG, DXF, разработка КМД, безналичный расчет с НДС 20%, 44-ФЗ',
+                          icon: CreditCard,
+                          tag: 'НДС 20% / 44-ФЗ'
                         },
-                        { 
-                          label: 'Мостовые и дорожные барьеры', 
-                          desc: 'Пешеходные удерживающие ограждения ГОСТ 52289, велопарковки, переходы',
-                          filter: 'infrastructure'
-                        },
-                        { 
-                          label: 'Госзаказ и тендеры 44-ФЗ / 223-ФЗ', 
-                          desc: 'Поставки для администраций районов СПб и ЛО со сдачей Госкомиссии',
-                          filter: 'gov'
-                        },
-                      ].map((item, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => handleLinkClick('portfolio')}
-                          className="group p-3.5 h-[98px] border border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50 transition-all text-left flex flex-col justify-between cursor-pointer rounded-none"
-                        >
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="text-xs sm:text-sm font-semibold text-neutral-900 group-hover:text-black transition-colors truncate">
-                              {item.label}
-                            </span>
-                            <ArrowRight className="w-3.5 h-3.5 text-neutral-400 group-hover:text-black group-hover:translate-x-0.5 transition-all shrink-0" />
-                          </div>
-                          <p className="text-[11px] text-neutral-500 font-light leading-relaxed line-clamp-2">
-                            {item.desc}
-                          </p>
-                        </button>
-                      ))}
+                      ].map((item, idx) => {
+                        const Icon = item.icon;
+                        return (
+                          <button
+                            key={idx}
+                            onClick={() => handleLinkClick('faq')}
+                            className="group p-3.5 h-[105px] border border-neutral-200 hover:border-neutral-900 hover:bg-neutral-50 transition-all text-left flex flex-col justify-between cursor-pointer rounded-none"
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-1.5">
+                                <Icon className="w-3.5 h-3.5 text-neutral-600 group-hover:text-black" />
+                                <span className="text-xs sm:text-sm font-semibold text-neutral-900 group-hover:text-black transition-colors truncate">
+                                  {item.title}
+                                </span>
+                              </div>
+                              <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 bg-neutral-100 text-neutral-600 group-hover:bg-black group-hover:text-white transition-colors">
+                                {item.tag}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-neutral-500 font-light leading-relaxed line-clamp-2">
+                              {item.desc}
+                            </p>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
-                  {/* Col 3: Интерактивная карта и статистика */}
+                  {/* Col 3: Сайдбар базы знаний и CTA */}
                   <div className="col-span-5 border border-neutral-200 bg-neutral-50 p-6 flex flex-col justify-between">
                     <div>
                       <div className="font-mono text-[10px] uppercase tracking-widest text-neutral-400 mb-2">
-                        [ Интерактивная карта проектов ]
+                        [ Регламенты и стандарты ]
                       </div>
                       <h4 className="text-base font-normal text-neutral-900 mb-2 tracking-tight">
-                        География реализованных проектов
+                        База знаний завода «Стальное Дело»
                       </h4>
                       <p className="text-xs text-neutral-500 font-light leading-relaxed mb-4">
-                        Более 2 500 сданных объектов благоустройства и металлоконструкций по всей России и в странах СНГ. Прямые поставки от завода без посредников.
+                        Официальные регламенты приемки металлопроката, порядок согласования чертежей КМД и оформление исполнительной документации КС-2/КС-3.
                       </p>
 
                       <div className="space-y-2 py-3 border-t border-b border-neutral-200 text-xs text-neutral-700">
@@ -614,11 +619,11 @@ export const Header: React.FC<HeaderProps> = ({
 
                     <div className="space-y-2 pt-4">
                       <button
-                        onClick={() => handleLinkClick('portfolio')}
+                        onClick={() => handleLinkClick('faq')}
                         className="w-full py-2.5 px-4 bg-black text-white text-xs font-mono uppercase tracking-wider hover:bg-neutral-800 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                       >
-                        <span>Открыть страницу портфолио с картой</span>
-                        <MapPin className="w-3.5 h-3.5" />
+                        <span>Перейти к разделу FAQ</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
                       </button>
 
                       <button
@@ -628,7 +633,7 @@ export const Header: React.FC<HeaderProps> = ({
                         }}
                         className="w-full py-2 px-4 border border-neutral-300 text-neutral-900 text-xs font-mono uppercase tracking-wider hover:border-black transition-colors flex items-center justify-center gap-1.5 cursor-pointer bg-white"
                       >
-                        <span>Запросить референс-лист и смету</span>
+                        <span>Задать вопрос инженеру завода</span>
                       </button>
                     </div>
                   </div>
@@ -654,13 +659,13 @@ export const Header: React.FC<HeaderProps> = ({
                 { label: 'Производство и цеха ЧПУ', section: 'production' },
                 { label: 'Конструкторское бюро завода (ЕСКД)', section: 'engineering-bureau' },
                 { label: 'Продукция завода (Уличная мебель)', section: 'catalog' },
-                { label: 'Портфолио объектов', section: 'portfolio' },
+                { label: 'Частые вопросы (FAQ)', section: 'faq' },
                 { label: 'B2B и Госзаказ (44-ФЗ)', section: 'b2b' },
                 { label: 'Контакты завода в Колпино', section: 'contacts' },
               ].map((item, idx) => {
                 const isActive = (item.section === 'production' && currentPage === 'production') ||
                                  (item.section === 'catalog' && currentPage === 'catalog') ||
-                                 (item.section === 'portfolio' && currentPage === 'portfolio') ||
+                                 (item.section === 'faq' && currentPage === 'faq') ||
                                  (item.section === 'b2b' && currentPage === 'b2b') ||
                                  (item.section === 'contacts' && currentPage === 'contacts') ||
                                  (item.section === 'hero' && currentPage === 'home');

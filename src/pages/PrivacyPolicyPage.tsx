@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   AlertCircle
 } from 'lucide-react';
+import { SEOHead } from '../components/SEOHead';
 
 interface PrivacyPolicyPageProps {
   onBackToHome: () => void;
@@ -223,6 +224,12 @@ export const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = ({
 
   return (
     <div className="bg-white min-h-screen text-neutral-900 pb-20">
+      <SEOHead
+        title="Политика конфиденциальности (152-ФЗ) | Завод «Стальное Дело»"
+        description="Политика обработки и защиты персональных данных пользователей сайта sdmaf.ru в соответствии с Федеральным законом № 152-ФЗ РФ."
+        keywords="политика конфиденциальности 152-фз, обработка персональных данных, стальное дело"
+        canonicalPath="/privacy"
+      />
       {/* Top Breadcrumbs */}
       <div className="border-b border-neutral-200 bg-neutral-50/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between text-xs font-mono text-neutral-500">

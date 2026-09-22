@@ -1,0 +1,34 @@
+# Robots.txt for sdmaf.ru - Завод металлоконструкций и МАФ «Стальное Дело»
+# Optimized for Googlebot, YandexBot, and all modern web crawlers
+
+User-agent: *
+Allow: /
+Disallow: /api/
+
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+
+User-agent: Googlebot-Image
+Allow: /
+Allow: /images/
+Allow: /assets/
+
+User-agent: Yandex
+Allow: /
+Disallow: /api/
+Clean-param: ref /
+Clean-param: source /
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term /
+
+User-agent: YandexImages
+Allow: /
+Allow: /images/
+Allow: /assets/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+
+Host: https://sdmaf.ru
+Sitemap: https://sdmaf.ru/sitemap.xml

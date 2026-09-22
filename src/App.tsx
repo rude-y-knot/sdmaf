@@ -5,7 +5,8 @@ import { Hero } from './components/Hero';
 import { SmartQuoteCalculator } from './components/SmartQuoteCalculator';
 import { CatalogTeaser } from './components/CatalogTeaser';
 import { MachineryAndTech } from './components/MachineryAndTech';
-import { GeoPortfolioMap } from './components/GeoPortfolioMap';
+import { FAQSection } from './components/FAQSection';
+import { FAQPage } from './pages/FAQPage';
 import { B2BPartners } from './components/B2BPartners';
 import { Footer } from './components/Footer';
 import { SiteMeasurerModal } from './components/SiteMeasurerModal';
@@ -15,7 +16,6 @@ import { ProductionUnitDetailPage } from './pages/ProductionUnitDetailPage';
 import { EngineeringBureauPage } from './pages/EngineeringBureauPage';
 import { B2BTendersPage } from './pages/B2BTendersPage';
 import { ContactsPage } from './pages/ContactsPage';
-import { PortfolioPage } from './pages/PortfolioPage';
 import { RequisitesPage } from './pages/RequisitesPage';
 import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
 import { PublicOfferPage } from './pages/PublicOfferPage';
@@ -26,8 +26,9 @@ import { ProductQuoteModal } from './components/ProductQuoteModal';
 import { FloatingEstimateBubble } from './components/FloatingEstimateBubble';
 import { BatchEstimateDrawer } from './components/BatchEstimateDrawer';
 import { BitrixWebhookGuideModal } from './components/BitrixWebhookGuideModal';
+import { SEOHead } from './components/SEOHead';
 
-type PageType = 'home' | 'catalog' | 'production' | 'unit-detail' | 'b2b' | 'contacts' | 'portfolio' | 'requisites' | 'privacy' | 'offer';
+type PageType = 'home' | 'catalog' | 'production' | 'unit-detail' | 'b2b' | 'contacts' | 'faq' | 'requisites' | 'privacy' | 'offer';
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
@@ -105,7 +106,7 @@ export default function App() {
     }
     if (p === '/b2b' || p === '/tenders') return 'b2b';
     if (p === '/contacts') return 'contacts';
-    if (p === '/portfolio' || p === '/projects') return 'portfolio';
+    if (p === '/faq' || p === '/questions') return 'faq';
     if (p === '/requisites') return 'requisites';
     if (p === '/privacy') return 'privacy';
     if (p === '/offer') return 'offer';
@@ -147,8 +148,8 @@ export default function App() {
       navigate('/b2b');
     } else if (page === 'contacts') {
       navigate('/contacts');
-    } else if (page === 'portfolio') {
-      navigate('/portfolio');
+    } else if (page === 'faq') {
+      navigate('/faq');
     } else if (page === 'requisites') {
       navigate('/requisites');
     } else if (page === 'privacy') {
@@ -211,6 +212,12 @@ export default function App() {
               path="/"
               element={
                 <>
+                  <SEOHead
+                    title="Стальное Дело — Завод металлоконструкций и МАФ | Санкт-Петербург, Колпино"
+                    description="Производство металлоконструкций и малых архитектурных форм полного цикла в Санкт-Петербурге (Колпино). 4000+ м², ЧПУ станки, лазерный раскрой до 25 мм, гибка, порошковая покраска RAL."
+                    keywords="завод металлоконструкций спб, производство маф санкт-петербург, лазерная резка металла колпино, гибка листового металла чпу, порошковая покраска спб ral"
+                    canonicalPath="/"
+                  />
                   {/* Hero Section */}
                   <Hero
                     onOpenCalculator={() => {
@@ -248,9 +255,15 @@ export default function App() {
                     onNavigateToProduction={() => navigate('/production')}
                   />
 
-                  {/* Portfolio Featured Cards */}
-                  <GeoPortfolioMap
-                    onNavigateToPortfolio={() => navigate('/portfolio')}
+                  {/* FAQ Knowledge Base Section */}
+                  <FAQSection
+                    onOpenCalculator={() => {
+                      const el = document.getElementById('calculator');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                      else setIsCalculatorModalOpen(true);
+                    }}
+                    onOpenMeasurerModal={() => setIsMeasurerModalOpen(true)}
+                    onNavigateToFAQ={() => navigate('/faq')}
                   />
 
                   {/* B2B Audiences & Logistics */}
@@ -475,19 +488,26 @@ export default function App() {
             />
             <Route path="/tenders" element={<Navigate to="/b2b" replace />} />
 
-            {/* 6. Portfolio */}
+            {/* 6. FAQ (Dedicated Page) and redirects */}
             <Route
-              path="/portfolio"
+              path="/faq"
               element={
-                <PortfolioPage
+                <FAQPage
                   onBackToHome={() => navigate('/')}
-                  onOpenCalculator={() => setIsCalculatorModalOpen(true)}
+                  onOpenCalculator={(service) => {
+                    setIsCalculatorModalOpen(true);
+                  }}
                   onOpenMeasurerModal={() => setIsMeasurerModalOpen(true)}
                   onNavigateToCatalog={() => navigate('/catalog')}
+                  onNavigateToProduction={() => navigate('/production')}
+                  onNavigateToContacts={() => navigate('/contacts')}
                 />
               }
             />
-            <Route path="/projects" element={<Navigate to="/portfolio" replace />} />
+            <Route path="/questions" element={<Navigate to="/faq" replace />} />
+            <Route path="/chasto-zadavaemye-voprosy" element={<Navigate to="/faq" replace />} />
+            <Route path="/portfolio" element={<Navigate to="/faq" replace />} />
+            <Route path="/projects" element={<Navigate to="/faq" replace />} />
 
             {/* 7. Contacts */}
             <Route
@@ -571,7 +591,7 @@ export default function App() {
             }
           }}
           onNavigateToLaser={() => navigate('/laser')}
-          onNavigateToPortfolio={() => navigate('/portfolio')}
+          onNavigateToFAQ={() => handleNavigatePage('faq')}
           onNavigateToB2B={() => navigate('/b2b')}
           onNavigateToContacts={() => navigate('/contacts')}
           onNavigateHome={() => navigate('/')}

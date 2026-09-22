@@ -23,6 +23,7 @@ import {
   CalendarCheck
 } from 'lucide-react';
 import { PRODUCTION_UNITS } from '../data/productionUnitsData';
+import { SEOHead } from '../components/SEOHead';
 
 interface EngineeringBureauPageProps {
   onBackToProduction: () => void;
@@ -150,6 +151,22 @@ export const EngineeringBureauPage: React.FC<EngineeringBureauPageProps> = ({
 
   return (
     <div className="bg-white min-h-screen selection:bg-black selection:text-white">
+      <SEOHead
+        title="Конструкторское бюро завода «Стальное Дело» | Разработка КМ, КМД, ТУ по ЕСКД"
+        description="Проектирование металлоконструкций и МАФ: разработка рабочих чертежей КМ/КМД, 3D-моделирование SolidWorks/КОМПАС, подготовка разверток под лазерный раскрой ЧПУ."
+        keywords="конструкторское бюро спб, разработка кмд, проектирование металлоконструкций, чертежи dxf для лазера, solidworks, компас-3d, стальное дело"
+        canonicalPath="/engineering"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'Service',
+          'name': 'Конструкторское бюро и инженерное проектирование металлоизделий',
+          'description': 'Разработка рабочей документации КМ/КМД, ТУ, карт раскроя и 3D-моделирование по стандартам ЕСКД.',
+          'provider': {
+            '@type': 'LocalBusiness',
+            'name': 'Завод металлоконструкций и МАФ «Стальное Дело»'
+          }
+        }}
+      />
       {/* Breadcrumbs Navigation */}
       <div className="border-b border-neutral-200 bg-[#FAFAFA]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between text-xs font-mono">

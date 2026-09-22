@@ -22,7 +22,7 @@ interface FooterProps {
   onNavigateToCatalog?: (category?: string) => void;
   onNavigateToProduction?: (unitId?: string) => void;
   onNavigateToLaser?: () => void;
-  onNavigateToPortfolio?: () => void;
+  onNavigateToFAQ?: () => void;
   onNavigateToB2B?: () => void;
   onNavigateToContacts?: () => void;
   onNavigateHome?: () => void;
@@ -40,7 +40,7 @@ export const Footer: React.FC<FooterProps> = ({
   onNavigateToCatalog,
   onNavigateToProduction,
   onNavigateToLaser,
-  onNavigateToPortfolio,
+  onNavigateToFAQ,
   onNavigateToB2B,
   onNavigateToContacts,
   onNavigateHome,
@@ -309,10 +309,10 @@ export const Footer: React.FC<FooterProps> = ({
               <li>
                 <button 
                   data-no-hover="true" 
-                  onClick={() => onNavigateToPortfolio ? onNavigateToPortfolio() : null} 
+                  onClick={() => onNavigateToFAQ ? onNavigateToFAQ() : null} 
                   className="hover:text-white text-left transition-colors cursor-pointer"
                 >
-                  Портфолио и реализованные объекты
+                  Частые вопросы (FAQ)
                 </button>
               </li>
               <li>
