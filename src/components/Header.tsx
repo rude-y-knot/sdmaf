@@ -414,7 +414,7 @@ export const Header: React.FC<HeaderProps> = ({
                         </h4>
                       </div>
                       <span className="text-[11px] font-mono text-neutral-400">
-                        5 основных направлений
+                        6 основных направлений
                       </span>
                     </div>
 
@@ -444,6 +444,11 @@ export const Header: React.FC<HeaderProps> = ({
                           label: 'Велопарковки и мобильность', 
                           desc: 'Арочные, спиральные и дизайнерские антивандальные стойки, велобоксы',
                           cat: 'bike' 
+                        },
+                        { 
+                          label: 'Сувениры, вывески и POS', 
+                          desc: 'Органайзеры, таблички, подставки, каркасы светильников, букенды и мерч',
+                          cat: 'suvenirs' 
                         },
                       ].map((item, idx) => (
                         <button

@@ -287,6 +287,15 @@ export const Footer: React.FC<FooterProps> = ({
                   Велосипедные парковки и велобоксы
                 </button>
               </li>
+              <li>
+                <button 
+                  data-no-hover="true"
+                  onClick={() => onNavigateToCatalog ? onNavigateToCatalog('suvenirs') : null}
+                  className="hover:text-white transition-colors text-left cursor-pointer"
+                >
+                  Сувенирная продукция, вывески и POS-материалы
+                </button>
+              </li>
             </ul>
           </div>
 

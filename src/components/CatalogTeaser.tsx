@@ -38,6 +38,12 @@ export const CatalogTeaser: React.FC<CatalogTeaserProps> = ({ onNavigateToCatalo
       desc: 'Арочные, спиральные и дизайнерские антивандальные велостойки, станции ремонта и крытые велонавесы.',
       image: '/images/veloparking.webp',
     },
+    {
+      id: 'suvenirs',
+      title: 'Сувенирная продукция и POS',
+      desc: 'Органайзеры, стальные вывески, подставки для телефонов, каркасы светильников, букенды и POS-материалы для HoReCa.',
+      image: '/images/suvenirs.webp',
+    },
   ];
 
   return (

@@ -469,6 +469,12 @@ export default function App() {
             <Route path="/metal-structures" element={<Navigate to="/catalog/stainless" replace />} />
             <Route path="/stainless" element={<Navigate to="/catalog/stainless" replace />} />
             <Route path="/artobj" element={<Navigate to="/catalog/stainless" replace />} />
+            <Route path="/suvenirs" element={<Navigate to="/catalog/suvenirs" replace />} />
+            <Route path="/souvenirs" element={<Navigate to="/catalog/suvenirs" replace />} />
+            <Route path="/pos" element={<Navigate to="/catalog/suvenirs" replace />} />
+            <Route path="/signs" element={<Navigate to="/catalog/suvenirs" replace />} />
+            <Route path="/merch" element={<Navigate to="/catalog/suvenirs" replace />} />
+            <Route path="/vyveski" element={<Navigate to="/catalog/suvenirs" replace />} />
 
             {/* 5. B2B & Tenders */}
             <Route

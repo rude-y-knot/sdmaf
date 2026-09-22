@@ -70,6 +70,20 @@
     <priority>0.85</priority>
   </url>
 
+  <url>
+    <loc>https://sdmaf.ru/catalog/suvenirs</loc>
+    <lastmod>2026-09-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <url>
+    <loc>https://sdmaf.ru/catalog/pos</loc>
+    <lastmod>2026-09-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
   <!-- 4. Производственный комплекс -->
   <url>
     <loc>https://sdmaf.ru/production</loc>
