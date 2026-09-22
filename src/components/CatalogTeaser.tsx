@@ -12,36 +12,31 @@ export const CatalogTeaser: React.FC<CatalogTeaserProps> = ({ onNavigateToCatalo
       id: 'slides',
       title: 'Детские горки и скаты',
       desc: 'Прямые, винтовые, холмовые и тоннельные скаты из полированной нержавеющей стали AISI 304 по ТР ЕАЭС 042/2017.',
-      count: 'Сертификат ГОСТ',
-      image: '/images/gorki3.jpg',
+      image: '/images/gorki.webp',
     },
     {
       id: 'furniture',
       title: 'Уличная мебель',
       desc: 'Скамейки, урны, перголы, шезлонги, парковые столы и качели из конструкционной стали, лиственницы и термоясеня.',
-      count: 'Серии и B2B',
-      image: '/images/mebel.jpg',
+      image: '/images/mebel.webp',
     },
     {
       id: 'stainless',
       title: 'Изделия из нержавеющей стали',
       desc: 'Зеркальные арт-объекты, входные порталы, парапетные ограждения, решетки и перголы AISI 304/316.',
-      count: 'Super Mirror №8',
-      image: '/images/artobj.jpg',
+      image: '/images/artobj.webp',
     },
     {
       id: 'vats',
       title: 'Чаны и купели',
       desc: 'Сибирские банные чаны на дровах из стали AISI 304 толщиной 3–4 мм с отделкой алтайским кедром и уличные купели.',
-      count: '100% гидроконтроль',
-      image: '/images/chani.jpg',
+      image: '/images/chani.webp',
     },
     {
       id: 'bike',
       title: 'Велопарковки и мобильность',
       desc: 'Арочные, спиральные и дизайнерские антивандальные велостойки, станции ремонта и крытые велонавесы.',
-      count: 'Антивандал',
-      image: '/images/veloparking.jpg',
+      image: '/images/veloparking.webp',
     },
   ];
 
@@ -81,16 +76,12 @@ export const CatalogTeaser: React.FC<CatalogTeaserProps> = ({ onNavigateToCatalo
               className="bg-white p-6 sm:p-8 flex flex-col justify-between hover:bg-neutral-50/70 transition-colors cursor-pointer group"
             >
               <div>
-                <div className="flex items-center justify-between text-xs font-mono text-neutral-400 mb-4">
-                  <span className="uppercase tracking-wider">[ КАТЕГОРИЯ ]</span>
-                  <span className="text-neutral-900 font-medium">{item.count}</span>
-                </div>
-
-                <div className="relative aspect-16/10 w-full bg-neutral-100 overflow-hidden mb-6 border border-neutral-100">
+                {/* Image Showcase with generous whitespace and 100% uncropped display */}
+                <div className="relative aspect-16/10 w-full bg-[#F7F7F7] p-6 sm:p-8 flex items-center justify-center mb-6 border border-neutral-100 overflow-hidden">
                   <img
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-full object-cover grayscale-25 group-hover:grayscale-0 group-hover:scale-102 transition-all duration-700"
+                    className="w-auto h-auto max-w-full max-h-full object-contain select-none transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"
                   />
                 </div>
