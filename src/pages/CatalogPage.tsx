@@ -12,7 +12,6 @@ import {
   Compass,
   Hammer,
   Send,
-  UploadCloud,
   Check,
   ChevronRight,
   Award,
@@ -24,7 +23,7 @@ import {
 } from 'lucide-react';
 import { ConsentCheckbox } from '../components/ConsentCheckbox';
 import { SEOHead } from '../components/SEOHead';
-import { sendLeadToBitrix24 } from '../services/bitrixService';
+import { sendLeadToBitrix24, buildBitrixLeadTitle } from '../services/bitrixService';
 
 interface CatalogPageProps {
   onBackToHome?: () => void;
@@ -727,10 +726,16 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
     if (!consentAccepted || !clientPhone.trim()) return;
     setIsSubmitting(true);
     
+    const leadTitle = buildBitrixLeadTitle(
+      clientName,
+      `[Каталог: ${currentSection.title}] ${furnitureType}`,
+      quantity
+    );
+
     try {
       await sendLeadToBitrix24({
         sourceType: 'maf_product_quote',
-        title: `[Запрос КП Каталог] ${currentSection.title} (${furnitureType}, ${quantity} шт.)`,
+        title: leadTitle,
         name: clientName || 'Заказчик из каталога',
         phone: clientPhone,
         department: 'Отдел продаж и комплектации МАФ',
@@ -1105,7 +1110,7 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
               Заказать расчет: {currentSection.navLabel}
             </h2>
             <p className="mt-3 text-xs sm:text-sm text-neutral-600 font-normal leading-relaxed">
-              Заполните параметры или прикрепите готовое техническое задание (ТЗ) / файл чертежа. Инженер завода рассчитает точную смету с детализацией материалов и сроков.
+              Заполните параметры изделия или укажите технические требования. Инженер завода рассчитает точную смету с детализацией материалов и сроков.
             </p>
           </div>
 

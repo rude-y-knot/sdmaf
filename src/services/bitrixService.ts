@@ -41,31 +41,127 @@ export interface BitrixSendResult {
   message?: string;
 }
 
+function escapeHtml(str: string): string {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 /**
- * Formats custom details into a clean HTML / text comments block for Bitrix24 Lead card
+ * Formats custom details into a clean HTML comments block for Bitrix24 Lead card.
+ * NOTE: Emojis are strictly avoided to prevent MySQL utf8 3-byte truncation issues in Bitrix24.
  */
-function formatLeadComments(payload: BitrixLeadPayload): string {
-  const lines: string[] = [];
-  
+function formatLeadCommentsHtml(payload: BitrixLeadPayload): string {
   const pageName = payload.pageSource || (typeof window !== 'undefined' ? `${document.title || 'Сайт завода'} (URL: ${window.location.pathname || '/'})` : 'Главная страница сайта');
+  const sourceLabel = getFormSourceLabel(payload.sourceType);
+  const now = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
+
+  const contactsList: string[] = [];
+  contactsList.push(`<li><b>Контактное лицо:</b> ${escapeHtml(payload.name || 'Не указано')}</li>`);
+  contactsList.push(`<li><b>Телефон:</b> <a href="tel:${escapeHtml(payload.phone)}">${escapeHtml(payload.phone)}</a></li>`);
+  if (payload.email) contactsList.push(`<li><b>Email:</b> <a href="mailto:${escapeHtml(payload.email)}">${escapeHtml(payload.email)}</a></li>`);
+  if (payload.company) contactsList.push(`<li><b>Организация / Компания:</b> ${escapeHtml(payload.company)}</li>`);
+  if (payload.inn) contactsList.push(`<li><b>ИНН:</b> ${escapeHtml(payload.inn)}</li>`);
+  if (payload.department) contactsList.push(`<li><b>Профильный отдел:</b> ${escapeHtml(payload.department)}</li>`);
+
+  const detailsList: string[] = [];
+  if (payload.details && Object.keys(payload.details).length > 0) {
+    for (const [key, value] of Object.entries(payload.details)) {
+      if (value === undefined || value === null || value === '') continue;
+      
+      let formattedVal = String(value);
+      if (Array.isArray(value)) {
+        formattedVal = value.join(', ');
+      } else if (typeof value === 'boolean') {
+        formattedVal = value ? 'Да (Требуется)' : 'Нет';
+      }
+
+      detailsList.push(`<li><b>${escapeHtml(key)}:</b> ${escapeHtml(formattedVal)}</li>`);
+    }
+  } else {
+    detailsList.push(`<li><b>Параметры:</b> Базовая консультация / обратный звонок</li>`);
+  }
+
+  let filesHtml = '';
+  if (payload.files && payload.files.length > 0) {
+    const fileItems = payload.files.map((f, idx) => {
+      const link = f.url ? ` &mdash; <a href="${escapeHtml(f.url)}" target="_blank" rel="noopener noreferrer">Скачать документ</a>` : '';
+      return `<li>${idx + 1}. ${escapeHtml(f.name)} ${f.size ? `(${escapeHtml(f.size)})` : ''}${link}</li>`;
+    }).join('');
+    filesHtml = `
+      <div style="margin-bottom: 12px; padding: 10px; border: 1px solid #cbd5e1; background: #ffffff;">
+        <div style="font-weight: bold; color: #1e293b; margin-bottom: 6px;">Прикрепленные документы / чертежи:</div>
+        <ul style="margin: 0; padding-left: 20px; color: #334155;">
+          ${fileItems}
+        </ul>
+      </div>
+    `;
+  }
+
+  return `
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.6; color: #1e293b;">
+  <div style="background-color: #f8fafc; padding: 12px 16px; border-left: 4px solid #0284c7; margin-bottom: 14px;">
+    <div style="font-size: 15px; font-weight: bold; color: #0f172a; margin-bottom: 4px;">ДЕТАЛЬНАЯ ЗАЯВКА С САЙТА SDMAF.RU</div>
+    <div style="font-size: 12px; color: #475569;">
+      <b>Категория формы:</b> ${escapeHtml(sourceLabel)}<br/>
+      <b>Страница отправки:</b> ${escapeHtml(pageName)}<br/>
+      <b>Дата и время:</b> ${escapeHtml(now)} (МСК)
+    </div>
+  </div>
+
+  <div style="margin-bottom: 14px; padding: 12px 16px; border: 1px solid #e2e8f0; background: #ffffff;">
+    <div style="font-size: 12px; font-weight: bold; color: #0284c7; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">1. Контактные данные заказчика:</div>
+    <ul style="margin: 0; padding-left: 20px; color: #334155;">
+      ${contactsList.join('')}
+    </ul>
+  </div>
+
+  <div style="margin-bottom: 14px; padding: 12px 16px; border: 1px solid #e2e8f0; background: #ffffff;">
+    <div style="font-size: 12px; font-weight: bold; color: #0284c7; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px;">2. Заполненные параметры и значения формы:</div>
+    <ul style="margin: 0; padding-left: 20px; color: #334155;">
+      ${detailsList.join('')}
+    </ul>
+  </div>
+
+  ${filesHtml}
+
+  <div style="font-size: 11px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 10px; margin-top: 12px;">
+    <b>Регламент обработки:</b> Требуется связаться с заказчиком, уточнить детали ТЗ и направить официальное КП завода (НДС 22%).
+  </div>
+</div>
+`.trim();
+}
+
+/**
+ * Clean plain-text version for DESCRIPTION field
+ */
+function formatLeadCommentsText(payload: BitrixLeadPayload): string {
+  const lines: string[] = [];
+  const pageName = payload.pageSource || (typeof window !== 'undefined' ? `${document.title || 'Сайт завода'} (${window.location.pathname || '/'})` : 'Главная страница сайта');
+  const sourceLabel = getFormSourceLabel(payload.sourceType);
+  const now = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' });
 
   lines.push(`==============================================`);
-  lines.push(`📋 ДЕТАЛЬНАЯ ЗАЯВКА С САЙТА SDMAF.RU`);
+  lines.push(`ДЕТАЛЬНАЯ ЗАЯВКА С САЙТА SDMAF.RU`);
   lines.push(`==============================================`);
-  lines.push(`📌 Категория формы: ${getFormSourceLabel(payload.sourceType)}`);
-  lines.push(`🌐 Страница отправки: ${pageName}`);
-  lines.push(`⏰ Дата и время: ${new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })} (МСК)`);
+  lines.push(`Категория формы: ${sourceLabel}`);
+  lines.push(`Страница отправки: ${pageName}`);
+  lines.push(`Дата и время: ${now} (МСК)`);
   lines.push(`----------------------------------------------`);
-  lines.push(`👤 Контактное лицо: ${payload.name || 'Не указано'}`);
-  lines.push(`📞 Телефон: ${payload.phone}`);
-  if (payload.email) lines.push(`✉️ Email: ${payload.email}`);
-  if (payload.company) lines.push(`🏢 Организация: ${payload.company}`);
-  if (payload.inn) lines.push(`📑 ИНН: ${payload.inn}`);
-  if (payload.department) lines.push(`🎯 Профильный отдел: ${payload.department}`);
+  lines.push(`[ КОНТАКТНЫЕ ДАННЫЕ ]`);
+  lines.push(`- Контактное лицо: ${payload.name || 'Не указано'}`);
+  lines.push(`- Телефон: ${payload.phone}`);
+  if (payload.email) lines.push(`- Email: ${payload.email}`);
+  if (payload.company) lines.push(`- Организация: ${payload.company}`);
+  if (payload.inn) lines.push(`- ИНН: ${payload.inn}`);
+  if (payload.department) lines.push(`- Профильный отдел: ${payload.department}`);
   lines.push(`----------------------------------------------`);
+  lines.push(`[ ЗАПОЛНЕННЫЕ ПАРАМЕТРЫ ФОРМЫ ]`);
 
-  lines.push(`\n[ ПОДРОБНЫЕ ПАРАМЕТРЫ И УТОЧНЕНИЯ ИЗ ФОРМЫ ]`);
-  
   if (payload.details && Object.keys(payload.details).length > 0) {
     for (const [key, value] of Object.entries(payload.details)) {
       if (value === undefined || value === null || value === '') continue;
@@ -84,20 +180,30 @@ function formatLeadComments(payload: BitrixLeadPayload): string {
   }
 
   if (payload.files && payload.files.length > 0) {
-    lines.push(`\n[ ПРИКРЕПЛЕННЫЕ ДОКУМЕНТЫ ]`);
+    lines.push(`----------------------------------------------`);
+    lines.push(`[ ПРИКРЕПЛЕННЫЕ ДОКУМЕНТЫ ]`);
     payload.files.forEach((f, idx) => {
-      lines.push(`${idx + 1}. 📄 ${f.name} ${f.size ? `(${f.size})` : ''}`);
-      if (f.url) {
-        lines.push(`   👉 Ссылка: ${f.url}`);
-      }
+      lines.push(`${idx + 1}. ${f.name} ${f.size ? `(${f.size})` : ''} ${f.url ? `-> ${f.url}` : ''}`);
     });
   }
 
-  lines.push(`\n----------------------------------------------`);
-  lines.push(`💼 Статус расчета: Требуется связаться с заказчиком, уточнить детали ТЗ и направить официальное КП с НДС 22%.`);
+  lines.push(`----------------------------------------------`);
+  lines.push(`Статус: Требуется связаться с заказчиком, уточнить детали ТЗ и направить официальное КП с НДС 22%.`);
   lines.push(`==============================================`);
 
   return lines.join('\n');
+}
+
+export function buildBitrixLeadTitle(companyName: string | undefined | null, orderItemDescription: string, quantityText?: string | number): string {
+  const companyClean = companyName?.trim();
+  const qtyStr = quantityText !== undefined && quantityText !== null && String(quantityText).trim() !== '' 
+    ? ` (${String(quantityText).includes('шт') ? quantityText : `${quantityText} шт.`})` 
+    : '';
+
+  if (companyClean) {
+    return `${companyClean}: ${orderItemDescription}${qtyStr}`;
+  }
+  return `${orderItemDescription}${qtyStr}`;
 }
 
 export function getFormSourceLabel(type: FormSourceType): string {
@@ -127,7 +233,8 @@ export function getFormSourceLabel(type: FormSourceType): string {
  * Dispatches the lead to Bitrix24 via crm.lead.add
  */
 export async function sendLeadToBitrix24(payload: BitrixLeadPayload): Promise<BitrixSendResult> {
-  const comments = formatLeadComments(payload);
+  const htmlComments = formatLeadCommentsHtml(payload);
+  const textComments = formatLeadCommentsText(payload);
 
   const pageName = payload.pageSource || (typeof window !== 'undefined' ? `${document.title || 'Сайт завода'} (${window.location.pathname || '/'})` : 'Главная страница сайта');
 
@@ -142,8 +249,8 @@ export async function sendLeadToBitrix24(payload: BitrixLeadPayload): Promise<Bi
       SOURCE_ID: 'WEB',
       SOURCE_DESCRIPTION: `Сайт sdmaf.ru [${pageName}]: ${getFormSourceLabel(payload.sourceType)}`,
       COMPANY_TITLE: payload.company || (payload.inn ? `ИНН ${payload.inn}` : ''),
-      COMMENTS: comments,
-      DESCRIPTION: comments,
+      COMMENTS: htmlComments,
+      DESCRIPTION: textComments,
       PHONE: payload.phone ? [
         {
           VALUE: payload.phone,

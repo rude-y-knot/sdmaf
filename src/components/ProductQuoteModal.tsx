@@ -20,7 +20,7 @@ import {
 import { MAFProduct } from '../types';
 import { useEstimate } from '../context/EstimateContext';
 import { ConsentCheckbox } from './ConsentCheckbox';
-import { sendLeadToBitrix24 } from '../services/bitrixService';
+import { sendLeadToBitrix24, buildBitrixLeadTitle } from '../services/bitrixService';
 
 interface ProductQuoteModalProps {
   product: MAFProduct | null;
@@ -71,10 +71,16 @@ export const ProductQuoteModal: React.FC<ProductQuoteModalProps> = ({
 
     setIsSubmitting(true);
 
+    const leadTitle = buildBitrixLeadTitle(
+      contactCompany,
+      `[Заказ МАФ] ${product.name} (${product.article})`,
+      quantity
+    );
+
     try {
       const result = await sendLeadToBitrix24({
         sourceType: 'maf_product_quote',
-        title: `[Заказ МАФ] ${product.name} (${product.article}) — ${quantity} шт.`,
+        title: leadTitle,
         name: contactName || 'Заказчик МАФ',
         phone: contactPhone,
         email: contactEmail,

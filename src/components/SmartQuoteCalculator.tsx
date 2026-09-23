@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { ConsentCheckbox } from './ConsentCheckbox';
-import { sendLeadToBitrix24 } from '../services/bitrixService';
+import { sendLeadToBitrix24, buildBitrixLeadTitle } from '../services/bitrixService';
 
 interface SmartQuoteCalculatorProps {
   isOpenModal?: boolean;
@@ -74,10 +74,16 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
       return found ? found.title : op;
     });
 
+    const leadTitle = buildBitrixLeadTitle(
+      contactCompany,
+      `[Калькулятор] ${alloyName}`,
+      estimatedQuantity
+    );
+
     try {
       const result = await sendLeadToBitrix24({
         sourceType: 'laser_calculator',
-        title: `[Калькулятор] ${alloyName} (${estimatedQuantity} шт.)`,
+        title: leadTitle,
         name: contactName || 'Заказчик',
         phone: contactPhone,
         email: contactEmail,
@@ -87,6 +93,7 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
         details: {
           'Направление производства': taskName,
           'Марка стали / Сплав': alloyName,
+          'Толщина листа / проката': `${thickness} мм`,
           'Количество в партии': `${estimatedQuantity} шт.`,
           'Выбранные технологические операции': opLabels,
           'Снабжение металлопрокатом': rawMaterial === 'warehouse' ? 'Склад завода (металл в наличии)' : 'Давальческий металлопрокат заказчика',
@@ -411,34 +418,74 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
                 })}
               </div>
 
-              {/* Quantity in Pieces Slider */}
+              {/* Quantity in Pieces Selector with Number Input & Slider */}
               <div className="border border-neutral-200 p-4 mb-6 bg-neutral-50">
-                <div className="flex items-center justify-between text-xs font-mono text-black mb-2">
-                  <span className="uppercase tracking-wider font-semibold">Ориентировочная партия: {estimatedQuantity} шт.</span>
-                  <span className="text-neutral-500 font-mono text-[11px]">
-                    {estimatedQuantity === 1
-                      ? 'Единичный образец'
-                      : estimatedQuantity <= 10
-                      ? 'Мелкосерийная партия'
-                      : estimatedQuantity <= 100
-                      ? 'Серийная поставка'
-                      : 'Крупносерийное производство'}
-                  </span>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                  <div>
+                    <label className="text-xs font-mono uppercase tracking-wider font-semibold text-black block">
+                      Ориентировочная партия:
+                    </label>
+                    <div className="text-neutral-500 font-mono text-[11px] mt-0.5">
+                      {estimatedQuantity === 1
+                        ? 'Единичный образец'
+                        : estimatedQuantity <= 10
+                        ? 'Мелкосерийная партия'
+                        : estimatedQuantity <= 100
+                        ? 'Серийная поставка'
+                        : 'Крупносерийное производство'}
+                    </div>
+                  </div>
+
+                  {/* Manual exact number input */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono text-neutral-500">Точное кол-во:</span>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        min={1}
+                        max={10000}
+                        value={estimatedQuantity}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value, 10);
+                          setEstimatedQuantity(isNaN(val) || val < 1 ? 1 : val);
+                        }}
+                        className="w-24 px-2.5 py-1.5 bg-white border border-neutral-300 focus:border-black focus:outline-none text-right font-mono text-sm font-semibold text-neutral-900"
+                      />
+                      <span className="absolute right-7 pointer-events-none top-1/2 -translate-y-1/2 text-xs text-neutral-400 font-mono"></span>
+                    </div>
+                    <span className="text-xs font-mono font-medium text-neutral-700">шт.</span>
+                  </div>
                 </div>
+
                 <input
                   type="range"
                   min={1}
                   max={500}
                   step={1}
-                  value={estimatedQuantity}
+                  value={Math.min(estimatedQuantity, 500)}
                   onChange={(e) => setEstimatedQuantity(Number(e.target.value))}
                   className="w-full accent-black cursor-pointer h-1.5"
                 />
-                <div className="flex justify-between text-[10px] text-neutral-400 font-mono mt-1.5">
-                  <span>1 шт. (образец)</span>
-                  <span>25 шт.</span>
-                  <span>100 шт. (серия)</span>
-                  <span>500+ шт.</span>
+
+                <div className="flex flex-wrap items-center justify-between gap-2 text-[10px] text-neutral-500 font-mono mt-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-neutral-400">Быстрый выбор:</span>
+                    {[1, 10, 25, 50, 100, 250, 500].map((qty) => (
+                      <button
+                        key={qty}
+                        type="button"
+                        onClick={() => setEstimatedQuantity(qty)}
+                        className={`px-1.5 py-0.5 border text-[10px] font-mono transition-colors cursor-pointer ${
+                          estimatedQuantity === qty
+                            ? 'bg-black text-white border-black'
+                            : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400'
+                        }`}
+                      >
+                        {qty}
+                      </button>
+                    ))}
+                  </div>
+                  <span className="text-neutral-400">или введите любое число в поле</span>
                 </div>
               </div>
 

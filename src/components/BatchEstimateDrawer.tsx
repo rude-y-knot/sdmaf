@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useEstimate } from '../context/EstimateContext';
 import { ConsentCheckbox } from './ConsentCheckbox';
-import { sendLeadToBitrix24 } from '../services/bitrixService';
+import { sendLeadToBitrix24, buildBitrixLeadTitle } from '../services/bitrixService';
 
 interface BatchEstimateDrawerProps {
   onOpenPrivacy?: () => void;
@@ -72,10 +72,17 @@ export const BatchEstimateDrawer: React.FC<BatchEstimateDrawerProps> = ({
     setRequestNumber(orderNum);
 
     const positionsList = items.map(i => `${i.product.name} (${i.product.article}) × ${i.quantity} шт. [категория: ${i.product.categoryLabel}]`);
+    
+    const leadTitle = buildBitrixLeadTitle(
+      contactCompany,
+      `[Сводная смета ${orderNum}] ${items.length} наим.`,
+      totalCount
+    );
+
     try {
       const result = await sendLeadToBitrix24({
         sourceType: 'batch_estimate',
-        title: `[Сводная смета] ${totalCount} позиций (${orderNum})`,
+        title: leadTitle,
         name: contactName || 'Заказчик партии',
         phone: contactPhone,
         email: contactEmail,

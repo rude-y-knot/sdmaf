@@ -8,7 +8,7 @@ import {
   Database
 } from 'lucide-react';
 import { ConsentCheckbox } from './ConsentCheckbox';
-import { sendLeadToBitrix24 } from '../services/bitrixService';
+import { sendLeadToBitrix24, buildBitrixLeadTitle } from '../services/bitrixService';
 
 interface SiteMeasurerModalProps {
   isOpen: boolean;
@@ -81,10 +81,15 @@ export const SiteMeasurerModal: React.FC<SiteMeasurerModalProps> = ({
 
     setIsSubmitting(true);
 
+    const leadTitle = buildBitrixLeadTitle(
+      company,
+      `[Выезд замерщика] ${district} район (${objectType})`
+    );
+
     try {
       const result = await sendLeadToBitrix24({
         sourceType: 'site_measurer',
-        title: `[Выезд замерщика] ${district} район (${objectType})`,
+        title: leadTitle,
         name: name || 'Заказчик выезда',
         phone: phone,
         company: company,

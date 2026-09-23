@@ -22,7 +22,7 @@ import {
   Database
 } from 'lucide-react';
 import { ConsentCheckbox } from '../components/ConsentCheckbox';
-import { sendLeadToBitrix24 } from '../services/bitrixService';
+import { sendLeadToBitrix24, buildBitrixLeadTitle } from '../services/bitrixService';
 import { SEOHead } from '../components/SEOHead';
 
 interface ContactsPageProps {
@@ -75,10 +75,15 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
     if (!visitorPhone || !visitorConsent) return;
     setIsSubmittingVisit(true);
 
+    const leadTitle = buildBitrixLeadTitle(
+      visitorCompany,
+      `[Экскурсия / Аудит цехов] ${visitorPurpose || 'Посещение завода'}`
+    );
+
     try {
       const result = await sendLeadToBitrix24({
         sourceType: 'plant_excursion',
-        title: `[Экскурсия на завод / Аудит] ${visitorName || 'Посетитель'} (${visitorCompany || 'Организация'})`,
+        title: leadTitle,
         name: visitorName || 'Посетитель завода',
         phone: visitorPhone,
         company: visitorCompany,

@@ -557,7 +557,7 @@ export const ProductionPage: React.FC<ProductionPageProps> = ({
                 className="w-full py-4 px-6 bg-black text-white text-xs font-mono uppercase tracking-wider hover:bg-neutral-800 transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm"
               >
                 <Calculator className="w-4 h-4" />
-                <span>Загрузить чертеж в калькулятор</span>
+                <span>Рассчитать смету в калькуляторе</span>
               </button>
 
               <button
