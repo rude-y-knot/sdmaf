@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { ConsentCheckbox } from '../components/ConsentCheckbox';
 import { SEOHead } from '../components/SEOHead';
+import { sendLeadToBitrix24 } from '../services/bitrixService';
 
 interface CatalogPageProps {
   onBackToHome?: () => void;
@@ -701,10 +702,10 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
   const [executionType, setExecutionType] = useState('Готовое изделие «под ключ»');
   const [materialType, setMaterialType] = useState(currentSection.defaultMaterial);
   const [quantity, setQuantity] = useState('10');
+  const [urgency, setUrgency] = useState<'standard' | 'express'>('standard');
   const [clientName, setClientName] = useState('');
   const [clientPhone, setClientPhone] = useState('');
   const [clientComment, setClientComment] = useState('');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [consentAccepted, setConsentAccepted] = useState(false);
@@ -721,14 +722,35 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!consentAccepted) return;
+    if (!consentAccepted || !clientPhone.trim()) return;
     setIsSubmitting(true);
-    setTimeout(() => {
+    
+    try {
+      await sendLeadToBitrix24({
+        sourceType: 'maf_product_quote',
+        title: `[Запрос КП Каталог] ${currentSection.title} (${furnitureType}, ${quantity} шт.)`,
+        name: clientName || 'Заказчик из каталога',
+        phone: clientPhone,
+        department: 'Отдел продаж и комплектации МАФ',
+        pageSource: `Каталог МАФ / Раздел ${currentSection.title} (URL: /catalog/${activeSectionId})`,
+        details: {
+          'Раздел каталога': currentSection.title,
+          'Тип изделия / Категория': furnitureType,
+          'Формат поставки / Исполнение': executionType,
+          'Материал металлоконструкции': materialType,
+          'Ориентировочное количество': `${quantity} шт.`,
+          'Срочность выпуска': urgency === 'express' ? 'Экспресс: 2–3 раб. дня' : 'Стандарт: 10–15 раб. дней',
+          'Комментарий / Особые требования': clientComment || 'Не указаны',
+        }
+      });
+    } catch (err) {
+      console.warn('Bitrix send lead error:', err);
+    } finally {
       setIsSubmitting(false);
       setIsSubmitted(true);
-    }, 800);
+    }
   };
 
   const sectionKeys: ProductSectionId[] = ['slides', 'furniture', 'stainless', 'vats', 'bike', 'suvenirs'];
@@ -1172,30 +1194,19 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
                   </div>
                 </div>
 
-                {/* File Upload Box */}
+                {/* Urgency and Production Schedule */}
                 <div>
                   <label className="block text-xs font-mono uppercase tracking-wider text-neutral-700 mb-2">
-                    Прикрепить чертеж, эскиз или ТЗ (DWG, DXF, STEP, PDF, ZIP)
+                    Срочность выпуска
                   </label>
-                  <label className="border-2 border-dashed border-neutral-300 hover:border-neutral-500 p-5 flex flex-col items-center justify-center cursor-pointer transition-colors bg-neutral-50/50">
-                    <input
-                      type="file"
-                      accept=".dwg,.dxf,.step,.stp,.pdf,.zip,.rar,.png,.jpg,.jpeg"
-                      onChange={(e) => {
-                        if (e.target.files && e.target.files[0]) {
-                          setSelectedFile(e.target.files[0]);
-                        }
-                      }}
-                      className="hidden"
-                    />
-                    <UploadCloud className="w-6 h-6 text-neutral-400 mb-2" />
-                    <span className="text-xs text-neutral-700 font-medium">
-                      {selectedFile ? selectedFile.name : 'Нажмите для выбора файла или перетащите сюда'}
-                    </span>
-                    <span className="text-[11px] text-neutral-400 font-mono mt-1">
-                      Форматы DWG, DXF, STEP, PDF до 50 Мб
-                    </span>
-                  </label>
+                  <select
+                    value={urgency}
+                    onChange={(e) => setUrgency(e.target.value as any)}
+                    className="w-full px-3.5 py-2.5 border border-neutral-300 text-sm focus:border-black focus:outline-none bg-white text-neutral-900 font-medium"
+                  >
+                    <option value="standard">стандарт 10-15 раб.дней</option>
+                    <option value="express">Экспресс: 2-3 раб.дня</option>
+                  </select>
                 </div>
 
                 {/* Contact Fields */}

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { 
   X, 
   Trash2, 
@@ -6,13 +6,11 @@ import {
   Minus, 
   Calculator, 
   Send, 
-  UploadCloud, 
   Check, 
   ShieldCheck, 
   Building2, 
   ArrowRight,
   FileCheck2,
-  FileCode2,
   Phone,
   Mail,
   AlertCircle,
@@ -23,7 +21,6 @@ import {
 import { useEstimate } from '../context/EstimateContext';
 import { ConsentCheckbox } from './ConsentCheckbox';
 import { sendLeadToBitrix24 } from '../services/bitrixService';
-import { uploadFilesToServer } from '../services/uploadService';
 
 interface BatchEstimateDrawerProps {
   onOpenPrivacy?: () => void;
@@ -50,17 +47,14 @@ export const BatchEstimateDrawer: React.FC<BatchEstimateDrawerProps> = ({
   const [contactEmail, setContactEmail] = useState('');
   const [contactCompany, setContactCompany] = useState('');
   const [contactComment, setContactComment] = useState('');
+  const [urgency, setUrgency] = useState<'standard' | 'express'>('standard');
   const [consentChecked, setConsentChecked] = useState(true);
   const [includeDelivery, setIncludeDelivery] = useState(false);
   const [includeBim, setIncludeBim] = useState(true);
-  const [uploadedFiles, setUploadedFiles] = useState<Array<{ name: string; size: string; url?: string; fileName?: string }>>([]);
-  const [isUploadingFile, setIsUploadingFile] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [requestNumber, setRequestNumber] = useState('');
   const [createdLeadId, setCreatedLeadId] = useState<string | number | null>(null);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!isBatchDrawerOpen) return null;
 
@@ -68,25 +62,6 @@ export const BatchEstimateDrawer: React.FC<BatchEstimateDrawerProps> = ({
   const totalWeight = items.reduce((sum, item) => {
     return sum + (item.product.weight || 45) * item.quantity;
   }, 0);
-
-  const handleFileUpload = async (files: FileList | null) => {
-    if (!files || files.length === 0) return;
-    setIsUploadingFile(true);
-    try {
-      const serverFiles = await uploadFilesToServer(files);
-      const newItems = serverFiles.map((sf) => ({
-        name: sf.originalName || sf.name,
-        size: sf.size,
-        url: sf.url,
-        fileName: sf.fileName,
-      }));
-      setUploadedFiles((prev) => [...prev, ...newItems]);
-    } catch (err) {
-      console.warn('Error uploading project files to server:', err);
-    } finally {
-      setIsUploadingFile(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,7 +71,7 @@ export const BatchEstimateDrawer: React.FC<BatchEstimateDrawerProps> = ({
     const orderNum = `СД-СМЕТА-${Math.floor(1000 + Math.random() * 9000)}`;
     setRequestNumber(orderNum);
 
-    const positionsList = items.map(i => `${i.product.name} (${i.product.article}) × ${i.quantity} шт.`);
+    const positionsList = items.map(i => `${i.product.name} (${i.product.article}) × ${i.quantity} шт. [категория: ${i.product.categoryLabel}]`);
     try {
       const result = await sendLeadToBitrix24({
         sourceType: 'batch_estimate',
@@ -110,13 +85,13 @@ export const BatchEstimateDrawer: React.FC<BatchEstimateDrawerProps> = ({
         details: {
           'Номер сметы на сайте': orderNum,
           'Всего изделий': `${totalCount} шт.`,
-          'Расчетный вес металла': `~${totalWeight} кг`,
+          'Расчетный вес металлоконструкций': `~${totalWeight} кг`,
+          'Срочность выпуска': urgency === 'express' ? 'Экспресс: 2–3 раб. дня' : 'Стандарт: 10–15 раб. дней',
           'Позиции спецификации': positionsList,
-          'Доставка манипулятором': includeDelivery ? 'Требуется' : 'Самовывоз со склада в Колпино',
-          'Включить BIM (.rfa) и DWG': includeBim ? 'Да' : 'Нет',
-          'Пожелания заказчика': contactComment,
-        },
-        files: uploadedFiles
+          'Доставка манипулятором': includeDelivery ? 'Требуется доставка на объект заводом' : 'Самовывоз со склада в Колпино (СПб)',
+          'Включить BIM (.rfa) и DWG': includeBim ? 'Да, предоставить модели' : 'Нет',
+          'Пожелания заказчика': contactComment || 'Не указаны',
+        }
       });
 
       if (result.leadId) {
@@ -487,47 +462,19 @@ export const BatchEstimateDrawer: React.FC<BatchEstimateDrawerProps> = ({
                     />
                   </div>
 
-                  {/* File attachment */}
+                  {/* Urgency selection */}
                   <div>
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={(e) => handleFileUpload(e.target.files)}
-                      multiple
-                      className="hidden"
-                      accept=".dwg,.dxf,.pdf,.rvt,.step,.stp,.zip"
-                    />
-                    <button
-                      type="button"
-                      disabled={isUploadingFile}
-                      onClick={() => fileInputRef.current?.click()}
-                      className="w-full py-2 px-3 border border-dashed border-neutral-300 hover:border-neutral-400 bg-white text-neutral-600 text-[11px] font-mono flex items-center justify-center gap-2 cursor-pointer transition-colors disabled:opacity-60"
+                    <label className="text-[10px] font-mono uppercase tracking-wider text-neutral-600 block mb-1">
+                      Срочность выпуска:
+                    </label>
+                    <select
+                      value={urgency}
+                      onChange={(e) => setUrgency(e.target.value as any)}
+                      className="w-full px-3 py-2 bg-white border border-neutral-300 text-xs text-neutral-900 focus:outline-none focus:border-black font-sans"
                     >
-                      {isUploadingFile ? (
-                        <>
-                          <RefreshCw className="w-3.5 h-3.5 text-neutral-600 animate-spin" />
-                          <span>Сохранение на сервере завода...</span>
-                        </>
-                      ) : (
-                        <>
-                          <UploadCloud className="w-3.5 h-3.5 text-neutral-400" />
-                          <span>Прикрепить проект площадки (DWG, PDF, ZIP)</span>
-                        </>
-                      )}
-                    </button>
-                    {uploadedFiles.length > 0 && (
-                      <div className="mt-1 space-y-1">
-                        {uploadedFiles.map((f, i) => (
-                          <div key={i} className="text-[10px] font-mono text-neutral-600 flex items-center justify-between bg-neutral-100/70 p-1.5 border border-neutral-200">
-                            <div className="flex items-center gap-1.5 truncate max-w-[190px]">
-                              <FileCode2 className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
-                              <span className="truncate">{f.name}</span>
-                            </div>
-                            <span className="text-emerald-700 text-[9px] font-mono shrink-0 ml-1">✓ Сохранено</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                      <option value="standard">стандарт 10-15 раб.дней</option>
+                      <option value="express">Экспресс: 2-3 раб.дня</option>
+                    </select>
                   </div>
 
                   <ConsentCheckbox

@@ -603,7 +603,7 @@ export const Header: React.FC<HeaderProps> = ({
                         База знаний завода «Стальное Дело»
                       </h4>
                       <p className="text-xs text-neutral-500 font-light leading-relaxed mb-4">
-                        Официальные регламенты приемки металлопроката, порядок согласования чертежей КМД и оформление исполнительной документации КС-2/КС-3.
+                        Официальные регламенты приемки металлопроката, порядок согласования чертежей КМД, паспорта качества и сертификаты на материалы.
                       </p>
 
                       <div className="space-y-2 py-3 border-t border-b border-neutral-200 text-xs text-neutral-700">
@@ -613,11 +613,11 @@ export const Header: React.FC<HeaderProps> = ({
                         </div>
                         <div className="flex items-center gap-2">
                           <CheckCircle2 className="w-3.5 h-3.5 text-[#55AA53] shrink-0" />
-                          <span>Гарантия на антикоррозийное покрытие до 10 лет</span>
+                          <span>Гарантия 2 года (срок службы 10 лет)</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <CheckCircle2 className="w-3.5 h-3.5 text-[#55AA53] shrink-0" />
-                          <span>Полный комплект исполнительной документации и КС-2/КС-3</span>
+                          <span>Паспорта качества завода и сертификаты на материалы</span>
                         </div>
                       </div>
                     </div>

@@ -49,44 +49,53 @@ function formatLeadComments(payload: BitrixLeadPayload): string {
   
   const pageName = payload.pageSource || (typeof window !== 'undefined' ? `${document.title || 'Сайт завода'} (URL: ${window.location.pathname || '/'})` : 'Главная страница сайта');
 
-  lines.push(`=== ПЕРСОНАЛИЗИРОВАННАЯ ЗАЯВКА С САЙТА SDMAF.RU ===`);
-  lines.push(`📍 Страница отправки: ${pageName}`);
-  lines.push(`Категория формы: ${getFormSourceLabel(payload.sourceType)}`);
-  lines.push(`Дата и время: ${new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })} (МСК)`);
-  lines.push(`----------------------------------------`);
-
+  lines.push(`==============================================`);
+  lines.push(`📋 ДЕТАЛЬНАЯ ЗАЯВКА С САЙТА SDMAF.RU`);
+  lines.push(`==============================================`);
+  lines.push(`📌 Категория формы: ${getFormSourceLabel(payload.sourceType)}`);
+  lines.push(`🌐 Страница отправки: ${pageName}`);
+  lines.push(`⏰ Дата и время: ${new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' })} (МСК)`);
+  lines.push(`----------------------------------------------`);
+  lines.push(`👤 Контактное лицо: ${payload.name || 'Не указано'}`);
+  lines.push(`📞 Телефон: ${payload.phone}`);
+  if (payload.email) lines.push(`✉️ Email: ${payload.email}`);
   if (payload.company) lines.push(`🏢 Организация: ${payload.company}`);
   if (payload.inn) lines.push(`📑 ИНН: ${payload.inn}`);
   if (payload.department) lines.push(`🎯 Профильный отдел: ${payload.department}`);
-  lines.push(`💰 Расчет стоимости: Индивидуальный расчет менеджером (связаться с заказчиком, уточнить детали ТЗ и рассчитать КП)`);
+  lines.push(`----------------------------------------------`);
 
-  lines.push(`\n[ СПЕЦИФИЧЕСКИЕ ПАРАМЕТРЫ ЗАПРОСА ]`);
+  lines.push(`\n[ ПОДРОБНЫЕ ПАРАМЕТРЫ И УТОЧНЕНИЯ ИЗ ФОРМЫ ]`);
   
-  for (const [key, value] of Object.entries(payload.details)) {
-    if (value === undefined || value === null || value === '') continue;
-    
-    let formattedVal = String(value);
-    if (Array.isArray(value)) {
-      formattedVal = value.join(', ');
-    } else if (typeof value === 'boolean') {
-      formattedVal = value ? 'Да (Требуется)' : 'Нет';
-    }
+  if (payload.details && Object.keys(payload.details).length > 0) {
+    for (const [key, value] of Object.entries(payload.details)) {
+      if (value === undefined || value === null || value === '') continue;
+      
+      let formattedVal = String(value);
+      if (Array.isArray(value)) {
+        formattedVal = value.join(', ');
+      } else if (typeof value === 'boolean') {
+        formattedVal = value ? 'Да (Требуется)' : 'Нет';
+      }
 
-    lines.push(`• ${key}: ${formattedVal}`);
+      lines.push(`• ${key}: ${formattedVal}`);
+    }
+  } else {
+    lines.push(`• Параметры: Базовая заявка на обратный звонок и консультацию`);
   }
 
   if (payload.files && payload.files.length > 0) {
-    lines.push(`\n[ ПРИКРЕПЛЕННЫЕ ЧЕРТЕЖИ И ФАЙЛЫ НА СЕРВЕРЕ ]`);
+    lines.push(`\n[ ПРИКРЕПЛЕННЫЕ ДОКУМЕНТЫ ]`);
     payload.files.forEach((f, idx) => {
       lines.push(`${idx + 1}. 📄 ${f.name} ${f.size ? `(${f.size})` : ''}`);
       if (f.url) {
-        lines.push(`   👉 Ссылка на сервере завода: ${f.url}`);
+        lines.push(`   👉 Ссылка: ${f.url}`);
       }
     });
   }
 
-  lines.push(`\n[ ИСТОЧНИК И МАРКИРОВКА ]`);
-  lines.push(`Сайт: sdmaf.ru | Страница: ${pageName} | Форма: ${payload.sourceType} | UTM: crm_lead_auto`);
+  lines.push(`\n----------------------------------------------`);
+  lines.push(`💼 Статус расчета: Требуется связаться с заказчиком, уточнить детали ТЗ и направить официальное КП с НДС 22%.`);
+  lines.push(`==============================================`);
 
   return lines.join('\n');
 }
@@ -130,12 +139,11 @@ export async function sendLeadToBitrix24(payload: BitrixLeadPayload): Promise<Bi
       OPENED: 'Y',
       ASSIGNED_BY_ID: 43, // Default user ID from webhook
       CURRENCY_ID: 'RUB',
-      // Note: OPPORTUNITY is intentionally omitted so the lead lands in CRM without a fixed price;
-      // the assigned manager contacts the client, clarifies specifications, and calculates the exact quote.
       SOURCE_ID: 'WEB',
       SOURCE_DESCRIPTION: `Сайт sdmaf.ru [${pageName}]: ${getFormSourceLabel(payload.sourceType)}`,
       COMPANY_TITLE: payload.company || (payload.inn ? `ИНН ${payload.inn}` : ''),
       COMMENTS: comments,
+      DESCRIPTION: comments,
       PHONE: payload.phone ? [
         {
           VALUE: payload.phone,

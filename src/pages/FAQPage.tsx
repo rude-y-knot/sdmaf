@@ -236,7 +236,7 @@ export const FAQPage: React.FC<FAQPageProps> = ({
             <div className="p-4 bg-[#FAFAFA] border border-neutral-200">
               <div className="text-[10px] font-mono text-neutral-500 uppercase">Госзаказ и девелопмент</div>
               <div className="text-xl sm:text-2xl font-light text-neutral-900 mt-1">44 / 223-ФЗ</div>
-              <div className="text-[11px] text-neutral-500 mt-0.5">НДС 22%, акты КС-2/КС-3</div>
+              <div className="text-[11px] text-neutral-500 mt-0.5">НДС 22%, паспорта качества и сертификаты на материалы</div>
             </div>
           </div>
         </div>
@@ -254,7 +254,7 @@ export const FAQPage: React.FC<FAQPageProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Поиск по базе знаний (например: сроки, доставка, гарантия, AISI 304, КС-2, НАКС)..."
+                placeholder="Поиск по базе знаний (например: сроки, доставка, гарантия, AISI 304, паспорта качества, сертификаты)..."
                 className="w-full bg-[#FAFAFA] border border-neutral-200 text-xs sm:text-sm text-neutral-900 pl-10 pr-20 py-2.5 rounded-none focus:outline-none focus:border-black transition-colors"
               />
               {searchQuery && (

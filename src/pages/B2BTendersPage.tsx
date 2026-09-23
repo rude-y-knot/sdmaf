@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { 
   Building2, 
   ShieldCheck, 
@@ -20,14 +20,10 @@ import {
   ExternalLink,
   ChevronRight,
   RefreshCw,
-  Database,
-  UploadCloud,
-  FileCode2,
-  X
+  Database
 } from 'lucide-react';
 import { ConsentCheckbox } from '../components/ConsentCheckbox';
 import { sendLeadToBitrix24 } from '../services/bitrixService';
-import { uploadFilesToServer } from '../services/uploadService';
 import { SEOHead } from '../components/SEOHead';
 
 interface B2BTendersPageProps {
@@ -58,39 +54,17 @@ export const B2BTendersPage: React.FC<B2BTendersPageProps> = ({
   const [formEmail, setFormEmail] = useState('');
   const [formInn, setFormInn] = useState('');
   const [contractType, setContractType] = useState('44-ФЗ / 223-ФЗ (Госзакупки)');
+  const [urgency, setUrgency] = useState<'standard' | 'express'>('standard');
   const [needBankGuarantee, setNeedBankGuarantee] = useState(false);
   const [formTenderNumber, setFormTenderNumber] = useState('');
   const [formComment, setFormComment] = useState('');
   const [consentChecked, setConsentChecked] = useState(true);
-  const [uploadedFiles, setUploadedFiles] = useState<Array<{ name: string; size: string; url?: string; fileName?: string }>>([]);
-  const [isUploadingFile, setIsUploadingFile] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [createdLeadId, setCreatedLeadId] = useState<string | number | null>(null);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   // Active Audience Tab
   const [activeAudience, setActiveAudience] = useState<number>(0);
-
-  const handleFileUpload = async (files: FileList | null) => {
-    if (!files || files.length === 0) return;
-    setIsUploadingFile(true);
-    try {
-      const serverFiles = await uploadFilesToServer(files);
-      const newItems = serverFiles.map((sf) => ({
-        name: sf.originalName || sf.name,
-        size: sf.size,
-        url: sf.url,
-        fileName: sf.fileName,
-      }));
-      setUploadedFiles((prev) => [...prev, ...newItems]);
-    } catch (err) {
-      console.warn('Error uploading tender files:', err);
-    } finally {
-      setIsUploadingFile(false);
-    }
-  };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,13 +83,15 @@ export const B2BTendersPage: React.FC<B2BTendersPageProps> = ({
         pageSource: 'Страница: B2B и Тендерный отдел (44-ФЗ / 223-ФЗ / ГОЗ)',
         details: {
           'Тип контракта': contractType,
+          'Срочность выпуска': urgency === 'express' ? 'Экспресс: 2–3 раб. дня' : 'Стандарт: 10–15 раб. дней',
           'Банковская гарантия / Спецсчет': needBankGuarantee ? 'Требуется банковская гарантия исполнения контракта' : 'Не требуется',
           'Номер закупки / ЕИС / ТЗ': formTenderNumber || 'Прямой запрос на расчет сметы',
-          'Контактное лицо': formName,
-          'Организация / ИНН': formCompany,
-          'Комментарий к поставке': formComment,
-        },
-        files: uploadedFiles
+          'Контактное лицо': formName || 'Не указано',
+          'Организация / ИНН': formCompany || 'Не указано',
+          'Телефон': formPhone,
+          'Email': formEmail,
+          'Комментарий к поставке': formComment || 'Не указан',
+        }
       });
 
       if (result.leadId) {
@@ -137,15 +113,15 @@ export const B2BTendersPage: React.FC<B2BTendersPageProps> = ({
       desc: 'Прямые поставки от производителя с фиксированными сроками в графике строительства. Изготовление серийных и индивидуальных МАФ, крупноузловая заводская готовность, шеф-монтаж и сдача Госкомиссии.',
       features: [
         'Соответствие стандартам ПИК, Setl Group, ЛСР, ЦДС, GloraX',
-        'Полный пакет исполнительной документации: КС-2, КС-3, паспорта качества',
+        'Полный комплект исполнительной документации: паспорта качества и сертификаты на материалы',
         'Поэтапная отгрузка точно к графику сдачи очередей строительства',
-        'Гарантия на изделия до 10 лет с постгарантийным сервисом'
+        'Гарантия 2 года (срок службы 10 лет) с постгарантийным сервисом'
       ],
-      tags: ['ПИК-Стандарт', 'ЛСР', 'Setl Group', 'КС-2 / КС-3', 'Шеф-монтаж', 'График поставок'],
+      tags: ['ПИК-Стандарт', 'ЛСР', 'Setl Group', 'Паспорта качества', 'Сертификаты на металл', 'Шеф-монтаж'],
       stats: [
         { label: 'Сданных ЖК', val: '65+' },
-        { label: 'Срок службы', val: '25+ лет' },
-        { label: 'Гарантия', val: 'до 10 лет' }
+        { label: 'Срок службы', val: '10 лет' },
+        { label: 'Гарантия', val: '2 года' }
       ]
     },
     {
@@ -187,19 +163,19 @@ export const B2BTendersPage: React.FC<B2BTendersPageProps> = ({
     {
       id: 'industry',
       title: 'Промышленность и Строительство',
-      subtitle: 'Несущие строительные металлоконструкции и промышленная металлообработка',
-      desc: 'Серийный выпуск строительных металлоконструкций: колонны, балки, фермы, площадки обслуживания, эстакады, закладные детали, анкерные блоки, опоры освещения и трубопроводов.',
+      subtitle: 'Комплексное изготовление специфических элементов: приставные и переходные лестницы, поручни и другие элементы из нержавеющей стали',
+      desc: 'Специализированное производство технологических и архитектурных элементов для промышленных предприятий, производственных цехов, чистых зон и строительных объектов. Изготовление приставных, маршевых и вертикальных лестниц, технологических площадок, поручней, ограждений, водоотводных систем и нестандартных узлов из нержавеющей стали AISI 304 / AISI 316. Компания не занимается металлоконструкциями из чёрной стали.',
       features: [
-        'Аттестованные сварщики НАКС (национальное агентство контроля сварки)',
-        'Ультразвуковой (УЗК) и магнитно-порошковый контроль швов собственной лабораторией',
-        'Антикоррозийная защита: горячее цинкование по ГОСТ 9.307-89 до 120 мкм',
-        'Комплектация паспортами качества на металлопрокат и сертификатами на сварочные материалы'
+        'Приставные, маршевые и переходные лестницы из нержавеющей стали с защитными ограждениями',
+        'Технологические площадки обслуживания оборудования, трапы и переходные мостики',
+        'Поручни, перила, отбойники и защитные барьеры из полированной и сатинированной нержавеющей стали',
+        'Аттестованная аргонодуговая сварка (TIG), пассивация сварных швов и электрохимическая полировка'
       ],
-      tags: ['СП 16.13330', 'НАКС', 'УЗК контроль', 'Горячий цинк 120 мкм', 'ГОСТ 23118-2019', 'Опоры'],
+      tags: ['Нержавеющая сталь', 'AISI 304 / 316', 'Приставные лестницы', 'Переходные лестницы', 'Поручни и перила', 'Площадки', 'Без чёрной стали', 'TIG / Пассивация'],
       stats: [
-        { label: 'Мощность', val: '350 т/мес' },
-        { label: 'Точность реза', val: '0,5 мм' },
-        { label: 'Аттестация', val: 'НАКС / ОТК' }
+        { label: 'Показатели эффективности', val: '50 т/мес' },
+        { label: 'Точность лазерного раскроя', val: '0,1 мм' },
+        { label: 'Сплавы', val: 'AISI 304 / 316' }
       ]
     }
   ];
@@ -227,8 +203,8 @@ export const B2BTendersPage: React.FC<B2BTendersPageProps> = ({
       a: 'Да, завод «Стальное Дело» имеет открытые лицевые счета в Управлении Федерального казначейства и банках для работы с государственным оборонным заказом (ГОЗ) и контрактами по 44-ФЗ и 223-ФЗ.'
     },
     {
-      q: 'Предоставляете ли вы акты КС-2 и справки КС-3?',
-      a: 'Да, по запросу генподрядчика или заказчика при проведении шеф-монтажных или монтажных работ мы оформляем полный комплект исполнительной документации: КС-2, КС-3, акты скрытых работ и паспорта качества.'
+      q: 'Предоставляются ли паспорта качества и сертификаты на материалы?',
+      a: 'Да, на каждую партию отгружаемой продукции завод «Стальное Дело» предоставляет официальные паспорта качества завода-изготовителя и заверенные сертификаты соответствия на используемый металлопрокат и материалы.'
     },
     {
       q: 'Каковы стандартные сроки подготовки коммерческого предложения по ТЗ?',
@@ -240,7 +216,7 @@ export const B2BTendersPage: React.FC<B2BTendersPageProps> = ({
     },
     {
       q: 'Какие условия гарантии на изделия и антикоррозийные покрытия?',
-      a: 'На несущие стальные конструкции предоставляется гарантия до 10 лет. На порошково-полимерное покрытие по цинковому грунту — 5 лет. На горячее цинкование — до 25 лет без признаков сквозной коррозии.'
+      a: 'На несущие стальные конструкции предоставляется официальная гарантия завода 2 года при расчетном сроке службы изделий 10 лет. На порошково-полимерное покрытие и горячее цинкование предоставляется полный комплект паспортов качества.'
     }
   ];
 
@@ -290,7 +266,7 @@ export const B2BTendersPage: React.FC<B2BTendersPageProps> = ({
               B2B-Партнерство и Тендерные Поставки
             </h1>
             <p className="text-base sm:text-lg text-neutral-500 font-light leading-relaxed max-w-3xl mb-8">
-              Прямое производство малых архитектурных форм и строительных металлоконструкций в Санкт-Петербурге. Поставки для девелоперов, генподрядчиков и муниципальных заказчиков по 44-ФЗ и 223-ФЗ.
+              Прямое производство малых архитектурных форм и специфических элементов из нержавеющей стали в Санкт-Петербурге. Поставки для девелоперов, генподрядчиков и муниципальных заказчиков по 44-ФЗ и 223-ФЗ.
             </p>
 
             <div className="flex flex-wrap items-center gap-3 font-mono text-xs">
@@ -349,10 +325,10 @@ export const B2BTendersPage: React.FC<B2BTendersPageProps> = ({
             </div>
             <div className="bg-white p-5">
               <div className="font-mono text-2xl sm:text-3xl font-light text-neutral-900 mb-1">
-                до 10 лет
+                2 года
               </div>
               <div className="text-xs text-neutral-500 font-light">
-                Официальная гарантия завода на металлоконструкции
+                Официальная гарантия завода (срок службы 10 лет)
               </div>
             </div>
           </div>
@@ -372,7 +348,7 @@ export const B2BTendersPage: React.FC<B2BTendersPageProps> = ({
               </h2>
             </div>
             <p className="text-xs text-neutral-500 max-w-md font-light leading-relaxed">
-              Выстроенные регламенты взаимодействия: от проектирования КМД до шеф-монтажа и подписания форм КС-2 / КС-3.
+              Выстроенные регламенты взаимодействия: от проектирования КМД до шеф-монтажа, передачи паспортов качества и сертификатов на материалы.
             </p>
           </div>
 
@@ -929,57 +905,19 @@ export const B2BTendersPage: React.FC<B2BTendersPageProps> = ({
                     />
                   </div>
 
-                  {/* File attachment for tender documents / CAD drawings */}
+                  {/* Urgency select */}
                   <div>
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={(e) => handleFileUpload(e.target.files)}
-                      multiple
-                      className="hidden"
-                      accept=".dwg,.dxf,.step,.stp,.pdf,.zip,.rar,.xlsx,.xls"
-                    />
-                    <button
-                      type="button"
-                      disabled={isUploadingFile}
-                      onClick={() => fileInputRef.current?.click()}
-                      className="w-full py-2.5 px-3.5 border border-dashed border-neutral-700 hover:border-neutral-500 bg-neutral-900/80 text-neutral-300 text-xs font-mono flex items-center justify-center gap-2 cursor-pointer transition-colors disabled:opacity-60"
+                    <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-400 mb-1.5">
+                      Срочность выпуска
+                    </label>
+                    <select
+                      value={urgency}
+                      onChange={(e) => setUrgency(e.target.value as any)}
+                      className="w-full px-3.5 py-2.5 bg-neutral-900 border border-neutral-700 text-xs text-white focus:outline-none focus:border-white transition-colors"
                     >
-                      {isUploadingFile ? (
-                        <>
-                          <RefreshCw className="w-3.5 h-3.5 text-neutral-300 animate-spin" />
-                          <span>Сохранение документации на сервере завода...</span>
-                        </>
-                      ) : (
-                        <>
-                          <UploadCloud className="w-4 h-4 text-neutral-400" />
-                          <span>Прикрепить ТЗ, смету или чертежи (DWG, STEP, PDF, ZIP)</span>
-                        </>
-                      )}
-                    </button>
-                    {uploadedFiles.length > 0 && (
-                      <div className="mt-2 space-y-1.5">
-                        {uploadedFiles.map((f, i) => (
-                          <div key={i} className="text-xs font-mono text-neutral-300 flex items-center justify-between bg-neutral-900 border border-neutral-800 p-2">
-                            <div className="flex items-center gap-2 truncate max-w-[240px]">
-                              <FileCode2 className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-                              <span className="truncate">{f.name}</span>
-                              <span className="text-[10px] text-neutral-500">({f.size})</span>
-                            </div>
-                            <div className="flex items-center gap-2 shrink-0">
-                              <span className="text-emerald-400 text-[10px] font-mono">✓ Сохранено</span>
-                              <button
-                                type="button"
-                                onClick={() => setUploadedFiles((prev) => prev.filter((_, idx) => idx !== i))}
-                                className="text-neutral-500 hover:text-white p-0.5"
-                              >
-                                <X className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                      <option value="standard">стандарт 10-15 раб.дней</option>
+                      <option value="express">Экспресс: 2-3 раб.дня</option>
+                    </select>
                   </div>
 
                   <ConsentCheckbox

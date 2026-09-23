@@ -1,29 +1,22 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   Calculator, 
-  UploadCloud, 
-  FileCode2, 
-  FileCheck, 
   Check, 
   Clock, 
-  UserCheck, 
   Send, 
-  Phone, 
-  AlertCircle, 
   CheckCircle2, 
   ArrowRight, 
   Layers, 
   Sparkles, 
   X,
   RefreshCw,
-  Database,
-  Link,
-  ExternalLink
+  ShieldCheck,
+  Building2,
+  FileCheck
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import { ConsentCheckbox } from './ConsentCheckbox';
 import { sendLeadToBitrix24 } from '../services/bitrixService';
-import { uploadFilesToServer, UploadedServerFile } from '../services/uploadService';
 
 interface SmartQuoteCalculatorProps {
   isOpenModal?: boolean;
@@ -45,12 +38,6 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
   const [thickness, setThickness] = useState<number>(4);
   const [selectedOps, setSelectedOps] = useState<string[]>(['cutting', 'bending', 'powder_painting']);
   const [estimatedQuantity, setEstimatedQuantity] = useState<number>(20); // шт
-  
-  // File upload state
-  const [uploadedFiles, setUploadedFiles] = useState<Array<{ name: string; size: string; type: string; url?: string; fileName?: string }>>([]);
-  const [isUploadingFile, setIsUploadingFile] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Form submission & personalized fields
   const [contactName, setContactName] = useState('');
@@ -70,30 +57,6 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
     setSelectedOps((prev) =>
       prev.includes(opId) ? prev.filter((id) => id !== opId) : [...prev, opId]
     );
-  };
-
-  const handleFileUpload = async (files: FileList | null) => {
-    if (!files || files.length === 0) return;
-    setIsUploadingFile(true);
-
-    try {
-      // Upload files directly to our server storage
-      const serverFiles: UploadedServerFile[] = await uploadFilesToServer(files);
-      
-      const newItems = serverFiles.map((sf) => ({
-        name: sf.originalName || sf.name,
-        size: sf.size,
-        type: sf.name.split('.').pop()?.toUpperCase() || 'CAD',
-        url: sf.url,
-        fileName: sf.fileName,
-      }));
-
-      setUploadedFiles((prev) => [...prev, ...newItems]);
-    } catch (err) {
-      console.warn('Failed to upload file to server:', err);
-    } finally {
-      setIsUploadingFile(false);
-    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -122,16 +85,15 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
         department: 'Конструкторско-технологическое бюро',
         pageSource: isOpenModal ? 'Модальное окно калькулятора' : 'Главная страница / Инженерный калькулятор',
         details: {
-          'Тип задачи': taskName,
-          'Сплав / Марка': alloyName,
-          'Тираж': `${estimatedQuantity} шт.`,
-          'Выбранные операции': opLabels,
-          'Снабжение металлом': rawMaterial === 'warehouse' ? 'Склад завода (наш металл)' : 'Давальческий металлопрокат заказчика',
-          'Срочность изготовления': urgency === 'express' ? 'СРОЧНО (24–48 часов, экспресс-запуск)' : 'Стандартные сроки (3–5 рабочих дней)',
-          'Цвет полимеризации RAL': customRal || 'По согласованию с КБ',
-          'Комментарий заказчика': contactComment,
-        },
-        files: uploadedFiles
+          'Направление производства': taskName,
+          'Марка стали / Сплав': alloyName,
+          'Количество в партии': `${estimatedQuantity} шт.`,
+          'Выбранные технологические операции': opLabels,
+          'Снабжение металлопрокатом': rawMaterial === 'warehouse' ? 'Склад завода (металл в наличии)' : 'Давальческий металлопрокат заказчика',
+          'Срочность выпуска': urgency === 'express' ? 'Экспресс: 2–3 раб. дня' : 'Стандарт: 10–15 раб. дней',
+          'Порошковая окраска / RAL': customRal || 'По согласованию с КБ',
+          'Особые требования / Примечания заказчика': contactComment || 'Не указаны',
+        }
       });
 
       if (result.leadId) {
@@ -200,7 +162,7 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
           Расчет стоимости производства
         </h2>
         <p className="text-xs sm:text-sm text-neutral-500 mt-2 max-w-xl font-normal">
-          Расчет и аудит чертежей DWG, DXF, STEP, PDF конструкторским бюро завода.
+          Экспресс-расчет параметров партии и подготовка официального КП конструкторским бюро завода.
         </p>
       </div>
 
@@ -216,10 +178,10 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
           </div>
 
           <h3 className="text-2xl font-light text-neutral-900 mb-2">
-            Чертежи переданы инженеру-технологу
+            Заявка передана инженеру-технологу
           </h3>
           <p className="text-xs sm:text-sm text-neutral-500 max-w-md mx-auto mb-8 font-normal">
-            Инженерная служба выполняет раскладку карт раскроя Nesting и расчет нормо-часов по стандартам ГОСТ.
+            Инженерная служба выполняет расчет раскроя и технологических нормо-часов с учетом выбранной срочности.
           </p>
 
           {/* Assigned Engineer Card */}
@@ -235,7 +197,7 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
                 Алексей Смирнов
               </div>
               <div className="text-xs text-neutral-500 font-mono">
-                Лазерный раскрой, гибка, чертежи КМ / КМД
+                Лазерный раскрой, ЧПУ гибка, КМ / КМД
               </div>
             </div>
           </div>
@@ -258,7 +220,7 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
               В работе у инженера
             </div>
             <div className="text-[10px] font-mono text-neutral-400 mt-2">
-              Расчет сметы поступит на номер {contactPhone}
+              Расчет сметы с НДС 22% поступит на номер {contactPhone}
             </div>
           </div>
 
@@ -267,7 +229,6 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
               onClick={() => {
                 setIsSubmitted(false);
                 setCurrentStep(1);
-                setUploadedFiles([]);
               }}
               className="px-6 py-3 text-[11px] font-mono uppercase tracking-[0.15em] border border-neutral-300 text-neutral-800 hover:border-black transition-colors"
             >
@@ -292,7 +253,7 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
               { num: 1, label: '01. Задача' },
               { num: 2, label: '02. Металл' },
               { num: 3, label: '03. Операции' },
-              { num: 4, label: '04. Чертежи КД' },
+              { num: 4, label: '04. Спецификация' },
             ].map((step) => (
               <button
                 key={step.num}
@@ -492,133 +453,64 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
                   onClick={() => setCurrentStep(4)}
                   className="px-8 py-3.5 bg-black text-white text-[11px] font-mono uppercase tracking-[0.2em] hover:bg-neutral-800 transition-colors flex items-center gap-2 cursor-pointer"
                 >
-                  <span>Далее: Загрузка чертежей КД</span>
+                  <span>Далее: Параметры и контакты</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </motion.div>
           )}
 
-          {/* STEP 4: Drag & Drop зона для чертежей КД + Контактные данные для направления сметы */}
+          {/* STEP 4: Спецификация параметров и Контактные данные */}
           {currentStep === 4 && (
             <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, x: 0 }}>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-6">
-                {/* File Upload Zone */}
+                {/* Summary & Guarantees card */}
                 <div className="space-y-4">
                   <div className="text-xs font-mono uppercase tracking-widest text-neutral-400">
-                    Шаг 4 из 4 — Документация и чертежи
+                    Шаг 4 из 4 — Спецификация заявки
                   </div>
 
-                  <div
-                    onDragOver={(e) => {
-                      e.preventDefault();
-                      setIsDragging(true);
-                    }}
-                    onDragLeave={() => setIsDragging(false)}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      setIsDragging(false);
-                      handleFileUpload(e.dataTransfer.files);
-                    }}
-                    onClick={() => fileInputRef.current?.click()}
-                    className={`border border-dashed p-8 text-center cursor-pointer transition-colors relative ${
-                      isDragging
-                        ? 'border-black bg-neutral-100'
-                        : 'border-neutral-300 hover:border-black bg-neutral-50'
-                    }`}
-                  >
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      multiple
-                      accept=".dwg,.dxf,.step,.stp,.pdf,.zip,.rar"
-                      className="hidden"
-                      onChange={(e) => handleFileUpload(e.target.files)}
-                    />
-                    {isUploadingFile ? (
-                      <div className="py-2">
-                        <RefreshCw className="w-8 h-8 text-black animate-spin mx-auto mb-3" />
-                        <div className="text-xs font-mono uppercase tracking-wider text-black">
-                          Сохранение чертежа на сервере завода...
-                        </div>
-                        <div className="text-[11px] text-neutral-500 mt-1 font-mono">
-                          Генерация прямой защищенной ссылки для CRM
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <UploadCloud className="w-8 h-8 text-neutral-600 mx-auto mb-3" />
-                        <div className="text-xs font-mono uppercase tracking-wider text-black">
-                          Загрузите чертежи или архив проекта
-                        </div>
-                        <div className="text-[11px] text-neutral-500 mt-1 font-mono">
-                          DWG / DXF / STEP / PDF до 100 МБ • Сохраняется на сервере завода
-                        </div>
-                      </>
-                    )}
-                  </div>
-
-                  {/* List of uploaded files */}
-                  {uploadedFiles.length > 0 && (
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-neutral-500">
-                        <span>Прикрепленные чертежи ({uploadedFiles.length}):</span>
-                        <span className="text-emerald-700 flex items-center gap-1">
-                          <CheckCircle2 className="w-3 h-3" />
-                          Сохранено на сервере
-                        </span>
-                      </div>
-                      {uploadedFiles.map((f, i) => (
-                        <div key={i} className="flex items-center justify-between p-3 border border-neutral-200 bg-white text-xs">
-                          <div className="flex items-center gap-2 overflow-hidden flex-1 min-w-0">
-                            <FileCode2 className="w-4 h-4 text-neutral-600 shrink-0" />
-                            <span className="font-mono text-neutral-900 truncate">{f.name}</span>
-                            <span className="text-[10px] text-neutral-400 font-mono shrink-0">({f.size})</span>
-                          </div>
-                          <div className="flex items-center gap-2 shrink-0 ml-2">
-                            {f.url && (
-                              <a
-                                href={f.url}
-                                target="_blank"
-                                rel="noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="text-neutral-500 hover:text-black text-[11px] font-mono flex items-center gap-1 bg-neutral-100 hover:bg-neutral-200 px-2 py-0.5"
-                                title="Открыть/скачать файл с нашего сервера"
-                              >
-                                <Link className="w-3 h-3" />
-                                <span>Ссылка</span>
-                              </a>
-                            )}
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setUploadedFiles((prev) => prev.filter((_, idx) => idx !== i));
-                              }}
-                              className="text-neutral-400 hover:text-black p-1 cursor-pointer"
-                              title="Удалить"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
+                  <div className="border border-neutral-200 bg-neutral-50 p-5 space-y-3">
+                    <div className="text-[10px] font-mono uppercase tracking-wider text-neutral-500 font-semibold border-b border-neutral-200 pb-2">
+                      Параметры комплектации:
                     </div>
-                  )}
+                    <div className="space-y-2 text-xs font-mono">
+                      <div className="flex justify-between items-start">
+                        <span className="text-neutral-500">Направление:</span>
+                        <span className="font-semibold text-neutral-900 text-right">{tasks.find(t => t.id === taskType)?.title}</span>
+                      </div>
+                      <div className="flex justify-between items-start">
+                        <span className="text-neutral-500">Марка стали:</span>
+                        <span className="font-semibold text-neutral-900 text-right">{alloys.find(a => a.id === alloyType)?.title}</span>
+                      </div>
+                      <div className="flex justify-between items-start">
+                        <span className="text-neutral-500">Тираж:</span>
+                        <span className="font-semibold text-neutral-900">{estimatedQuantity} шт.</span>
+                      </div>
+                      <div className="flex justify-between items-start">
+                        <span className="text-neutral-500">Операции:</span>
+                        <span className="font-semibold text-neutral-900 text-right">{selectedOps.length} поз.</span>
+                      </div>
+                    </div>
+                  </div>
 
                   {/* Service Guarantees Card */}
-                  <div className="border border-neutral-200 bg-white p-4 text-[11px] font-mono space-y-2 text-neutral-700">
+                  <div className="border border-neutral-200 bg-white p-4 text-[11px] font-mono space-y-2.5 text-neutral-700">
                     <div className="flex items-center gap-2">
-                      <Check className="w-3 h-3 text-black" />
-                      <span>Контроль геометрии инженерами КБ</span>
+                      <Check className="w-3.5 h-3.5 text-black shrink-0" />
+                      <span>Аудит и адаптация чертежей конструкторским бюро завода</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Check className="w-3 h-3 text-black" />
-                      <span>Бесплатная оптимизация раскроя Nesting</span>
+                      <Check className="w-3.5 h-3.5 text-black shrink-0" />
+                      <span>Бесплатная оптимизация карт раскроя Nesting</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Check className="w-3 h-3 text-black" />
-                      <span>Контроль ОТК и паспорт качества изделия</span>
+                      <Check className="w-3.5 h-3.5 text-black shrink-0" />
+                      <span>Контроль ОТК и паспорт качества изделия (ГОСТ)</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Check className="w-3.5 h-3.5 text-black shrink-0" />
+                      <span>Безналичный расчет с НДС 22%, 44-ФЗ и 223-ФЗ</span>
                     </div>
                   </div>
                 </div>
@@ -685,9 +577,9 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
                       </div>
                     </div>
 
-                    {/* Production parameters specific to Laser & Bending */}
+                    {/* Production parameters: Raw material & Urgency */}
                     <div className="p-3 bg-neutral-50 border border-neutral-200 space-y-3">
-                      <div className="text-[10px] font-mono uppercase tracking-widest text-neutral-500">
+                      <div className="text-[10px] font-mono uppercase tracking-widest text-neutral-500 font-semibold">
                         Параметры производственного цикла:
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
@@ -707,10 +599,10 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
                           <select
                             value={urgency}
                             onChange={(e) => setUrgency(e.target.value as any)}
-                            className="w-full p-2 bg-white border border-neutral-300 text-xs text-neutral-900 focus:outline-none focus:border-black"
+                            className="w-full p-2 bg-white border border-neutral-300 text-xs text-neutral-900 focus:outline-none focus:border-black font-semibold"
                           >
-                            <option value="standard">Стандарт (3–5 рабочих дней)</option>
-                            <option value="express">ЭКСПРЕСС (24–48ч, вне очереди)</option>
+                            <option value="standard">стандарт 10-15 раб.дней</option>
+                            <option value="express">Экспресс: 2-3 раб.дня</option>
                           </select>
                         </div>
                       </div>
@@ -746,7 +638,7 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
                       {isSubmitting ? (
                         <>
                           <RefreshCw className="w-4 h-4 animate-spin" />
-                          <span>Обработка чертежей...</span>
+                          <span>Расчет сметы...</span>
                         </>
                       ) : (
                         <>
@@ -781,12 +673,14 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs overflow-y-auto">
         <div className="relative w-full max-w-5xl my-8">
-          <button
-            onClick={onClose}
-            className="absolute -top-3 -right-3 z-50 p-2.5 bg-black text-white hover:bg-neutral-800 transition-colors border border-neutral-700 cursor-pointer"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="absolute -top-3 -right-3 z-50 p-2.5 bg-black text-white hover:bg-neutral-800 transition-colors border border-neutral-700 cursor-pointer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
           {content}
         </div>
       </div>
