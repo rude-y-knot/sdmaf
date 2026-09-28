@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft,
@@ -14,6 +14,8 @@ import {
   Send,
   Check,
   ChevronRight,
+  ChevronDown,
+  ChevronLeft,
   Award,
   Flame,
   Bike,
@@ -708,6 +710,21 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [consentAccepted, setConsentAccepted] = useState(false);
+  const [isMobileCategoryMenuOpen, setIsMobileCategoryMenuOpen] = useState(false);
+  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const tabScrollContainerRef = useRef<HTMLDivElement | null>(null);
+
+  // Auto-scroll active category tab to center in mobile/desktop view
+  useEffect(() => {
+    const activeEl = tabRefs.current[activeSectionId];
+    if (activeEl && tabScrollContainerRef.current) {
+      activeEl.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center',
+        block: 'nearest'
+      });
+    }
+  }, [activeSectionId]);
 
   // Update form defaults when section changes
   useEffect(() => {
@@ -829,27 +846,95 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
       {/* 2. CATEGORY TABS BAR */}
       <div className="border-b border-neutral-200 bg-white sticky top-16 z-30 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 overflow-x-auto py-2.5 scrollbar-none no-scrollbar">
-            {sectionKeys.map((secKey, idx) => {
-              const sec = PRODUCT_SECTIONS[secKey];
-              const isActive = activeSectionId === secKey;
-              return (
-                <button
-                  key={secKey}
-                  onClick={() => handleSelectSection(secKey)}
-                  className={`px-4 py-2 text-xs font-mono uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer flex items-center gap-2 border ${
-                    isActive
-                      ? 'bg-black text-white border-black font-semibold'
-                      : 'bg-neutral-50 text-neutral-600 border-neutral-200 hover:border-neutral-400 hover:text-black hover:bg-neutral-100'
-                  }`}
-                >
-                  <span className={`text-[10px] ${isActive ? 'text-neutral-300' : 'text-neutral-400'}`}>
-                    0{idx + 1}
-                  </span>
-                  <span>{sec.navLabel}</span>
-                </button>
-              );
-            })}
+          {/* Mobile Category Quick Switcher Header (Compact Bar with Dropdown Toggle) */}
+          <div className="sm:hidden py-2 border-b border-neutral-100 flex items-center justify-between gap-2">
+            <button
+              onClick={() => setIsMobileCategoryMenuOpen(!isMobileCategoryMenuOpen)}
+              className="w-full flex items-center justify-between px-3 py-2 bg-neutral-900 text-white text-xs font-mono border border-neutral-800 transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2 truncate">
+                <span className="text-[10px] text-emerald-400 font-bold">
+                  0{sectionKeys.indexOf(activeSectionId) + 1}
+                </span>
+                <span className="font-semibold truncate uppercase tracking-wider">{currentSection.navLabel}</span>
+              </div>
+              <div className="flex items-center gap-1.5 shrink-0 text-neutral-400 text-[10px]">
+                <span>Все 6 разделов</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isMobileCategoryMenuOpen ? 'rotate-180 text-white' : ''}`} />
+              </div>
+            </button>
+          </div>
+
+          {/* Mobile Dropdown Menu Drawer */}
+          {isMobileCategoryMenuOpen && (
+            <div className="sm:hidden border-b border-neutral-200 bg-neutral-50 p-2.5 animate-in slide-in-from-top-2 duration-150 space-y-1.5 shadow-lg">
+              <div className="text-[10px] font-mono uppercase text-neutral-400 px-2 py-1">
+                Выберите раздел каталога:
+              </div>
+              <div className="grid grid-cols-1 gap-1">
+                {sectionKeys.map((secKey, idx) => {
+                  const sec = PRODUCT_SECTIONS[secKey];
+                  const isActive = activeSectionId === secKey;
+                  return (
+                    <button
+                      key={secKey}
+                      onClick={() => {
+                        handleSelectSection(secKey);
+                        setIsMobileCategoryMenuOpen(false);
+                      }}
+                      className={`w-full text-left px-3 py-2.5 text-xs font-mono flex items-center justify-between border transition-all cursor-pointer ${
+                        isActive
+                          ? 'bg-black text-white border-black font-semibold'
+                          : 'bg-white text-neutral-800 border-neutral-200 hover:bg-neutral-100'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className={`text-[11px] font-mono ${isActive ? 'text-emerald-400 font-bold' : 'text-neutral-400'}`}>
+                          0{idx + 1}
+                        </span>
+                        <span className="uppercase tracking-wider">{sec.navLabel}</span>
+                      </div>
+                      {isActive && (
+                        <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Horizontal Scrollable Tabs Strip with auto-centering */}
+          <div className="relative py-2 sm:py-2.5">
+            <div
+              ref={tabScrollContainerRef}
+              className="flex items-center gap-2 overflow-x-auto scrollbar-none no-scrollbar overscroll-x-contain touch-pan-x snap-x snap-mandatory px-0.5"
+            >
+              {sectionKeys.map((secKey, idx) => {
+                const sec = PRODUCT_SECTIONS[secKey];
+                const isActive = activeSectionId === secKey;
+                return (
+                  <button
+                    key={secKey}
+                    ref={(el) => { tabRefs.current[secKey] = el; }}
+                    onClick={() => {
+                      handleSelectSection(secKey);
+                      setIsMobileCategoryMenuOpen(false);
+                    }}
+                    className={`shrink-0 snap-center px-3.5 py-2 text-xs font-mono uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer flex items-center gap-2 border ${
+                      isActive
+                        ? 'bg-black text-white border-black font-semibold shadow-xs'
+                        : 'bg-neutral-50 text-neutral-600 border-neutral-200 hover:border-neutral-400 hover:text-black hover:bg-neutral-100'
+                    }`}
+                  >
+                    <span className={`text-[10px] ${isActive ? 'text-emerald-400 font-bold' : 'text-neutral-400'}`}>
+                      0{idx + 1}
+                    </span>
+                    <span>{sec.navLabel}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
@@ -874,6 +959,48 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
                 <p className="mt-4 text-base sm:text-lg text-neutral-600 leading-relaxed font-normal">
                   {currentSection.lead}
                 </p>
+              </div>
+
+              {/* MOBILE ONLY: Image Showcase & Blueprint Spec directly under header */}
+              <div className="block lg:hidden space-y-6">
+                {/* IMAGE CONTAINER */}
+                <div className="border border-neutral-200 bg-white p-2 sm:p-3 shadow-xs">
+                  <div className="overflow-hidden bg-neutral-100 w-full border border-neutral-100">
+                    <img
+                      src={currentSection.image}
+                      alt={currentSection.alt}
+                      className="w-full h-auto object-cover select-none pointer-events-none block"
+                      loading="eager"
+                    />
+                  </div>
+
+                  {/* Image caption and quick metadata */}
+                  <div className="pt-3 px-1 space-y-2">
+                    <div className="flex items-center justify-between text-[11px] font-mono text-neutral-500 border-b border-neutral-100 pb-2">
+                      <span>{currentSection.imageCaption}</span>
+                    </div>
+                    <p className="text-xs text-neutral-700 font-normal leading-relaxed">
+                      {currentSection.imageSubtext}
+                    </p>
+                  </div>
+                </div>
+
+                {/* HIGHLIGHT BOX: CUSTOM BLUEPRINT SPEC */}
+                <div className="border border-neutral-200 bg-neutral-50 p-5 space-y-3 font-mono text-xs">
+                  <div className="flex items-center gap-2 text-neutral-900 font-semibold uppercase tracking-wider text-[11px]">
+                    <Compass className="w-4 h-4 text-neutral-900" />
+                    <span>Работаем по вашим чертежам</span>
+                  </div>
+                  <p className="text-neutral-600 font-sans text-xs leading-relaxed">
+                    Принимаем чертежи и 3D-модели в форматах <strong>DWG, DXF, STEP, STP, PDF, CDR</strong>. Штатное Конструкторское бюро адаптирует эскизы и модели под технологические возможности ЧПУ-оборудования с сохранением авторской концепции.
+                  </p>
+                  <div className="pt-2 border-t border-neutral-200 grid grid-cols-2 gap-2 text-[11px] text-neutral-700">
+                    <div>• Срок КП: <strong>от 2 часов</strong></div>
+                    <div>• Партии: <strong>от 1 шт до серий</strong></div>
+                    <div>• НДС 22% / УСН</div>
+                    <div>• 44-ФЗ / 223-ФЗ</div>
+                  </div>
+                </div>
               </div>
 
               {/* CORE NOMENCLATURE LIST */}
@@ -1030,8 +1157,8 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
               </div>
             </div>
 
-            {/* RIGHT COLUMN: Image Showcase, Full-width static container */}
-            <div className="lg:col-span-5 lg:sticky lg:top-24 space-y-6">
+            {/* RIGHT COLUMN: Desktop Only Image Showcase & Callouts (Sticky) */}
+            <div className="hidden lg:block lg:col-span-5 lg:sticky lg:top-24 space-y-6">
               {/* IMAGE CONTAINER */}
               <div className="border border-neutral-200 bg-white p-2 sm:p-3 shadow-xs">
                 <div className="overflow-hidden bg-neutral-100 w-full border border-neutral-100">

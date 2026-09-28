@@ -27,6 +27,7 @@ import { FloatingEstimateBubble } from './components/FloatingEstimateBubble';
 import { BatchEstimateDrawer } from './components/BatchEstimateDrawer';
 import { BitrixWebhookGuideModal } from './components/BitrixWebhookGuideModal';
 import { SitemapModal } from './components/SitemapModal';
+import { ScrollToTopButton } from './components/ScrollToTopButton';
 import { SEOHead } from './components/SEOHead';
 
 type PageType = 'home' | 'catalog' | 'production' | 'unit-detail' | 'b2b' | 'contacts' | 'faq' | 'requisites' | 'privacy' | 'offer';
@@ -662,6 +663,9 @@ export default function App() {
             navigate(`/${page}`);
           }}
         />
+
+        {/* Floating Scroll To Top Button */}
+        <ScrollToTopButton />
 
         {/* 152-ФЗ Cookie Consent Banner */}
         <CookieConsentBanner 
