@@ -47,7 +47,7 @@ export const FAQPage: React.FC<FAQPageProps> = ({
 }) => {
   const [activeCategory, setActiveCategory] = useState<'all' | 'timeline' | 'delivery' | 'warranty' | 'engineering' | 'payment'>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [openItems, setOpenItems] = useState<string[]>(['timeline-standard', 'delivery-geo', 'warranty-periods']);
+  const [openItems, setOpenItems] = useState<string[]>(['timeline-standard']);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   // Quick Question Form

@@ -26,6 +26,7 @@ import { ProductQuoteModal } from './components/ProductQuoteModal';
 import { FloatingEstimateBubble } from './components/FloatingEstimateBubble';
 import { BatchEstimateDrawer } from './components/BatchEstimateDrawer';
 import { BitrixWebhookGuideModal } from './components/BitrixWebhookGuideModal';
+import { SitemapModal } from './components/SitemapModal';
 import { SEOHead } from './components/SEOHead';
 
 type PageType = 'home' | 'catalog' | 'production' | 'unit-detail' | 'b2b' | 'contacts' | 'faq' | 'requisites' | 'privacy' | 'offer';
@@ -84,6 +85,7 @@ export default function App() {
   const [isCalculatorModalOpen, setIsCalculatorModalOpen] = useState(false);
   const [isMeasurerModalOpen, setIsMeasurerModalOpen] = useState(false);
   const [isBitrixGuideOpen, setIsBitrixGuideOpen] = useState(false);
+  const [isSitemapModalOpen, setIsSitemapModalOpen] = useState(false);
   const [legalModalType, setLegalModalType] = useState<'privacy' | 'offer' | 'requisites' | null>(null);
 
   // Compute active page type for Header active states
@@ -607,6 +609,17 @@ export default function App() {
           onOpenPrivacyModal={handleOpenPrivacy}
           onOpenOfferModal={handleOpenOffer}
           onOpenBitrixGuide={() => setIsBitrixGuideOpen(true)}
+          onOpenSitemapModal={() => setIsSitemapModalOpen(true)}
+        />
+
+        {/* Dynamic Sitemap.xml Generator & Route Explorer Modal */}
+        <SitemapModal
+          isOpen={isSitemapModalOpen}
+          onClose={() => setIsSitemapModalOpen(false)}
+          onNavigateRoute={(path) => {
+            setIsSitemapModalOpen(false);
+            navigate(path);
+          }}
         />
 
         {/* Bitrix24 CRM Webhook & Personalization Guide Modal */}

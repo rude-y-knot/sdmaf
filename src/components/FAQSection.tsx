@@ -191,7 +191,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({
 }) => {
   const [activeCategory, setActiveCategory] = useState<'all' | 'timeline' | 'delivery' | 'warranty' | 'engineering' | 'payment'>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [openItems, setOpenItems] = useState<string[]>(['timeline-standard', 'delivery-geo', 'warranty-periods']);
+  const [openItems, setOpenItems] = useState<string[]>(['timeline-standard']);
 
   const categories: FAQCategoryTab[] = [
     { id: 'all', label: 'Все вопросы', count: FAQ_DATA.length, icon: HelpCircle },

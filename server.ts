@@ -4,6 +4,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import multer from "multer";
 import { createServer as createViteServer } from "vite";
+import { generateSitemapXml } from "./src/utils/sitemapGenerator";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -62,6 +63,71 @@ app.use("/uploads", express.static(uploadsDir, {
 // API Routes
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+// Dynamic XML Sitemap for Search Engines (Google, Yandex, Bing)
+app.get("/sitemap.xml", (req, res) => {
+  try {
+    const host = req.get("host") || `localhost:${PORT}`;
+    const protocol = req.headers["x-forwarded-proto"] || req.protocol || "http";
+    const baseUrl = `${protocol}://${host}`;
+    const isProductionCustomDomain = host.includes("sdmaf.ru");
+    const domain = isProductionCustomDomain ? "https://sdmaf.ru" : baseUrl;
+
+    const xml = generateSitemapXml(domain);
+    res.setHeader("Content-Type", "application/xml; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    res.send(xml);
+  } catch (error: any) {
+    console.error("Sitemap generation error:", error);
+    res.status(500).send("Error generating sitemap");
+  }
+});
+
+// Dynamic robots.txt
+app.get("/robots.txt", (req, res) => {
+  const host = req.get("host") || `localhost:${PORT}`;
+  const protocol = req.headers["x-forwarded-proto"] || req.protocol || "http";
+  const baseUrl = `${protocol}://${host}`;
+  const isProductionCustomDomain = host.includes("sdmaf.ru");
+  const domain = isProductionCustomDomain ? "https://sdmaf.ru" : baseUrl;
+
+  const robots = `# Robots.txt for Завод металлоконструкций и МАФ «Стальное Дело»
+User-agent: *
+Allow: /
+Disallow: /api/
+
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+
+User-agent: Googlebot-Image
+Allow: /
+Allow: /images/
+Allow: /assets/
+
+User-agent: Yandex
+Allow: /
+Disallow: /api/
+Clean-param: ref /
+Clean-param: source /
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term /
+
+User-agent: YandexImages
+Allow: /
+Allow: /images/
+Allow: /assets/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+
+Host: ${domain}
+Sitemap: ${domain}/sitemap.xml
+`;
+
+  res.setHeader("Content-Type", "text/plain; charset=utf-8");
+  res.send(robots);
 });
 
 // File upload endpoint: accepts multiple or single files (field 'files' or 'file')
