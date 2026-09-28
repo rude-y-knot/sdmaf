@@ -284,29 +284,34 @@ export const FAQPage: React.FC<FAQPageProps> = ({
             </div>
           </div>
 
-          {/* Category Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 mt-4 no-scrollbar border-t border-neutral-100 pt-3">
-            {categories.map((cat) => {
-              const Icon = cat.icon;
-              const isActive = activeCategory === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  onClick={() => setActiveCategory(cat.id)}
-                  className={`flex items-center gap-2 px-3.5 py-2 text-xs font-mono uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
-                    isActive
-                      ? 'bg-black text-white border border-black font-medium'
-                      : 'bg-[#FAFAFA] text-neutral-600 border border-neutral-200 hover:border-neutral-400 hover:text-black'
-                  }`}
-                >
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-neutral-500'}`} />
-                  <span>{cat.label}</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 ${isActive ? 'bg-neutral-800 text-neutral-200' : 'bg-neutral-200 text-neutral-700'}`}>
-                    {cat.count}
-                  </span>
-                </button>
-              );
-            })}
+          {/* Category Filter Chips: Multi-row wrapping list without horizontal scroll */}
+          <div className="mt-4 pt-3.5 border-t border-neutral-100">
+            <div className="text-[11px] font-mono uppercase tracking-wider text-neutral-400 mb-2">
+              Категории вопросов:
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {categories.map((cat) => {
+                const Icon = cat.icon;
+                const isActive = activeCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setActiveCategory(cat.id)}
+                    className={`flex items-center gap-2 px-3.5 py-2 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-black text-white border border-black font-medium shadow-xs'
+                        : 'bg-[#FAFAFA] text-neutral-700 border border-neutral-200 hover:border-neutral-400 hover:text-black hover:bg-white'
+                    }`}
+                  >
+                    <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-white' : 'text-neutral-500'}`} />
+                    <span>{cat.label}</span>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-mono ${isActive ? 'bg-neutral-800 text-neutral-200' : 'bg-neutral-200 text-neutral-700'}`}>
+                      {cat.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
