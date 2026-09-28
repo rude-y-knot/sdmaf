@@ -118,14 +118,27 @@ export const SiteMeasurerModal: React.FC<SiteMeasurerModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-white border border-neutral-200 p-6 sm:p-10 my-8">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-neutral-400 hover:text-black transition-colors cursor-pointer"
+    <div 
+      className="fixed inset-0 z-50 overflow-y-auto overscroll-contain bg-black/80 backdrop-blur-xs p-2 sm:p-4 md:p-6"
+      style={{ WebkitOverflowScrolling: 'touch' }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div className="min-h-full flex items-start sm:items-center justify-center py-4 sm:py-8">
+        <div 
+          className="relative w-full max-w-lg bg-white border border-neutral-200 p-5 sm:p-8 md:p-10 shadow-2xl my-auto"
+          onClick={(e) => e.stopPropagation()}
         >
-          <X className="w-5 h-5" />
-        </button>
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 sm:top-5 sm:right-5 z-20 p-2 text-neutral-500 hover:text-black bg-neutral-100 hover:bg-neutral-200 border border-neutral-200 transition-colors cursor-pointer"
+            aria-label="Закрыть"
+          >
+            <X className="w-5 h-5" />
+          </button>
 
         {isSubmitted ? (
           <div className="text-center py-6">
@@ -321,6 +334,7 @@ export const SiteMeasurerModal: React.FC<SiteMeasurerModalProps> = ({
             </form>
           </div>
         )}
+        </div>
       </div>
     </div>
   );

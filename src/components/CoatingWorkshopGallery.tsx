@@ -51,9 +51,9 @@ export const CoatingWorkshopGallery: React.FC<CoatingWorkshopGalleryProps> = ({
       desc: 'Оборудование Gema Switzerland обеспечивает контролируемое нанесение порошка в труднодоступные углы, радиусы и внутренние полости деталей (преодоление эффекта клетки Фарадея) с равномерной толщиной полимерного слоя 80–120 мкм.',
     },
     {
-      title: 'Палитра RAL Classic, Муар, Шагрень и суперстойкие полиэфиры',
-      country: 'Порошки AkzoNobel, Pulver, Neokem',
-      desc: 'Окраска в 215+ оттенков каталога RAL с выбором фактуры: гладкий глянец/мат, антивандальный текстурированный муар и шагрень. Высокая стойкость к ультрафиолету, истиранию и перепадам температур от -60°C до +70°C.',
+      title: 'Палитры RAL Classic, Design, Effect и NCS (4 500+ цветов)',
+      country: 'Международные цветовые стандарты',
+      desc: 'Колеровка и покраска по каталогам RAL Classic (215+ цветов), RAL Design System (1825 архитектурных оттенков), RAL Effect (490 цветов) и NCS (2050 тонов) с выбором фактур: гладкий глянец/мат, антивандальный муар и защитная шагрень.',
     },
   ];
 
@@ -202,8 +202,8 @@ export const CoatingWorkshopGallery: React.FC<CoatingWorkshopGalleryProps> = ({
                 Термокамера №2 (Газовая крупногабаритная, 6000 × 1800 × 2100 мм)
               </div>
               <p className="text-xs sm:text-sm text-neutral-600 leading-normal">
-                Предназначена для крупногабаритных пространственных конструкций, длинномерного алюминиевого и стального профиля (до 6 метров), 
-                сварных ферм, ворот, пергол, ограждений и тяжелых уличных опор с загрузкой каретки до 3.5 тонн.
+                Предназначена для крупногабаритных пространственных конструкций, длинномерного оцинкованного и нержавеющего профиля (до 6 метров), 
+                сварных ферм, ворот, пергол, ограждений и уличных опор с загрузкой каретки до 3.5 тонн.
               </p>
             </div>
           </div>
@@ -345,21 +345,25 @@ export const CoatingWorkshopGallery: React.FC<CoatingWorkshopGalleryProps> = ({
         <div className="border border-neutral-200 bg-white p-6 shadow-xs">
           <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-neutral-500 mb-3">
             <Sparkles className="w-4 h-4 text-neutral-700" />
-            <span>Палитра и фактуры</span>
+            <span>Палитры и каталоги цветов</span>
           </div>
-          <h5 className="text-lg font-medium text-neutral-900 mb-3">Каталог 215+ цветов RAL</h5>
+          <h5 className="text-lg font-medium text-neutral-900 mb-3">4 500+ оттенков (RAL & NCS)</h5>
           <ul className="space-y-2 text-xs text-neutral-600 font-light">
             <li className="flex items-start gap-2">
               <Check className="w-3.5 h-3.5 text-neutral-900 shrink-0 mt-0.5" />
-              <span><strong>Архитектурный муар:</strong> матовая шероховатая текстура, устойчивая к отпечаткам и истиранию.</span>
+              <span><strong>RAL Classic:</strong> классическая шкала 215+ базовых оттенков (глянец, матовый, муар, шагрень).</span>
             </li>
             <li className="flex items-start gap-2">
               <Check className="w-3.5 h-3.5 text-neutral-900 shrink-0 mt-0.5" />
-              <span><strong>Шагрень:</strong> выразительный рельеф апельсиновой корки, скрывающий дефекты металлопроката.</span>
+              <span><strong>RAL Design:</strong> 1 825 оттенков с систематическим расположением тонов для архитекторов и дизайнеров.</span>
             </li>
             <li className="flex items-start gap-2">
               <Check className="w-3.5 h-3.5 text-neutral-900 shrink-0 mt-0.5" />
-              <span><strong>Глянец и мат:</strong> гладкие поверхности со степенью блеска от 10% до 90%.</span>
+              <span><strong>RAL Effect:</strong> 420 матовых тонов и 70 металликов для выразительных фасадных и интерьерных решений.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <Check className="w-3.5 h-3.5 text-neutral-900 shrink-0 mt-0.5" />
+              <span><strong>NCS (Natural Colour System):</strong> 2 050 стандартизированных тонов природной цветовой системы.</span>
             </li>
           </ul>
         </div>
@@ -381,7 +385,7 @@ export const CoatingWorkshopGallery: React.FC<CoatingWorkshopGalleryProps> = ({
             </li>
             <li className="flex items-start gap-2">
               <Check className="w-3.5 h-3.5 text-neutral-900 shrink-0 mt-0.5" />
-              <span><strong>Обрабатываемые металлы:</strong> нержавеющая сталь, алюминиевые сплавы, оцинкованный прокат.</span>
+              <span><strong>Обрабатываемые металлы:</strong> аустенитная и ферритная нержавеющая сталь, оцинкованный прокат.</span>
             </li>
           </ul>
         </div>

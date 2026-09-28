@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Check, 
   ShieldCheck, 
@@ -16,8 +16,16 @@ import {
   Layers,
   Wrench,
   Cpu,
-  BadgeCheck
+  BadgeCheck,
+  Filter,
+  Activity,
+  Layers3
 } from 'lucide-react';
+import { 
+  WELDING_FLEET_DATA, 
+  WELDING_FLEET_CATEGORIES, 
+  WeldingEquipmentItem 
+} from '../data/weldingFleetData';
 
 interface WeldingWorkshopGalleryProps {
   onOpenCalculator?: (service?: string) => void;
@@ -28,6 +36,8 @@ export const WeldingWorkshopGallery: React.FC<WeldingWorkshopGalleryProps> = ({
   onOpenCalculator,
   className = ''
 }) => {
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
   const masterSkills = [
     {
       title: 'Аттестация НАКС и высшие разряды (5–6 разряд)',
@@ -39,7 +49,7 @@ export const WeldingWorkshopGallery: React.FC<WeldingWorkshopGalleryProps> = ({
     },
     {
       title: 'Ювелирная культура шва и отсутствие поводок',
-      desc: 'Идеальная мелкочешуйчатая структура, стабильный катет без наплывов, пор и шлаковых включений. Прецизионное дозирование тепловложения при лазерной и импульсной сварке исключает коробление и термические поводки тонколистового металла (скаты горок, декоративные панели).',
+      desc: 'Идеальная мелкочешуйчатая структура, стабильный катет без наплывов, пор и шлаковых включений. Прецизионное дозирование тепловложения при лазерной и контактной сварке исключает коробление и термические поводки тонколистового металла.',
     },
     {
       title: '100% контроль качества ОТК и дефектоскопия',
@@ -50,155 +60,97 @@ export const WeldingWorkshopGallery: React.FC<WeldingWorkshopGalleryProps> = ({
       desc: 'Сварные соединения нержавеющей стали AISI 304 / AISI 316L проходят травление и электрохимическую пассивацию для полного восстановления антикоррозийного оксидного слоя. Зачистка и полировка до Mirror 8K или Scotch-Brite обеспечивают 100% травмобезопасность и эстетику.',
     },
     {
-      title: 'Сварка разнородных сталей и цветных сплавов',
-      desc: 'Уверенная работа с широким спектром металлов: пищевая и кислотостойкая нержавеющая сталь (AISI 304, AISI 316), конструкционная углеродистая сталь Ст3сп5, северная хладостойкая сталь 09Г2С, алюминиево-магниевые сплавы (АМг5, АД31).',
+      title: 'Сварка аустенитных и ферритных нержавеющих сталей',
+      desc: 'Уверенная работа со всем спектром нержавеющих и легированных сталей: аустенитные AISI 304, AISI 316, AISI 321, AISI 310, ферритные AISI 439 / AISI 430, а также качественный оцинкованный металлопрокат с полным сохранением антикоррозийных свойств.',
     },
   ];
 
-  const equipmentList = [
+  const featuredEquipment = [
     {
-      id: 'longitudinal-laser',
-      name: 'Продольная лазерная сварка',
-      badge: 'ЧПУ / Непрерывный шов',
-      country: 'Автоматизированный комплекс',
-      desc: 'Специализированная установка для прецизионной прямолинейной продольной сварки обечаек, цилиндрических корпусов, труб, тоннелей детских горок и листовых карт без перекосов и стыковочных ступеней.',
+      id: 'longitudinal-laser-featured',
+      name: 'Автоматическая продольная лазерная сварка ЧПУ (2 поста)',
+      badge: 'ЧПУ / Длина до 1500 мм / 2–3 кВт',
+      country: 'Автоматизированные комплексы ЧПУ',
+      desc: 'Автоматизированные станки с ЧПУ для скоростной прямолинейной лазерной сварки продольных швов обечаек длиной до 1 500 мм с автоматическим слежением за стыком.',
       advantages: [
-        'Идеально прямолинейный герметичный шов высокой плотности',
-        'Узкая зона термического влияния (HAZ) — металл не «ведет»',
-        'Глубокое проплавление корня шва с формированием ровного обратного валика',
-        'Скорость сварки в 3–4 раза выше классической аргонодуговой технологии',
+        'Идеально прямолинейный герметичный шов высокой плотности с автослежением за стыком',
+        'Узкая зона термического влияния (HAZ) — металл сохраняет идеальную плоскостность',
+        'Специализация по сталям AISI 304, AISI 316, AISI 321, AISI 439, AISI 310 и оцинковке',
+        'Формирование аккуратного внутреннего обратного валика без окалины и цветов побежалости',
       ],
       specs: [
-        { label: 'Длина свариваемого шва', val: 'до 3 000 мм' },
-        { label: 'Диаметр свариваемых обечаек', val: 'от Ø160 мм' },
-        { label: 'Диапазон толщин (нержавейка)', val: 'от 0.8 до 4.0 мм' },
-        { label: 'Скорость линейной сварки', val: 'до 2.5–4.0 м/мин' },
+        { label: 'Длина шва', val: 'до 1 500 мм' },
+        { label: 'Мощность лазера', val: '2 000 – 3 000 Вт' },
+        { label: 'Толщина (нерж/цинк)', val: 'от 0.5 до 5.0 мм' },
+        { label: 'Слежение за стыком', val: 'Автоматическое ЧПУ' },
       ],
     },
     {
-      id: 'maihong-bwt20',
-      name: 'Майхонг лазер BWT20',
-      badge: 'Волоконный лазер 2 кВт',
+      id: 'maihong-featured',
+      name: 'Волоконные лазерные комплексы Maihong (BWT20 & SUP23T)',
+      badge: 'Ручной лазер 2 кВт / Wobble',
       country: 'Maihong Laser Technology',
-      desc: 'Промышленный ручной комплекс волоконной лазерной сварки с излучателем высокой плотности энергии BWT20. Предназначен для прецизионного соединения тонколистовых металлов, пространственных конструкций и изделий сложной конфигурации.',
+      desc: 'Высокоскоростная лазерная сварка видовых лицевых швов металлоконструкций и изделий благоустройства без зачистки и окалины.',
       advantages: [
-        'Высокая концентрация лазерной энергии — минимальное тепловложение',
-        'Отсутствие термических поводок на полированных и шлифованных листах',
-        'Автоматический механизм подачи присадочной проволоки (0.8–1.6 мм)',
-        'Зеркальная чистота шва без окалины, пор и необходимости грубой зачистки',
+        'Wobble-качание луча до 5 мм для перекрытия зазоров в угловых стыках',
+        'Минимальное тепловложение — отсутствие поводок на тонком листе',
+        'Автоматический прецизионный механизм подачи присадочной проволоки',
+        'Ювелирный шов без пор, брызг и цветов побежалости',
       ],
       specs: [
-        { label: 'Мощность лазерного источника', val: '2 000 Вт (BWT)' },
-        { label: 'Свариваемые материалы', val: 'AISI 304, AISI 316, Ст3, АМг' },
-        { label: 'Диапазон толщин металла', val: '0.5 – 5.0 мм' },
-        { label: 'Система охлаждения', val: 'Двухконтурный фреоновый чиллер' },
+        { label: 'Мощность лазера', val: '2 000 Вт (BWT)' },
+        { label: 'Толщина металла', val: '0.5 – 6.0 мм' },
+        { label: 'Оптическая головка', val: 'SUP23T / FWH30' },
+        { label: 'Газ', val: 'Аргон / Азот' },
       ],
     },
     {
-      id: 'maihong-sup23t',
-      name: 'Майхонг лазер SUP23T',
-      badge: 'Wobble-качание луча',
-      country: 'Maihong / Головка SUP23T',
-      desc: 'Прецизионный аппарат лазерной сварки с интеллектуальной поворотной оптической головкой SUP23T. Реализует технологию качания луча (wobble welding) для надежного перекрытия зазоров в угловых, тавровых и нахлесточных соединениях.',
+      id: 'spot-welding-featured',
+      name: 'Участок контактной точечной сварки (TELWIN, TECNA, CEA)',
+      badge: '9 постов / до 40 кВт',
+      country: 'Италия (TECNA, CEA, Telwin)',
+      desc: 'Высокопроизводительный участок контактной сварки для листовых металлоконструкций, корпусов, кожухов и фасадных панелей.',
       advantages: [
-        'Многорежимное качание луча (круг, эллипс, треугольник, линия) шириной до 5 мм',
-        'Качественное перекрытие технологических зазоров до 1.5–2 мм',
-        'Формирование гладкого монолитного шва повышенной механической прочности',
-        'Сенсорный микропроцессорный контроллер с библиотекой технологических режимов',
+        'Высокая производительность и повторяемость геометрических параметров',
+        'Микропроцессорные блоки контроля времени сжатия, проковки и тока',
+        'Отсутствие расхода защитных газов и присадочных материалов',
+        'Сохранение структуры и антикоррозийных свойств оцинкованного металла',
       ],
       specs: [
-        { label: 'Оптическая головка', val: 'SUP23T с качанием луча' },
-        { label: 'Ширина колебания луча (Wobble)', val: '0.5 – 5.0 мм' },
-        { label: 'Материалы', val: 'Нержавеющая сталь, оцинковка, медь' },
-        { label: 'Контроль параметров', val: 'Цифровая ЧПУ-панель' },
+        { label: 'Парк постов', val: '9 станков (до 40 кВт)' },
+        { label: 'Управление', val: 'TE-101 / TE-90 / WS-402' },
+        { label: 'Толщина пакета', val: 'до 4.0 + 4.0 мм' },
+        { label: 'Охлаждение', val: 'Проточное водяное' },
       ],
     },
     {
-      id: 'kedr-mig',
-      name: 'Сварочный полуавтомат Кедр',
-      badge: 'Тяжелый MIG/MAG',
-      country: 'Кедр Промышленный инвертор',
-      desc: 'Мощный трехфазный инверторный полуавтомат промышленного класса для ответственной силовой сварки несущих каркасов, закладных элементов, тяжелых опорных узлов и пространственных ферм из углеродистых и низколегированных сталей.',
+      id: 'semiauto-featured',
+      name: 'Промышленные полуавтоматы Fronius Pulse и Кедр MIG/MAG',
+      badge: 'MIG/MAG / Pulse Synergic',
+      country: 'Австрия / Россия',
+      desc: 'Силовая сварка тяжелых несущих каркасов, закладных опор и герметичных банных чанов под постоянные статические и динамические нагрузки.',
       advantages: [
-        'Уверенный глубокий провар толстостенного металлопроката до 25–30 мм',
-        'Стабильное горение дуги при интенсивных многосменных нагрузках (ПВ 100%)',
-        'Четырехроликовый прецизионный привод подачи сплошной и порошковой проволоки',
-        'Сварка в защитной среде углекислого газа и газовых смесей (Ar+CO2)',
+        'Безбрызговая сварка аустенитной и ферритной нержавеющей стали Pulse Synergic',
+        'Глубокий гарантированный провар толстостенных сталей до 30 мм',
+        'Синергетические технологические программы под каждый тип сплава',
+        '100% аттестация по нормам НАКС (группы СК и КО)',
       ],
       specs: [
-        { label: 'Сварочный ток (макс)', val: 'до 500 А' },
-        { label: 'Диаметр сварочной проволоки', val: '0.8 – 1.6 мм' },
-        { label: 'Толщина свариваемой стали', val: 'от 1.5 до 30 мм' },
-        { label: 'Режимы сварки', val: 'MIG/MAG, MMA, 2T/4T' },
-      ],
-    },
-    {
-      id: 'fronius-mig',
-      name: 'Сварочный полуавтомат Фрониус (Fronius)',
-      badge: 'Австрия / Pulse Synergic',
-      country: 'Fronius International (Австрия)',
-      desc: 'Премиальная цифровая сварочная система мирового уровня с импульсной дугой Pulse Synergic. Обеспечивает капельный перенос металла без брызг и безупречное формирование швов на ответственных узлах из нержавеющей стали и алюминия.',
-      advantages: [
-        'Абсолютно чистое соединение без брызг — исключено налипание капель на деталь',
-        'Интеллектуальные синергетические программы под каждый сплав и диаметр',
-        'Превосходный контроль тепловложения при сварке тонких и средних толщин',
-        'Соответствие высшим европейским стандартам надежности и чистоты шва',
-      ],
-      specs: [
-        { label: 'Производитель', val: 'Fronius (Австрия)' },
-        { label: 'Технология переноса металла', val: 'Pulse Synergic (импульсная дуга)' },
-        { label: 'Свариваемые металлы', val: 'AISI 304/316, АМг, оцинкованная сталь' },
-        { label: 'Управление дугой', val: 'Цифровой сигнальный микропроцессор' },
+        { label: 'Сварочный ток', val: 'до 500 А (ПВ 100%)' },
+        { label: 'Толщина сталей', val: 'от 1.0 до 30.0 мм' },
+        { label: 'Проволока', val: '0.8 – 1.6 мм' },
+        { label: 'Защитный газ', val: 'Ar, Ar+CO2 (K-18)' },
       ],
     },
   ];
 
-  const comparisonTable = [
-    {
-      equipment: 'Продольная лазерная сварка',
-      process: 'Автоматическая лазерная сварка',
-      materials: 'AISI 304 / 316, сталь Ст3, оцинковка',
-      thickness: '0.8 – 4.0 мм',
-      gas: 'Азот высокой чистоты / Аргон',
-      application: 'Обечайки, трубы, тоннели и желоба горок до 3 м'
-    },
-    {
-      equipment: 'Майхонг лазер BWT20',
-      process: 'Ручная волоконная лазерная сварка',
-      materials: 'Нержавеющая сталь, алюминий, углеродистая сталь',
-      thickness: '0.5 – 5.0 мм',
-      gas: 'Аргон 99.998% / Азот',
-      application: 'Видовые швы МАФ, парковая мебель, кронштейны, корпуса'
-    },
-    {
-      equipment: 'Майхонг лазер SUP23T',
-      process: 'Wobble-сварка с качанием луча',
-      materials: 'AISI 304 / 316, алюминиевые сплавы АМг',
-      thickness: '0.5 – 6.0 мм',
-      gas: 'Аргон высокой чистоты',
-      application: 'Угловые и тавровые стыки с зазором, объемные узлы'
-    },
-    {
-      equipment: 'Полуавтомат Кедр',
-      process: 'MIG/MAG механизированная сварка',
-      materials: 'Конструкционная сталь Ст3сп5, сталь 09Г2С',
-      thickness: '1.5 – 30.0 мм',
-      gas: 'Смесь K-18 (82% Ar + 18% CO2), CO2',
-      application: 'Силовые каркасы, несущие фермы, тяжелые металлоконструкции'
-    },
-    {
-      equipment: 'Полуавтомат Фрониус (Fronius)',
-      process: 'Импульсная цифровая сварка Pulse',
-      materials: 'AISI 304, AISI 316L, алюминий АМг5/АД31',
-      thickness: '1.0 – 16.0 мм',
-      gas: 'Аргон высокой чистоты / Смеси Ar+CO2',
-      application: 'Банные чаны, спа-купели, ответственные емкости, фасадные узлы'
-    }
-  ];
+  const filteredFleet = selectedCategory === 'all' 
+    ? WELDING_FLEET_DATA 
+    : WELDING_FLEET_DATA.filter(item => item.category === selectedCategory);
 
   return (
     <div className={`space-y-16 ${className}`}>
-      {/* SECTION INTRO / HEADER (No photo at the top as requested) */}
+      {/* SECTION INTRO / HEADER */}
       <div className="border border-neutral-200 bg-white p-6 sm:p-10 lg:p-12">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-8 border-b border-neutral-200">
           <div className="space-y-3 max-w-3xl">
@@ -207,7 +159,7 @@ export const WeldingWorkshopGallery: React.FC<WeldingWorkshopGalleryProps> = ({
                 [ 04 / СВАРОЧНЫЙ УЧАСТОК ]
               </span>
               <span>•</span>
-              <span>5 СПЕЦИАЛИЗИРОВАННЫХ КОМПЛЕКСОВ</span>
+              <span>18 ЕДИНИЦ ОБОРУДОВАНИЯ В ПАРКЕ</span>
               <span>•</span>
               <span>ЦЕХ САНКТ-ПЕТЕРБУРГ / КОЛПИНО</span>
             </div>
@@ -215,7 +167,7 @@ export const WeldingWorkshopGallery: React.FC<WeldingWorkshopGalleryProps> = ({
               Сварочный участок и прецизионная сборка
             </h2>
             <p className="text-xs sm:text-sm text-neutral-600 font-light leading-relaxed">
-              Оснащение участка объединяет высокотехнологичную продольную и ручную лазерную сварку Maihong (BWT20, SUP23T) с признанными промышленными полуавтоматами Кедр и австрийскими импульсными системами Fronius. Полный контроль геометрии, глубокий провар и чистый корень шва.
+              Парк сварочного участка объединяет 18 специализированных установок: от волоконных ручных и автоматических лазеров Maihong и ЧПУ-комплексов продольного шва до 9 постов контактной точечной сварки TECNA / CEA / TELWIN и австрийских импульсных систем Fronius Pulse.
             </p>
           </div>
 
@@ -233,23 +185,23 @@ export const WeldingWorkshopGallery: React.FC<WeldingWorkshopGalleryProps> = ({
           </div>
         </div>
 
-        {/* Metric Badges (clean, technical, no photos) */}
+        {/* Metric Badges */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 pt-8 font-mono">
+          <div className="border border-neutral-200 bg-neutral-50 p-4">
+            <div className="text-2xl font-light text-neutral-900">18 постов</div>
+            <div className="text-[10px] text-neutral-500 uppercase mt-1">Оснащение сварочного парка</div>
+          </div>
           <div className="border border-neutral-200 bg-neutral-50 p-4">
             <div className="text-2xl font-light text-neutral-900">5–6 разряд</div>
             <div className="text-[10px] text-neutral-500 uppercase mt-1">Аттестация сварщиков НАКС</div>
           </div>
           <div className="border border-neutral-200 bg-neutral-50 p-4">
-            <div className="text-2xl font-light text-neutral-900">от 10 лет</div>
-            <div className="text-[10px] text-neutral-500 uppercase mt-1">Стаж ведущих мастеров</div>
-          </div>
-          <div className="border border-neutral-200 bg-neutral-50 p-4">
-            <div className="text-2xl font-light text-neutral-900">0.5 – 30 мм</div>
+            <div className="text-2xl font-light text-neutral-900">0.15 – 30 мм</div>
             <div className="text-[10px] text-neutral-500 uppercase mt-1">Диапазон свариваемых толщин</div>
           </div>
           <div className="border border-neutral-200 bg-neutral-50 p-4">
-            <div className="text-2xl font-light text-neutral-900">0 мм</div>
-            <div className="text-[10px] text-neutral-500 uppercase mt-1">Поводки при лазерной сварке</div>
+            <div className="text-2xl font-light text-neutral-900">до 42 кВт</div>
+            <div className="text-[10px] text-neutral-500 uppercase mt-1">Мощность контактных и шовных машин</div>
           </div>
           <div className="border border-neutral-200 bg-neutral-50 p-4">
             <div className="text-2xl font-light text-neutral-900">100% ВИК</div>
@@ -310,7 +262,7 @@ export const WeldingWorkshopGallery: React.FC<WeldingWorkshopGalleryProps> = ({
           <div className="lg:col-span-7 overflow-hidden border border-neutral-200 bg-neutral-900 relative group">
             <img
               src="/images/weld.png"
-              alt="Сварочный участок завода — пост лазерной и полуавтоматической сварки"
+              alt="Сварочный участок завода — пост лазерной, точечной и полуавтоматической сварки"
               className="w-full h-auto max-h-[480px] object-cover group-hover:scale-102 transition-transform duration-500"
             />
             <div className="absolute bottom-3 left-3 bg-black/80 backdrop-blur-xs text-white text-[11px] font-mono px-3 py-1 border border-neutral-700">
@@ -346,29 +298,27 @@ export const WeldingWorkshopGallery: React.FC<WeldingWorkshopGalleryProps> = ({
         </div>
       </div>
 
-      {/* SECTION 2: ДЕТАЛЬНОЕ ОПИСАНИЕ ОБОРУДОВАНИЯ (5 позиций) */}
+      {/* SECTION 2: ОСНОВНЫЕ ТЕХНОЛОГИЧЕСКИЕ НАПРАВЛЕНИЯ УЧАСТКА */}
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-neutral-200">
           <div>
             <div className="font-mono text-[11px] uppercase tracking-widest text-neutral-400 mb-1">
-              [ Парк оборудования сварочного участка ]
+              [ Ключевые группы оборудования ]
             </div>
             <h3 className="text-xl sm:text-3xl font-light text-neutral-900 tracking-tight">
-              Описание сварочного оборудования
+              Специализированные комплексы цеха
             </h3>
           </div>
           <p className="text-xs sm:text-sm text-neutral-500 max-w-md font-light leading-relaxed">
-            Каждая единица оборудования подобрана под конкретные технологические задачи: от тонкостенных нержавеющих скатов до силовых рам и герметичных емкостей.
+            Разделение участка по технологическим операциям обеспечивает высокую точность и скорость выполнения заказов.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {equipmentList.map((item, idx) => (
+          {featuredEquipment.map((item, idx) => (
             <div
               key={item.id}
-              className={`border border-neutral-200 bg-white p-6 sm:p-8 flex flex-col justify-between hover:border-neutral-900 transition-colors ${
-                idx === equipmentList.length - 1 && equipmentList.length % 2 !== 0 ? 'lg:col-span-2' : ''
-              }`}
+              className="border border-neutral-200 bg-white p-6 sm:p-8 flex flex-col justify-between hover:border-neutral-900 transition-colors"
             >
               <div className="space-y-5">
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-100 pb-3">
@@ -380,7 +330,7 @@ export const WeldingWorkshopGallery: React.FC<WeldingWorkshopGalleryProps> = ({
                       {item.country}
                     </span>
                   </div>
-                  <span className="font-mono text-[11px] bg-neutral-100 text-neutral-800 px-2.5 py-0.5 border border-neutral-200">
+                  <span className="font-mono text-[11px] bg-neutral-100 text-neutral-800 px-2.5 py-0.5 border border-neutral-200 font-medium">
                     {item.badge}
                   </span>
                 </div>
@@ -426,60 +376,128 @@ export const WeldingWorkshopGallery: React.FC<WeldingWorkshopGalleryProps> = ({
         </div>
       </div>
 
-      {/* SECTION 3: ТАБЛИЦА СРАВНЕНИЯ И ТЕХНИЧЕСКИХ ВОЗМОЖНОСТЕЙ */}
+      {/* SECTION 3: ПОЛНАЯ СВОДНАЯ ТАБЛИЦА ПАРКА СВАРОЧНОГО ОБОРУДОВАНИЯ (18 ПОЗИЦИЙ) */}
       <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-neutral-200">
           <div>
             <div className="font-mono text-[11px] uppercase tracking-widest text-neutral-400 mb-1">
-              [ Сводный технологический регламент ]
+              [ 03 / ПОЛНЫЙ ПАРК ОБОРУДОВАНИЯ УЧАСТКА ]
             </div>
             <h3 className="text-xl sm:text-3xl font-light text-neutral-900 tracking-tight">
-              Сводная матрица оборудования участка
+              Сводная таблица сварочного оборудования (18 единиц)
             </h3>
           </div>
-          <div className="flex items-center gap-2 text-xs font-mono text-neutral-500">
-            <TableProperties className="w-4 h-4" />
-            <span>Параметры и специализация</span>
+          
+          {/* Категории фильтрации */}
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setSelectedCategory('all')}
+              className={`px-3 py-1.5 font-mono text-xs cursor-pointer transition-colors ${
+                selectedCategory === 'all'
+                  ? 'bg-neutral-900 text-white'
+                  : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+              }`}
+            >
+              Все оборудование ({WELDING_FLEET_DATA.length})
+            </button>
+            <button
+              onClick={() => setSelectedCategory('laser')}
+              className={`px-3 py-1.5 font-mono text-xs cursor-pointer transition-colors ${
+                selectedCategory === 'laser'
+                  ? 'bg-neutral-900 text-white'
+                  : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+              }`}
+            >
+              Лазерная ({WELDING_FLEET_DATA.filter(i => i.category === 'laser').length})
+            </button>
+            <button
+              onClick={() => setSelectedCategory('semiauto')}
+              className={`px-3 py-1.5 font-mono text-xs cursor-pointer transition-colors ${
+                selectedCategory === 'semiauto'
+                  ? 'bg-neutral-900 text-white'
+                  : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+              }`}
+            >
+              Полуавтоматы ({WELDING_FLEET_DATA.filter(i => i.category === 'semiauto').length})
+            </button>
+            <button
+              onClick={() => setSelectedCategory('spot')}
+              className={`px-3 py-1.5 font-mono text-xs cursor-pointer transition-colors ${
+                selectedCategory === 'spot'
+                  ? 'bg-neutral-900 text-white'
+                  : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+              }`}
+            >
+              Точечная контактная ({WELDING_FLEET_DATA.filter(i => i.category === 'spot').length})
+            </button>
+            <button
+              onClick={() => setSelectedCategory('seam')}
+              className={`px-3 py-1.5 font-mono text-xs cursor-pointer transition-colors ${
+                selectedCategory === 'seam'
+                  ? 'bg-neutral-900 text-white'
+                  : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+              }`}
+            >
+              Шовная и продольная ({WELDING_FLEET_DATA.filter(i => i.category === 'seam').length})
+            </button>
           </div>
         </div>
 
-        <div className="border border-neutral-200 overflow-x-auto bg-white">
-          <table className="w-full text-left text-xs font-mono min-w-[760px]">
-            <thead className="bg-neutral-100 border-b border-neutral-200 text-neutral-700 uppercase tracking-wider text-[11px]">
+        <div className="border border-neutral-200 overflow-x-auto bg-white shadow-xs">
+          <table className="w-full text-left text-xs font-mono min-w-[1000px]">
+            <thead className="bg-neutral-900 text-white uppercase tracking-wider text-[11px]">
               <tr>
-                <th className="py-3 px-4 font-semibold">Оборудование</th>
-                <th className="py-3 px-4 font-semibold">Метод сварки</th>
-                <th className="py-3 px-4 font-semibold">Свариваемые металлы</th>
-                <th className="py-3 px-4 font-semibold">Диапазон толщин</th>
-                <th className="py-3 px-4 font-semibold">Защитный газ</th>
-                <th className="py-3 px-4 font-semibold">Типовые изделия</th>
+                <th className="py-3.5 px-4 font-semibold w-1/5">Оборудование / Модель</th>
+                <th className="py-3.5 px-3 font-semibold w-[12%]">Мощность / Сеть</th>
+                <th className="py-3.5 px-4 font-semibold w-1/4">Назначение и технологические особенности</th>
+                <th className="py-3.5 px-3 font-semibold w-[14%]">Свариваемые материалы</th>
+                <th className="py-3.5 px-3 font-semibold w-[12%]">Толщины</th>
+                <th className="py-3.5 px-4 font-semibold w-1/5">Типовые изделия</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-200 text-neutral-700">
-              {comparisonTable.map((row, idx) => (
-                <tr key={idx} className="hover:bg-neutral-50 transition-colors">
+              {filteredFleet.map((item, idx) => (
+                <tr 
+                  key={item.id} 
+                  className={idx % 2 === 0 ? 'bg-white hover:bg-neutral-50' : 'bg-[#FAFAFA] hover:bg-neutral-100 transition-colors'}
+                >
                   <td className="py-3.5 px-4 font-semibold text-neutral-900">
-                    {row.equipment}
+                    <div className="font-sans font-medium text-neutral-900 text-sm">{item.name}</div>
+                    <div className="text-[11px] text-neutral-500 font-mono mt-0.5">{item.categoryTitle}</div>
                   </td>
-                  <td className="py-3.5 px-4 text-neutral-600">
-                    {row.process}
+                  <td className="py-3.5 px-3">
+                    <div className="text-neutral-900 font-medium">{item.power}</div>
+                    <div className="text-[10px] text-neutral-400 mt-0.5">{item.voltage}</div>
                   </td>
-                  <td className="py-3.5 px-4">
-                    {row.materials}
+                  <td className="py-3.5 px-4 text-neutral-600 font-sans text-xs leading-relaxed">
+                    <div>{item.description}</div>
+                    <div className="text-[11px] text-neutral-500 font-mono mt-1 bg-neutral-100 p-1.5 border border-neutral-200 inline-block">
+                      {item.specs}
+                    </div>
                   </td>
-                  <td className="py-3.5 px-4 font-semibold text-neutral-900">
-                    {row.thickness}
+                  <td className="py-3.5 px-3 font-mono text-neutral-800 text-[11px]">
+                    {item.materials}
                   </td>
-                  <td className="py-3.5 px-4 text-neutral-500 text-[11px]">
-                    {row.gas}
+                  <td className="py-3.5 px-3 font-semibold text-neutral-900">
+                    {item.thickness}
                   </td>
                   <td className="py-3.5 px-4 text-neutral-600 font-sans text-xs">
-                    {row.application}
+                    {item.application}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+
+        <div className="bg-neutral-50 border border-neutral-200 p-4 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-neutral-600">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-[#55AA53]" />
+            <span>Все станки и посты подключены к промышленной трехфазной сети 380В и системе контурного охлаждения</span>
+          </div>
+          <div className="text-neutral-400">
+            Отображено: {filteredFleet.length} из {WELDING_FLEET_DATA.length} единиц оборудования
+          </div>
         </div>
       </div>
 

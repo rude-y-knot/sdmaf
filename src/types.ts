@@ -104,8 +104,8 @@ export interface MAFProduct {
   playgroundTypeLabel?: string;
 
   // 4. ЧАНЫ И КУПЕЛИ (vats)
-  // Марка стали: AISI 304 / AISI 430 / AISI 316 / Ст3
-  vatSteelGrade?: 'AISI 304' | 'AISI 430' | 'AISI 316' | 'Ст3' | string;
+  // Марка стали: AISI 304 / AISI 430 / AISI 439 / AISI 316 / AISI 321
+  vatSteelGrade?: 'AISI 304' | 'AISI 430' | 'AISI 439' | 'AISI 316' | 'AISI 321' | string;
   // Толщина металла: 2 мм / 3 мм / 4 мм
   vatThickness?: '2 мм' | '3 мм' | '4 мм' | string;
   // Вместимость и диаметр: Малые (2–4 чел: 1700–1800 мм) / Средние (4–6 чел: 1900–2100 мм) / Большие (8–10 чел: от 2300 мм)

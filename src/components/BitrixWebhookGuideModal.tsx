@@ -75,11 +75,20 @@ export const BitrixWebhookGuideModal: React.FC<BitrixWebhookGuideModalProps> = (
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-black/80 backdrop-blur-sm overflow-y-auto">
-      <div 
-        className="bg-white border border-neutral-200 w-full max-w-4xl shadow-2xl relative my-auto max-h-[92vh] flex flex-col"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div 
+      className="fixed inset-0 z-50 overflow-y-auto overscroll-contain bg-black/80 backdrop-blur-sm p-2 sm:p-4 md:p-6"
+      style={{ WebkitOverflowScrolling: 'touch' }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div className="min-h-full flex items-start sm:items-center justify-center py-2 sm:py-6">
+        <div 
+          className="bg-white border border-neutral-200 w-full max-w-4xl shadow-2xl relative my-auto max-h-[92vh] sm:max-h-[90vh] flex flex-col overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
+        >
         {/* Header */}
         <div className="p-5 sm:p-6 border-b border-neutral-200 flex items-start justify-between bg-neutral-900 text-white shrink-0">
           <div className="flex items-center gap-3">
@@ -276,7 +285,7 @@ export const BitrixWebhookGuideModal: React.FC<BitrixWebhookGuideModalProps> = (
                   </div>
                   <div className="text-xs text-neutral-600 space-y-1 font-mono">
                     <div>• <strong>Формат заголовка:</strong> [Калькулятор ЧПУ] Металл Толщина, Длина, Гибы</div>
-                    <div>• <strong>Уникальные поля:</strong> Марка стали (Ст3/AISI/Алюминий), толщина 0.5-30мм, пог. метры реза, число гибов, давальческое/заводское сырье, покраска RAL/Муар, срочность (24ч / стандарт), файл DXF/DWG/STEP.</div>
+                    <div>• <strong>Уникальные поля:</strong> Марка стали (AISI 304/316/321/439/Оцинковка), толщина 0.5-20мм, пог. метры реза, число гибов, давальческое/заводское сырье, покраска RAL/Муар, срочность (24ч / стандарт), файл DXF/DWG/STEP.</div>
                   </div>
                 </div>
 
@@ -465,5 +474,6 @@ export const BitrixWebhookGuideModal: React.FC<BitrixWebhookGuideModalProps> = (
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };

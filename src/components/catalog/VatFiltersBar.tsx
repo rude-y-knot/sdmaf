@@ -29,9 +29,9 @@ export const VatFiltersBar: React.FC<VatFiltersBarProps> = ({
 }) => {
   // Counts
   const gradeCounts = useMemo(() => {
-    const counts = { all: products.length, 'AISI 304': 0, 'AISI 430': 0, 'AISI 316': 0, 'Ст3': 0 };
+    const counts = { all: products.length, 'AISI 304': 0, 'AISI 430': 0, 'AISI 316': 0 };
     products.forEach((p) => {
-      const g = p.vatSteelGrade || (p.material.includes('AISI 304') ? 'AISI 304' : 'AISI 304');
+      const g = p.vatSteelGrade || (p.material.includes('AISI 316') ? 'AISI 316' : p.material.includes('AISI 430') || p.material.includes('AISI 439') ? 'AISI 430' : 'AISI 304');
       if (counts[g as keyof typeof counts] !== undefined) {
         counts[g as keyof typeof counts]++;
       }
@@ -166,9 +166,8 @@ export const VatFiltersBar: React.FC<VatFiltersBarProps> = ({
             {[
               { id: 'all', label: 'Все марки', count: gradeCounts.all },
               { id: 'AISI 304', label: 'AISI 304 (пищевая)', count: gradeCounts['AISI 304'] },
-              { id: 'AISI 430', label: 'AISI 430', count: gradeCounts['AISI 430'] },
+              { id: 'AISI 430', label: 'AISI 430 / 439 (ферритная)', count: gradeCounts['AISI 430'] },
               { id: 'AISI 316', label: 'AISI 316 (морская)', count: gradeCounts['AISI 316'] },
-              { id: 'Ст3', label: 'Ст3 / 09Г2С', count: gradeCounts['Ст3'] },
             ].map((btn) => {
               const active = filters.steelGrade === btn.id;
               return (

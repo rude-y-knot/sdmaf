@@ -38,22 +38,25 @@ const CAD_SYSTEMS = [
   {
     id: 'solidworks',
     name: 'SolidWorks 3D',
-    tag: 'Dassault Systèmes / Параметрика и FEA',
-    description: 'Основной инструмент твердотельного и поверхностного моделирования. Точный расчет разверток листового металла с учетом К-фактора деформации для наших прессов HACO и MAIHONG. Проведение конечно-элементного прочностного анализа (FEA) ветровых и снеговых нагрузок.',
-    formats: ['.SLDPRT', '.SLDASM', '.SLDDRW', '.STEP', '.IGES', '.XT'],
+    tag: 'Dassault Systèmes / Флагманский инструмент 3D-разработки завода',
+    description: 'Основной инструмент твердотельного и поверхностного моделирования конструкторского бюро «Стальное Дело». Полная параметрическая проработка металлических конструкций любой сложности, расчет разверток листового металла с учетом К-фактора деформации для наших прессов HACO и MAIHONG, проведение конечно-элементного прочностного анализа (FEA) ветровых и снеговых нагрузок, а также прямой экспорт для CAM-системы лазерного раскроя CypCut.',
+    formats: ['.SLDPRT', '.SLDASM', '.SLDDRW', '.STEP', '.IGES', '.IFC', '.XT', '.DXF'],
     capabilities: [
+      'Экспорт геометрии в открытый BIM-формат IFC для генпроектировщиков жилых кварталов',
+      'Кинематический анализ динамических игровых элементов (качели, карусели, шарниры)',
+      'Проектирование сложных пространственных криволинейных ферм и арт-объектов',
       'Параметрическое моделирование сложных сборок с автоматическим пересчетом деталировок',
-      'Симуляция гибки тонколистового металла (0.5 – 12 мм) с расчетом пружинения',
+      'Симуляция гибки тонколистового металла (0.5 – 12 мм) с расчетом пружинения и К-фактора',
       'FEA-анализ деформаций и напряжений в критических узлах несущих металлоконструкций',
       'Прямой экспорт контуров разверток 1:1 в DXF для CAM-системы раскроя CypCut'
     ],
-    badge: 'Основная 3D САПР'
+    badge: 'Основной инструмент разработки'
   },
   {
     id: 'kompas',
     name: 'КОМПАС-3D v22',
-    tag: 'АСКОН / 100% стандарты ЕСКД и ГОСТ',
-    description: 'Отечественная инженерная система для сквозного выпуска рабочей конструкторской документации. Безукоризненное соблюдение ГОСТ 2.102-2013, ГОСТ 2.106-96, автоматическое формирование ведомостей расхода металла и спецификаций, проходящих любые государственные экспертизы.',
+    tag: 'АСКОН / Дополнительные возможности КБ: стандарты ЕСКД и ГОСТ',
+    description: 'Дополнительная инженерная система конструкторского бюро для выпуска и адаптации проектно-конструкторской документации под российские стандарты ЕСКД. Безукоризненное оформление чертежей разделов КМ/КМД, ведомостей расхода металла и спецификаций по ГОСТ 2.102-2013 и ГОСТ 2.106-96, гарантирующих прохождение государственных экспертиз и согласований в надзорных инстанциях.',
     formats: ['.CDW', '.M3D', '.A3D', '.SPW', '.DWG', '.PDF'],
     capabilities: [
       'Выпуск полных рабочих комплектов чертежей разделов КМ (Конструкции металлические) и КМД',
@@ -61,21 +64,35 @@ const CAD_SYSTEMS = [
       'Оформление паспортов изделий и руководств по эксплуатации по ГОСТ Р 52169-2012',
       'Подготовка рабочей документации под требования 44-ФЗ, 223-ФЗ, КГА и КГИОП СПб'
     ],
-    badge: '100% ЕСКД и ГОСТ'
+    badge: 'Доп. возможности / ЕСКД'
   },
   {
     id: 'inventor',
     name: 'Autodesk Inventor',
-    tag: 'Autodesk / Пространственные фермы и BIM',
-    description: 'Инструмент для проектирования пространственных каркасов, нестандартных арт-объектов и интеграции в единую BIM-среду девелоперских проектов. Позволяет моделировать кинематику подвижных элементов и формировать информационные модели.',
+    tag: 'Autodesk / Дополнительные возможности: экосистема Autodesk и сложные сборки',
+    description: 'Дополнительный программный комплекс бюро для сквозной совместимости с проектными институтами и девелоперами, работающими в экосистеме Autodesk. Обеспечивает прямую трансляцию моделей в архитектурную среду Revit, проверку пространственных сопряжений и адаптацию проектов заказчика, выполненных в форматах IPT/IAM.',
     formats: ['.IPT', '.IAM', '.IDW', '.IFC', '.RVT', '.SAT'],
     capabilities: [
-      'Проектирование сложных пространственных криволинейных ферм и арт-объектов',
-      'Кинематический анализ динамических игровых элементов (качели, карусели, шарниры)',
-      'Экспорт геометрии в открытый BIM-формат IFC для генпроектировщиков жилых кварталов',
-      'Проверка сборок на пространственные коллизии и технологичность сварки НАКС'
+      'Прямая интеграция и конвертация моделей для архитектурной среды Autodesk Revit',
+      'Адаптация и технологический аудит проектной документации заказчиков в форматах IPT/IAM',
+      'Проверка крупногабаритных сборок на пространственные коллизии и технологичность сварки НАКС',
+      'Генерация параметрических библиотек элементов благоустройства'
     ],
-    badge: 'BIM & Кинематика'
+    badge: 'Доп. возможности / САПР'
+  },
+  {
+    id: 'autodesk',
+    name: 'Все продукты Autodesk',
+    tag: 'Autodesk Ecosystem / Полная совместимость со всей линейкой ПО Autodesk',
+    description: 'Полная инженерная поддержка и возможность работы со всеми отраслевыми продуктами линейки Autodesk (AutoCAD 2D/3D, Architecture, Mechanical, Revit, Civil 3D, Plant 3D, Navisworks, Fusion 360). Прямой прием исходных файлов девелоперов, глубокая ревизия, очистка слоев, векторизация и перенос архитектурных подложек, генеральных планов и схем заказчиков без геометрических искажений.',
+    formats: ['.DWG (все версии)', '.DXF', '.RVT', '.NWD', '.DWT', '.DWF', '.DGN', '.PDF'],
+    capabilities: [
+      'Работа со всеми версиями и специализированными отраслевыми продуктами экосистемы Autodesk',
+      'Прямой импорт, чистка и векторизация архитектурных планов и генпланов в формате DWG/DXF/RVT',
+      'Конвертация 2D-эскизов и BIM-моделей заказчика в технологические 3D-модели и развертки для лазера',
+      'Согласование схем привязки и монтажных узлов на генеральных планах девелоперов'
+    ],
+    badge: 'Все продукты Autodesk'
   }
 ];
 
@@ -207,7 +224,7 @@ export const EngineeringBureauPage: React.FC<EngineeringBureauPageProps> = ({
               [ 06 / ИНЖЕНЕРНЫЙ ОТДЕЛ ]
             </span>
             <span>•</span>
-            <span className="text-neutral-900 font-medium">SolidWorks • КОМПАС-3D • Inventor</span>
+            <span className="text-neutral-900 font-medium">SolidWorks (основной) • КОМПАС-3D • Все продукты Autodesk</span>
             <span>•</span>
             <span>ЦЕХ САНКТ-ПЕТЕРБУРГ / КОЛПИНО</span>
           </div>
@@ -234,7 +251,7 @@ export const EngineeringBureauPage: React.FC<EngineeringBureauPageProps> = ({
                   </div>
                   <div className="border border-neutral-200 p-3 bg-neutral-50/70">
                     <div className="text-[10px] font-mono text-neutral-500 uppercase">САПР-платформы</div>
-                    <div className="text-xs font-semibold text-neutral-900 mt-1">Solid, КОМПАС, Inventor</div>
+                    <div className="text-xs font-semibold text-neutral-900 mt-1">SolidWorks + САПР</div>
                   </div>
                   <div className="border border-neutral-200 p-3 bg-neutral-50/70">
                     <div className="text-[10px] font-mono text-neutral-500 uppercase">Срок разверток</div>
@@ -322,20 +339,25 @@ export const EngineeringBureauPage: React.FC<EngineeringBureauPageProps> = ({
             </p>
           </div>
 
-          {/* Software Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 scrollbar-none">
+          {/* Software Tabs: responsive grid on mobile/tablet */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 mb-6">
             {CAD_SYSTEMS.map((cad) => (
               <button
                 key={cad.id}
                 onClick={() => setActiveCadTab(cad.id)}
-                className={`px-5 py-2.5 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap border flex items-center gap-2 ${
+                className={`p-3 sm:p-3.5 text-left text-xs font-mono uppercase tracking-wider transition-all cursor-pointer border flex flex-col justify-between gap-2 ${
                   activeCadTab === cad.id
-                    ? 'bg-black text-white border-black font-semibold shadow-xs'
-                    : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400'
+                    ? 'bg-black text-white border-black font-semibold shadow-xs ring-1 ring-black'
+                    : 'bg-white text-neutral-700 border-neutral-200 hover:border-neutral-400 hover:bg-neutral-50'
                 }`}
               >
-                <span>{cad.name}</span>
-                <span className={`text-[10px] px-1.5 py-0.2 rounded-none ${activeCadTab === cad.id ? 'bg-neutral-800 text-neutral-200' : 'bg-neutral-100 text-neutral-500'}`}>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-semibold text-xs text-inherit">{cad.name}</span>
+                  {activeCadTab === cad.id && (
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+                  )}
+                </div>
+                <span className={`text-[10px] px-1.5 py-0.5 w-fit leading-tight ${activeCadTab === cad.id ? 'bg-neutral-800 text-neutral-200' : 'bg-neutral-100 text-neutral-600'}`}>
                   {cad.badge}
                 </span>
               </button>
@@ -511,7 +533,7 @@ export const EngineeringBureauPage: React.FC<EngineeringBureauPageProps> = ({
 
           <div className="border border-neutral-200 divide-y divide-neutral-200 bg-white">
             {[
-              { label: 'Программные комплексы 3D/2D САПР', val: 'SolidWorks 2024, КОМПАС-3D v22, Autodesk Inventor Professional', note: 'Лицензионное инженерное ПО с параметрикой' },
+              { label: 'Программные комплексы 3D/2D САПР', val: 'SolidWorks 2024 (основной), КОМПАС-3D v22, все продукты Autodesk (AutoCAD, Revit, Inventor, Navisworks)', note: 'Лицензионное инженерное ПО с параметрикой и BIM-экспортом' },
               { label: 'Соответствие стандартам', val: 'ЕСКД (ГОСТ 2.102, 2.106, 2.114), СП 16.13330.2017, ГОСТ Р 52169-2012', note: 'Гарантия прохождения КГА, КГИОП, Госэкспертизы' },
               { label: 'Поддерживаемые входные 3D-форматы', val: 'STEP, IGES, SLDPRT, IPT, SAT, XT, IFC, RVT, DWG 3D', note: 'Прямой импорт без потерь твердотельной геометрии' },
               { label: 'Поддерживаемые входные 2D-форматы', val: 'DWG, DXF, CDW, PDF, эскизы от руки, сканированные чертежи', note: 'Профессиональная векторизация и доработка по ЕСКД' },

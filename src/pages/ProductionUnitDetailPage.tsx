@@ -20,6 +20,7 @@ import {
 import { PRODUCTION_UNITS, ProductionUnit } from '../data/productionUnitsData';
 import { LaserWorkshopGallery } from '../components/LaserWorkshopGallery';
 import { BendingWorkshopGallery } from '../components/BendingWorkshopGallery';
+import { RollingWorkshopGallery } from '../components/RollingWorkshopGallery';
 import { CoatingWorkshopGallery } from '../components/CoatingWorkshopGallery';
 import { WeldingWorkshopGallery } from '../components/WeldingWorkshopGallery';
 import { SEOHead } from '../components/SEOHead';
@@ -283,9 +284,16 @@ export const ProductionUnitDetailPage: React.FC<ProductionUnitDetailPageProps> =
       )}
 
       {/* BENDING WORKSHOP SHOWCASE (HACO ERM 20040 & MAIHONG 160/3200 with ESA CNC) */}
-      {unit.category === 'bending' && (
+      {unit.id === 'bending-250t' && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-6">
           <BendingWorkshopGallery onOpenCalculator={onOpenCalculator} />
+        </div>
+      )}
+
+      {/* ROLLING WORKSHOP SHOWCASE (Keepler-Stan RME 1500x4 mm) */}
+      {unit.id === 'rolling-faccin' && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-6">
+          <RollingWorkshopGallery onOpenCalculator={onOpenCalculator} />
         </div>
       )}
 

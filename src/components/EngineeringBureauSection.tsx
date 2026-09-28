@@ -27,28 +27,30 @@ export const EngineeringBureauSection: React.FC<EngineeringBureauSectionProps> =
   onOpenMeasurerModal,
   onNavigateToBureau,
 }) => {
-  const [activeCadTab, setActiveCadTab] = useState<'solid' | 'kompas' | 'inventor'>('solid');
+  const [activeCadTab, setActiveCadTab] = useState<'solid' | 'kompas' | 'inventor' | 'autodesk'>('solid');
 
   const cadSoftwares = [
     {
       id: 'solid' as const,
       name: 'SolidWorks 3D',
-      badge: 'Параметрика & FEA',
-      role: 'Твердотельное моделирование и прочностной анализ',
-      description: 'Глубокая параметрическая проработка металлических конструкций любой геометрии. Расчет ветровых, снеговых и эксплуатационных нагрузок методом конечных элементов (FEA / Stress Analysis). Точный расчет коэффициентов деформации и К-фактора нейтрального слоя гибки листового металла под станки HACO и MAIHONG.',
-      formats: ['.SLDPRT', '.SLDASM', '.STEP', '.IGES', '.DXF'],
+      badge: 'Основной инструмент разработки',
+      role: 'Флагманский инструмент 3D-моделирования, расчетов и BIM',
+      description: 'Основной программный комплекс конструкторского бюро завода. Полная параметрическая проработка металлических конструкций любой геометрии, кинематический анализ подвижных игровых элементов, расчет ветровых и снеговых нагрузок методом конечных элементов (FEA), генерация точных разверток под станки HACO и MAIHONG и прямой экспорт в IFC.',
+      formats: ['.SLDPRT', '.SLDASM', '.STEP', '.IGES', '.IFC', '.DXF'],
       features: [
-        'Симуляция нагрузок и расчет запаса прочности несущих балок',
+        'Экспорт геометрии в открытый BIM-формат IFC для генпроектировщиков жилых кварталов',
+        'Кинематический анализ динамических игровых элементов (качели, карусели, шарниры)',
+        'Проектирование сложных пространственных криволинейных ферм и арт-объектов',
         'Автоматическое построение разверток с учетом толщины металла и радиуса матрицы',
-        'Исключение коллизий в узлах сопряжения до запуска резки в цехе',
+        'Симуляция нагрузок и расчет запаса прочности несущих балок (FEA)',
       ],
     },
     {
       id: 'kompas' as const,
       name: 'КОМПАС-3D',
-      badge: 'Стандарты РФ / ЕСКД',
-      role: 'Выпуск чертежей КМ/КМД и спецификаций по ГОСТ',
-      description: 'Базовый инструмент оформления проектной и рабочей конструкторской документации в строгом соответствии с требованиями Единой системы конструкторской документации (ЕСКД). Мгновенная генерация спецификаций, сборочных чертежей и ведомостей расхода металла по ГОСТ 2.102-2013 и ГОСТ 2.106-96.',
+      badge: 'Доп. возможности / ЕСКД',
+      role: 'Выпуск чертежей КМ/КМД и спецификаций по стандартам РФ',
+      description: 'Дополнительная инженерная САПР для оформления проектной и рабочей документации в строгом соответствии с требованиями Единой системы конструкторской документации (ЕСКД). Генерация спецификаций, сборочных чертежей и ведомостей расхода металла по ГОСТ 2.102-2013 и ГОСТ 2.106-96.',
       formats: ['.CDW', '.FRW', '.A3D', '.M3D', '.DWG'],
       features: [
         '100% соответствие всем нормам ЕСКД и ГОСТ СПДС без ручных правок',
@@ -59,14 +61,27 @@ export const EngineeringBureauSection: React.FC<EngineeringBureauSectionProps> =
     {
       id: 'inventor' as const,
       name: 'Autodesk Inventor',
-      badge: 'Крупные сборки & BIM',
-      role: 'Пространственные каркасы и адаптация под архитектурный BIM',
-      description: 'Специализированная среда для проектирования масштабных архитектурных ансамблей, винтовых скатов, пергол и кинематических МАФ. Экспорт трехмерных моделей в стандарты информационного моделирования зданий (BIM / IFC / Revit RVT) для прямых поставок генподрядчикам и девелоперам.',
+      badge: 'Доп. возможности / САПР',
+      role: 'Интеграция со сторонними проектами и экосистемой Autodesk',
+      description: 'Дополнительный программный комплекс бюро для сквозной совместимости с заказчиками, работающими в экосистеме Autodesk. Обеспечивает прямую трансляцию моделей в Revit, проверку пространственных сопряжений и адаптацию проектов заказчика.',
       formats: ['.IPT', '.IAM', '.IFC', '.RVT', '.SAT'],
       features: [
-        'Генерация BIM-семейств МАФ для проектов благоустройства девелоперов',
-        'Кинематический анализ шарниров, роликовых механизмов и качелей',
-        'Быстрая конвертация сложной органической геометрии в технологичный металл',
+        'Прямая интеграция и конвертация моделей для архитектурной среды Autodesk Revit',
+        'Адаптация и аудит проектной документации заказчиков в форматах IPT/IAM',
+        'Проверка сборок на пространственные коллизии и технологичность сварки НАКС',
+      ],
+    },
+    {
+      id: 'autodesk' as const,
+      name: 'Все продукты Autodesk',
+      badge: 'Все продукты Autodesk',
+      role: 'Поддержка полного семейства САПР и BIM Autodesk',
+      description: 'Возможность работы со всеми продуктами и форматами экосистемы Autodesk (AutoCAD 2D/3D, Architecture, Revit, Plant 3D, Navisworks, Fusion 360). Прямой прием, ревизия, конвертация и подготовка исходных архитектурных планов, BIM-моделей, генпланов и чертежей заказчиков без потери слоев и масштаба.',
+      formats: ['.DWG (все версии)', '.DXF', '.RVT', '.NWD', '.DWT', '.PDF'],
+      features: [
+        'Работа со всеми версиями и специализированными отраслевыми продуктами Autodesk',
+        'Прямой импорт, чистка и векторизация архитектурных планов в формате DWG/DXF/RVT',
+        'Конвертация 2D-эскизов и BIM-моделей заказчика в технологические 3D-модели и развертки для лазера',
       ],
     },
   ];
@@ -110,7 +125,7 @@ export const EngineeringBureauSection: React.FC<EngineeringBureauSectionProps> =
     },
     {
       title: 'Бионические арт-объекты и кинетика',
-      desc: 'Параметрическое моделирование сложных криволинейных форм, скрытый внутренний силовой каркас из 09Г2С, внешняя облицовка зеркальной сталью без видимых крепежей.',
+      desc: 'Параметрическое моделирование сложных криволинейных форм, скрытый внутренний оцинкованный силовой каркас, внешняя облицовка зеркальной сталью без видимых крепежей.',
       badge: 'Нестандартные формы',
     },
     {
@@ -182,22 +197,25 @@ export const EngineeringBureauSection: React.FC<EngineeringBureauSectionProps> =
                 Программный стек разработки
               </div>
               <h3 className="text-lg sm:text-xl font-medium text-neutral-900">
-                Проектирование в SolidWorks, КОМПАС-3D и Autodesk Inventor
+                Проектирование в SolidWorks (основной), КОМПАС-3D и продуктах Autodesk
               </h3>
             </div>
             
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 w-full md:w-auto">
               {cadSoftwares.map((cad) => (
                 <button
                   key={cad.id}
                   onClick={() => setActiveCadTab(cad.id)}
-                  className={`px-4 py-2 text-xs font-mono tracking-wider uppercase transition-colors cursor-pointer border ${
+                  className={`p-2.5 sm:px-3 sm:py-2 text-left sm:text-center text-xs font-mono tracking-wider uppercase transition-colors cursor-pointer border flex flex-col justify-between gap-1 ${
                     activeCadTab === cad.id
-                      ? 'bg-black text-white border-black font-medium shadow-xs'
-                      : 'bg-white text-neutral-600 border-neutral-200 hover:border-neutral-400'
+                      ? 'bg-black text-white border-black font-semibold shadow-xs ring-1 ring-black'
+                      : 'bg-white text-neutral-700 border-neutral-200 hover:border-neutral-400 hover:bg-neutral-50'
                   }`}
                 >
-                  {cad.name}
+                  <span className="font-semibold text-xs text-inherit">{cad.name}</span>
+                  <span className={`text-[9px] px-1 py-0.2 w-fit ${activeCadTab === cad.id ? 'bg-neutral-800 text-neutral-200' : 'bg-neutral-100 text-neutral-500'}`}>
+                    {cad.badge}
+                  </span>
                 </button>
               ))}
             </div>

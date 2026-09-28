@@ -119,11 +119,20 @@ export const BatchEstimateDrawer: React.FC<BatchEstimateDrawerProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-y-auto bg-black/75 backdrop-blur-xs animate-in fade-in duration-200">
-      <div 
-        className="bg-white border border-neutral-200 w-full max-w-4xl max-h-[94vh] flex flex-col shadow-2xl overflow-hidden my-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div 
+      className="fixed inset-0 z-50 overflow-y-auto overscroll-contain bg-black/80 backdrop-blur-xs p-2 sm:p-4 md:p-6 animate-in fade-in duration-200"
+      style={{ WebkitOverflowScrolling: 'touch' }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          setIsBatchDrawerOpen(false);
+        }
+      }}
+    >
+      <div className="min-h-full flex items-start sm:items-center justify-center py-2 sm:py-6">
+        <div 
+          className="bg-white border border-neutral-200 w-full max-w-4xl max-h-[94vh] sm:max-h-[90vh] flex flex-col shadow-2xl overflow-hidden my-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-200 bg-neutral-50/80">
           <div className="flex items-center gap-3">
@@ -518,5 +527,6 @@ export const BatchEstimateDrawer: React.FC<BatchEstimateDrawerProps> = ({
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };

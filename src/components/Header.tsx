@@ -300,7 +300,7 @@ export const Header: React.FC<HeaderProps> = ({
                     <div className="grid grid-cols-2 gap-3">
                       {[
                         { 
-                          label: 'Лазерный раскрой Кноппо (до 20 мм)', 
+                          label: 'Лазерный раскрой Knoppo (до 20 мм)', 
                           desc: 'Комплексы 3 кВт, столы 1500х3000 и 1500х6000 мм, точность реза 0,5 мм',
                           unitId: 'laser-22kw-6m'
                         },
@@ -316,11 +316,11 @@ export const Header: React.FC<HeaderProps> = ({
                         },
                         { 
                           label: 'Порошковая окраска RAL', 
-                          desc: 'Газовые термокамеры 3м и 6м, конвекция 16 575 м³/ч, палитра RAL, муар и шагрень',
+                          desc: 'Газовые термокамеры 3м и 6м, палитры RAL Classic, Design, Effect, NCS, муар и шагрень',
                           unitId: 'coating-ral'
                         },
                         { 
-                          label: 'Сварочный участок НАКС', 
+                          label: 'Сварочный участок', 
                           desc: 'Продольная лазерная сварка BWT20/SUP23T, полуавтоматы Кедр и Fronius',
                           unitId: 'welding-naks'
                         },
