@@ -15,8 +15,8 @@ export type FormSourceType =
   | 'tender_request'       // Тендерный отдел (44-ФЗ / 223-ФЗ)
   | 'b2b_tender'           // B2B тендеры и госзакупки
   | 'site_measurer'        // Выезд инженера-конструктора на замер объекта
-  | 'factory_excursion'    // Запись на очный аудит и пропуск на завод в Колпино
-  | 'plant_excursion'      // Экскурсия на завод / аудит цехов
+  | 'factory_excursion'    // Запись на очную экскурсию и пропуск на завод в Колпино
+  | 'plant_excursion'      // Экскурсия на завод / производство
   | 'quick_callback';      // Быстрый заказ звонка по отделу
 
 export interface BitrixLeadPayload {
@@ -221,7 +221,7 @@ export function getFormSourceLabel(type: FormSourceType): string {
       return 'Выезд инженера-замерщика на объект';
     case 'factory_excursion':
     case 'plant_excursion':
-      return 'Заявка на пропуск / аудит цехов завода';
+      return 'Заявка на пропуск / экскурсия на производство';
     case 'quick_callback':
       return 'Быстрый обратный звонок';
     default:

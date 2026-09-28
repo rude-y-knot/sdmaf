@@ -68,11 +68,11 @@ export const Footer: React.FC<FooterProps> = ({
     try {
       const result = await sendLeadToBitrix24({
         sourceType: 'plant_excursion',
-        title: `[Экскурсия / Футер] Быстрая запись на аудит цехов`,
+        title: `[Экскурсия / Футер] Запись на экскурсию на производство`,
         name: 'Посетитель с сайта',
         phone: excursionPhone,
         department: 'Служба безопасности завода и дирекция по производству',
-        pageSource: 'Подвал сайта (Футер) / Экскурсия на завод',
+        pageSource: 'Подвал сайта (Футер) / Экскурсия на производство',
         details: {
           'Источник': 'Быстрая форма в футере сайта',
           'Цель': 'Демонстрация лазерных комплексов 22 кВт (4м и 6м), листогиба 250т, лаборатории ОТК',
@@ -94,7 +94,7 @@ export const Footer: React.FC<FooterProps> = ({
   return (
     <footer id="contacts" className="bg-black text-white pt-20 pb-12 border-t border-neutral-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Plant Visit Section (Аудит производства в Колпино) */}
+        {/* Plant Visit Section (Экскурсия на производство в Колпино) */}
         <div className="border border-neutral-800 p-8 sm:p-12 mb-20">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             <div className="lg:col-span-7">
@@ -165,7 +165,7 @@ export const Footer: React.FC<FooterProps> = ({
                       </>
                     ) : (
                       <>
-                        <span>Записаться на аудит производства</span>
+                        <span>Записаться на экскурсию на производство</span>
                         <ArrowUpRight className="w-4 h-4" />
                       </>
                     )}

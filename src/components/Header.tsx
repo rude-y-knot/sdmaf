@@ -45,6 +45,7 @@ export const Header: React.FC<HeaderProps> = ({
   const [activeMegaTab, setActiveMegaTab] = useState<ActiveMegaTab>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileExpandedSection, setMobileExpandedSection] = useState<'production' | 'catalog' | 'faq' | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -649,62 +650,217 @@ export const Header: React.FC<HeaderProps> = ({
         )}
       </AnimatePresence>
 
-      {/* MOBILE RESPONSIVE MENU DRAWER */}
+      {/* MOBILE RESPONSIVE MENU DRAWER (Exact same structure as Desktop Navigation) */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden bg-white border-b border-neutral-200 px-6 py-6 space-y-4"
+            className="lg:hidden bg-white border-b border-neutral-200 px-4 sm:px-6 py-5 space-y-4 max-h-[85vh] overflow-y-auto"
           >
+            {/* 5 Main Navigation Items with Collapsible Submenus */}
             <div className="space-y-1">
-              {[
-                { label: 'Главная', section: 'hero' },
-                { label: 'Производство и цеха ЧПУ', section: 'production' },
-                { label: 'Конструкторское бюро завода (ЕСКД)', section: 'engineering-bureau' },
-                { label: 'Продукция завода (Уличная мебель)', section: 'catalog' },
-                { label: 'Частые вопросы (FAQ)', section: 'faq' },
-                { label: 'B2B и Госзаказ (44-ФЗ)', section: 'b2b' },
-                { label: 'Контакты завода в Колпино', section: 'contacts' },
-              ].map((item, idx) => {
-                const isActive = (item.section === 'production' && currentPage === 'production') ||
-                                 (item.section === 'catalog' && currentPage === 'catalog') ||
-                                 (item.section === 'faq' && currentPage === 'faq') ||
-                                 (item.section === 'b2b' && currentPage === 'b2b') ||
-                                 (item.section === 'contacts' && currentPage === 'contacts') ||
-                                 (item.section === 'hero' && currentPage === 'home');
-                return (
+              {/* 1. ПРОИЗВОДСТВО */}
+              <div className="border-b border-neutral-100">
+                <div className="flex items-center justify-between py-3">
                   <button
-                    key={idx}
-                    data-no-hover="true"
-                    onClick={() => {
-                      if (item.section === 'engineering-bureau') {
-                        handleUnitClick('engineering-bureau');
-                      } else {
-                        handleLinkClick(item.section);
-                      }
-                    }}
-                    className={`w-full text-left py-2.5 text-xs uppercase tracking-widest font-medium border-b border-neutral-100 last:border-0 cursor-pointer ${
-                      isActive
-                        ? 'text-black font-semibold'
-                        : 'text-neutral-700 hover:text-black'
+                    onClick={() => handleLinkClick('production')}
+                    className={`text-xs uppercase tracking-[0.14em] font-medium text-left cursor-pointer flex-1 ${
+                      currentPage === 'production' ? 'text-black font-bold' : 'text-neutral-900 hover:text-black'
                     }`}
                   >
-                    {item.label}
+                    1. Производство
                   </button>
-                );
-              })}
+                  <button
+                    onClick={() => setMobileExpandedSection(mobileExpandedSection === 'production' ? null : 'production')}
+                    className="p-1.5 text-neutral-500 hover:text-black cursor-pointer"
+                    aria-label="Раскрыть подразделы производства"
+                  >
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${mobileExpandedSection === 'production' ? 'rotate-180 text-black' : ''}`} />
+                  </button>
+                </div>
+
+                {mobileExpandedSection === 'production' && (
+                  <div className="pb-3 pl-3 space-y-2 border-l-2 border-neutral-900 ml-1 mb-2 animate-in slide-in-from-top-1 duration-150">
+                    <button
+                      onClick={() => handleLinkClick('production')}
+                      className="w-full text-left py-1.5 text-[11px] font-mono font-bold uppercase tracking-wider text-black flex items-center justify-between hover:underline cursor-pointer"
+                    >
+                      <span>→ Все цеха и паспорта станков</span>
+                    </button>
+                    {[
+                      { label: '01 Лазерный раскрой Knoppo (до 20 мм)', unitId: 'laser-22kw-6m' },
+                      { label: '02 Гибка металла с ЧПУ (HACO / MAIHONG)', unitId: 'bending-250t' },
+                      { label: '03 Вальцовка и обечайки Keepler RME', unitId: 'rolling-faccin' },
+                      { label: '04 Порошковая окраска RAL (газовые печи)', unitId: 'coating-ral' },
+                      { label: '05 Сварочный участок (НАКС / лазерная сварка)', unitId: 'welding-naks' },
+                      { label: '06 Конструкторское бюро (КМ/КМД, ЕСКД)', unitId: 'engineering-bureau' },
+                    ].map((sub, sIdx) => (
+                      <button
+                        key={sIdx}
+                        onClick={() => handleUnitClick(sub.unitId)}
+                        className="w-full text-left py-1 text-xs text-neutral-600 hover:text-black flex items-center justify-between cursor-pointer font-sans"
+                      >
+                        <span>{sub.label}</span>
+                        <ArrowRight className="w-3 h-3 text-neutral-400 shrink-0" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* 2. ПРОДУКЦИЯ ЗАВОДА */}
+              <div className="border-b border-neutral-100">
+                <div className="flex items-center justify-between py-3">
+                  <button
+                    onClick={() => handleLinkClick('catalog')}
+                    className={`text-xs uppercase tracking-[0.14em] font-medium text-left cursor-pointer flex-1 ${
+                      currentPage === 'catalog' ? 'text-black font-bold' : 'text-neutral-900 hover:text-black'
+                    }`}
+                  >
+                    2. Продукция завода
+                  </button>
+                  <button
+                    onClick={() => setMobileExpandedSection(mobileExpandedSection === 'catalog' ? null : 'catalog')}
+                    className="p-1.5 text-neutral-500 hover:text-black cursor-pointer"
+                    aria-label="Раскрыть категории продукции"
+                  >
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${mobileExpandedSection === 'catalog' ? 'rotate-180 text-black' : ''}`} />
+                  </button>
+                </div>
+
+                {mobileExpandedSection === 'catalog' && (
+                  <div className="pb-3 pl-3 space-y-2 border-l-2 border-neutral-900 ml-1 mb-2 animate-in slide-in-from-top-1 duration-150">
+                    <button
+                      onClick={() => handleCatalogCategory('all')}
+                      className="w-full text-left py-1.5 text-[11px] font-mono font-bold uppercase tracking-wider text-black flex items-center justify-between hover:underline cursor-pointer"
+                    >
+                      <span>→ Весь каталог (все 6 разделов)</span>
+                    </button>
+                    {[
+                      { label: '01 Детские горки и скаты (AISI 304, ТР 042)', cat: 'slides' },
+                      { label: '02 Уличная мебель (скамейки, урны, перголы)', cat: 'furniture' },
+                      { label: '03 Изделия из нержавеющей стали (AISI 304/316)', cat: 'stainless' },
+                      { label: '04 Чаны и купели на дровах (сталь AISI 304)', cat: 'vats' },
+                      { label: '05 Велопарковки и мобильность (стойки, боксы)', cat: 'bike' },
+                      { label: '06 Сувениры, вывески и POS (мерч, брендинг)', cat: 'suvenirs' },
+                    ].map((sub, sIdx) => (
+                      <button
+                        key={sIdx}
+                        onClick={() => handleCatalogCategory(sub.cat)}
+                        className="w-full text-left py-1 text-xs text-neutral-600 hover:text-black flex items-center justify-between cursor-pointer font-sans"
+                      >
+                        <span>{sub.label}</span>
+                        <ArrowRight className="w-3 h-3 text-neutral-400 shrink-0" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* 3. ЧАСТЫЕ ВОПРОСЫ (FAQ) */}
+              <div className="border-b border-neutral-100">
+                <div className="flex items-center justify-between py-3">
+                  <button
+                    onClick={() => handleLinkClick('faq')}
+                    className={`text-xs uppercase tracking-[0.14em] font-medium text-left cursor-pointer flex-1 ${
+                      currentPage === 'faq' ? 'text-black font-bold' : 'text-neutral-900 hover:text-black'
+                    }`}
+                  >
+                    3. Частые вопросы
+                  </button>
+                  <button
+                    onClick={() => setMobileExpandedSection(mobileExpandedSection === 'faq' ? null : 'faq')}
+                    className="p-1.5 text-neutral-500 hover:text-black cursor-pointer"
+                    aria-label="Раскрыть подразделы FAQ"
+                  >
+                    <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${mobileExpandedSection === 'faq' ? 'rotate-180 text-black' : ''}`} />
+                  </button>
+                </div>
+
+                {mobileExpandedSection === 'faq' && (
+                  <div className="pb-3 pl-3 space-y-2 border-l-2 border-neutral-900 ml-1 mb-2 animate-in slide-in-from-top-1 duration-150">
+                    <button
+                      onClick={() => handleLinkClick('faq')}
+                      className="w-full text-left py-1.5 text-[11px] font-mono font-bold uppercase tracking-wider text-black flex items-center justify-between hover:underline cursor-pointer"
+                    >
+                      <span>→ Все вопросы и ответы</span>
+                    </button>
+                    {[
+                      { label: '01 Сроки производства (от 24 часов)' },
+                      { label: '02 Доставка и самовывоз (СПб, РФ и СНГ)' },
+                      { label: '03 Гарантия до 10 лет и ГОСТ (ТР ЕАЭС 042)' },
+                      { label: '04 Чертежи, CAD и оплата (НДС 22% / 44-ФЗ)' },
+                    ].map((sub, sIdx) => (
+                      <button
+                        key={sIdx}
+                        onClick={() => handleLinkClick('faq')}
+                        className="w-full text-left py-1 text-xs text-neutral-600 hover:text-black flex items-center justify-between cursor-pointer font-sans"
+                      >
+                        <span>{sub.label}</span>
+                        <ArrowRight className="w-3 h-3 text-neutral-400 shrink-0" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* 4. B2B / ТЕНДЕРЫ */}
+              <div className="border-b border-neutral-100">
+                <button
+                  onClick={() => handleLinkClick('b2b')}
+                  className={`w-full py-3 text-xs uppercase tracking-[0.14em] font-medium text-left cursor-pointer flex items-center justify-between ${
+                    currentPage === 'b2b' ? 'text-black font-bold' : 'text-neutral-900 hover:text-black'
+                  }`}
+                >
+                  <span>4. B2B / Тендеры</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-neutral-400" />
+                </button>
+              </div>
+
+              {/* 5. КОНТАКТЫ */}
+              <div className="border-b border-neutral-100">
+                <button
+                  onClick={() => handleLinkClick('contacts')}
+                  className={`w-full py-3 text-xs uppercase tracking-[0.14em] font-medium text-left cursor-pointer flex items-center justify-between ${
+                    currentPage === 'contacts' ? 'text-black font-bold' : 'text-neutral-900 hover:text-black'
+                  }`}
+                >
+                  <span>5. Контакты</span>
+                  <ArrowRight className="w-3.5 h-3.5 text-neutral-400" />
+                </button>
+              </div>
             </div>
 
-            <div className="pt-4 border-t border-neutral-200 text-xs font-mono text-neutral-500 space-y-2">
-              <div>СПб, г. Колпино, ул. Финляндская, 3</div>
-              <div className="flex flex-col gap-1.5 font-sans font-medium text-sm text-neutral-900">
-                <a href="tel:+78122007706" className="block hover:text-black">
-                  <span className="text-neutral-500 font-normal mr-1.5 font-mono text-xs">СПб:</span>+7 (812) 200-77-06
+            {/* Quick Action Button: Calculator */}
+            <div className="pt-2">
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenCalculator();
+                }}
+                className="w-full py-2.5 px-4 bg-black text-white text-xs font-mono uppercase tracking-wider hover:bg-neutral-800 transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+              >
+                <Calculator className="w-3.5 h-3.5" />
+                <span>Рассчитать смету по чертежам</span>
+              </button>
+            </div>
+
+            {/* Factory Contacts & Production Address */}
+            <div className="pt-3 border-t border-neutral-200 text-xs font-mono text-neutral-500 space-y-2">
+              <div className="flex items-center gap-1.5 text-neutral-800">
+                <MapPin className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
+                <span>СПб, г. Колпино, ул. Финляндская, 3</span>
+              </div>
+              <div className="flex flex-col gap-1.5 font-sans font-medium text-sm text-neutral-900 pt-1">
+                <a href="tel:+78122007706" className="flex items-center gap-1.5 hover:text-black">
+                  <Phone className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
+                  <span><span className="text-neutral-500 font-normal mr-1 font-mono text-xs">СПб:</span>+7 (812) 200-77-06</span>
                 </a>
-                <a href="tel:+74951066224" className="block hover:text-black">
-                  <span className="text-neutral-500 font-normal mr-1.5 font-mono text-xs">Мск:</span>+7 (495) 106-62-24
+                <a href="tel:+74951066224" className="flex items-center gap-1.5 hover:text-black">
+                  <Phone className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
+                  <span><span className="text-neutral-500 font-normal mr-1 font-mono text-xs">Мск:</span>+7 (495) 106-62-24</span>
                 </a>
               </div>
             </div>

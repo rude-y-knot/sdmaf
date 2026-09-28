@@ -341,10 +341,10 @@ export const BitrixWebhookGuideModal: React.FC<BitrixWebhookGuideModalProps> = (
                 <div className="p-4 border border-neutral-200 bg-neutral-50">
                   <div className="flex items-center gap-2 mb-2">
                     <Building2 className="w-4 h-4 text-neutral-800" />
-                    <span className="font-semibold text-xs uppercase font-mono">6. Пропуск на завод / Аудит цехов</span>
+                    <span className="font-semibold text-xs uppercase font-mono">6. Пропуск на завод / Экскурсия на производство</span>
                   </div>
                   <div className="text-xs text-neutral-600 space-y-1 font-mono">
-                    <div>• <strong>Формат заголовка:</strong> [Аудит завода] Пропуск на КПП для ФИО, Компания</div>
+                    <div>• <strong>Формат заголовка:</strong> [Экскурсия на производство] Пропуск на КПП для ФИО, Компания</div>
                     <div>• <strong>Уникальные поля:</strong> Паспортные данные для бюро пропусков режимного предприятия (Ижорский завод), количество гостей, интересующие станки ЧПУ.</div>
                   </div>
                 </div>
@@ -378,7 +378,7 @@ export const BitrixWebhookGuideModal: React.FC<BitrixWebhookGuideModalProps> = (
                     <option value="batch_estimate">Сводная спецификация (смета с артикулами)</option>
                     <option value="tender_request">Тендерный отдел (44-ФЗ / 223-ФЗ)</option>
                     <option value="site_measurer">Выезд инженера-замерщика на объект</option>
-                    <option value="factory_excursion">Заявка на пропуск / Аудит цехов завода</option>
+                    <option value="factory_excursion">Заявка на пропуск / Экскурсия на производство</option>
                   </select>
                 </div>
 

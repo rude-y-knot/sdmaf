@@ -77,7 +77,7 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
 
     const leadTitle = buildBitrixLeadTitle(
       visitorCompany,
-      `[Экскурсия / Аудит цехов] ${visitorPurpose || 'Посещение завода'}`
+      `[Экскурсия на производство] ${visitorPurpose || 'Посещение завода'}`
     );
 
     try {
@@ -88,9 +88,9 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
         phone: visitorPhone,
         company: visitorCompany,
         department: 'Служба безопасности завода и дирекция по производству',
-        pageSource: 'Страница: Контакты / Запись на аудит производства в Колпино',
+        pageSource: 'Страница: Контакты / Запись на экскурсию на производство в Колпино',
         details: {
-          'Цель визита / Аудита': visitorPurpose,
+          'Цель экскурсии': visitorPurpose,
           'Запланированная дата': visitorDate || 'Ближайший рабочий день',
           'ФИО посетителя': visitorName,
           'Организация / Должность': visitorCompany,
@@ -188,7 +188,7 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
     <div className="bg-white min-h-screen text-neutral-900 pb-20">
       <SEOHead
         title="Контакты завода «Стальное Дело» | Производство в Колпино (СПб)"
-        description="Контакты завода металлоконструкций: Санкт-Петербург, г. Колпино, ул. Финляндская, 3. Телефон: +7 (812) 200-77-06. Почта: info@sdmaf.ru. Запись на аудит производства."
+        description="Контакты завода металлоконструкций: Санкт-Петербург, г. Колпино, ул. Финляндская, 3. Телефон: +7 (812) 200-77-06. Почта: info@sdmaf.ru. Запись на экскурсию на производство."
         keywords="контакты завод металлоконструкций спб, завод стальное дело колпино адрес, телефон отдела продаж маф, реквизиты стальное дело"
         canonicalPath="/contacts"
         jsonLd={{
@@ -247,41 +247,61 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
               Производственная площадка 4000+ м² и главный офис расположены в Колпино (территория «Ижорские заводы»). Прямой въезд грузового транспорта, ж/д ветка, лаборатория ОТК и шоурум изделий.
             </p>
 
-            {/* Quick Contact Chips */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-neutral-200 border border-neutral-200">
-              <div className="bg-white p-5">
-                <div className="text-[11px] font-mono uppercase text-neutral-400 mb-1">
-                  Единый многоканальный телефон
+            {/* Quick Contact Chips: Phones stacked vertically on the left, Email on the right */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-neutral-200 border border-neutral-200">
+              {/* Left Column: Phones stacked one under another */}
+              <div className="bg-white p-5 sm:p-6 flex flex-col justify-between space-y-5">
+                {/* Phone 1: SPb */}
+                <div>
+                  <div className="text-[11px] font-mono uppercase text-neutral-400 mb-1 flex items-center justify-between">
+                    <span>Единый многоканальный телефон</span>
+                    <span className="text-[10px] text-emerald-600 font-mono">СПб и ЛО</span>
+                  </div>
+                  <a href="tel:+78122007706" className="font-mono text-xl sm:text-2xl font-light text-neutral-900 hover:text-black">
+                    +7 (812) 200-77-06
+                  </a>
+                  <div className="text-xs text-neutral-500 font-light mt-0.5">
+                    Контактный центр и дежурный инженер (Пн-Пт 08:30–18:00)
+                  </div>
                 </div>
-                <a href="tel:+78122007706" className="font-mono text-xl sm:text-2xl font-light text-neutral-900 hover:text-black">
-                  +7 (812) 200-77-06
-                </a>
-                <div className="text-xs text-neutral-500 font-light mt-1">
-                  Бесплатно по СПб и ЛО
+
+                {/* Phone 2: Moscow */}
+                <div className="pt-4 border-t border-neutral-100">
+                  <div className="text-[11px] font-mono uppercase text-neutral-400 mb-1 flex items-center justify-between">
+                    <span>Отдел продаж в Москве</span>
+                    <span className="text-[10px] text-neutral-500 font-mono">Москва и МО</span>
+                  </div>
+                  <a href="tel:+74951066224" className="font-mono text-xl sm:text-2xl font-light text-neutral-900 hover:text-black">
+                    +7 (495) 106-62-24
+                  </a>
+                  <div className="text-xs text-neutral-500 font-light mt-0.5">
+                    Региональный отдел поставок и тендеров (Пн-Пт 09:00–18:00)
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-white p-5">
-                <div className="text-[11px] font-mono uppercase text-neutral-400 mb-1">
-                  Прямой email для заявок и КД
+              {/* Right Column: Email for Orders & CAD Files */}
+              <div className="bg-white p-5 sm:p-6 flex flex-col justify-between space-y-4">
+                <div>
+                  <div className="text-[11px] font-mono uppercase text-neutral-400 mb-1">
+                    Прямой email для заявок и КД
+                  </div>
+                  <a href="mailto:info@sdmaf.ru" className="font-mono text-xl sm:text-2xl font-light text-neutral-900 hover:underline">
+                    info@sdmaf.ru
+                  </a>
+                  <div className="text-xs text-neutral-500 font-light mt-2 leading-relaxed">
+                    Принимаем заявки, эскизы и чертежи в форматах DWG, DXF, STEP, PDF онлайн. Экспресс-расчет КП и сметы от 1 часа.
+                  </div>
                 </div>
-                <a href="mailto:info@sdmaf.ru" className="font-mono text-xl sm:text-2xl font-light text-neutral-900 hover:underline">
-                  info@sdmaf.ru
-                </a>
-                <div className="text-xs text-neutral-500 font-light mt-1">
-                  Прием чертежей и заявок онлайн (расчет от 1 часа)
-                </div>
-              </div>
 
-              <div className="bg-white p-5">
-                <div className="text-[11px] font-mono uppercase text-neutral-400 mb-1">
-                  Отдел продаж в Москве
-                </div>
-                <a href="tel:+74951066224" className="font-mono text-xl sm:text-2xl font-light text-neutral-900 hover:text-black">
-                  +7 (495) 106-62-24
-                </a>
-                <div className="text-xs text-neutral-500 font-light mt-1">
-                  Москва и Московская область
+                <div className="pt-4 border-t border-neutral-100">
+                  <a
+                    href="mailto:info@sdmaf.ru?subject=Запрос на расчет стоимости металлоконструкций"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-neutral-900 text-white text-xs font-mono uppercase tracking-wider hover:bg-black transition-colors"
+                  >
+                    <span>Написать на почту завода</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </a>
                 </div>
               </div>
             </div>
@@ -413,14 +433,14 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
               </div>
             </div>
 
-            {/* Right: Plant Audit & Excursion Booking */}
+            {/* Right: Plant Excursion Booking */}
             <div className="lg:col-span-6 border border-neutral-200 bg-neutral-50 p-6 sm:p-8 flex flex-col justify-between">
               <div>
                 <div className="font-mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">
-                  [ Личный аудит цехов ]
+                  [ Экскурсия по цехам завода ]
                 </div>
                 <h3 className="text-xl sm:text-2xl font-light text-neutral-900 mb-3">
-                  Запись на экскурсию по заводу
+                  Запись на экскурсию на производство
                 </h3>
                 <p className="text-xs sm:text-sm text-neutral-500 font-light leading-relaxed mb-6">
                   Приглашаем главных инженеров, архитекторов и руководителей проектов лично оценить культуру производства, работу двух лазерных раскройщиков 22 кВт (столы 4м и 6м) и лаборатории ОТК.
@@ -511,7 +531,7 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
 
                     <div>
                       <label className="block text-[11px] font-mono uppercase tracking-wider text-neutral-500 mb-1">
-                        Цель аудита производства
+                        Цель экскурсии на производство
                       </label>
                       <select
                         value={visitorPurpose}
@@ -519,7 +539,7 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
                         className="w-full px-3 py-2 bg-white border border-neutral-300 text-xs text-neutral-900 focus:outline-none focus:border-black"
                       >
                         <option value="Осмотр цеха лазерной резки и гибки">Осмотр цеха лазерной резки и гибки</option>
-                        <option value="Аудит лаборатории ОТК и сварочного участка">Аудит лаборатории ОТК и сварочного участка</option>
+                        <option value="Осмотр лаборатории ОТК и сварочного участка">Осмотр лаборатории ОТК и сварочного участка</option>
                         <option value="Ознакомление с образцами МАФ в шоуруме">Ознакомление с образцами МАФ в шоуруме</option>
                         <option value="Согласование КМД с конструкторским отделом">Согласование КМД с конструкторским отделом</option>
                       </select>
@@ -559,36 +579,45 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
         </div>
       </section>
 
-      {/* Section 3: Legal & Banking Requisites */}
+      {/* Section 3: Legal & Banking Requisites (Clean action card without heavy table) */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-neutral-50/50">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-8 border-b border-neutral-200 mb-8">
-            <div>
+          <div className="border border-neutral-200 bg-white p-6 sm:p-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="max-w-2xl">
               <div className="font-mono text-[11px] uppercase tracking-widest text-neutral-400 mb-2">
                 [ Юридическая информация ]
               </div>
-              <h2 className="text-2xl sm:text-3xl font-light text-neutral-900 tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-light text-neutral-900 tracking-tight mb-2">
                 Реквизиты предприятия ООО «Кадет СПб»
               </h2>
-              <p className="text-xs text-neutral-500 font-light mt-1">
-                Для выставления счетов, договоров поставки и тендерной документации
+              <p className="text-xs sm:text-sm text-neutral-500 font-light leading-relaxed">
+                Юридическое лицо завода «Стальное Дело» для выставления счетов, заключения договоров поставки, расчетов по 44-ФЗ / 223-ФЗ и тендерной документации.
               </p>
+              <div className="mt-3 flex flex-wrap items-center gap-3 text-xs font-mono text-neutral-600">
+                <span>ИНН: <strong>7806540608</strong></span>
+                <span>•</span>
+                <span>КПП: <strong>780601001</strong></span>
+                <span>•</span>
+                <span>ОГРН: <strong>1187847071190</strong></span>
+                <span>•</span>
+                <span className="text-neutral-500">НДС 22%</span>
+              </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
               {onNavigateToRequisites && (
                 <button
                   onClick={onNavigateToRequisites}
-                  className="px-4 py-2.5 bg-neutral-900 text-white text-xs font-mono uppercase tracking-wider hover:bg-black transition-colors flex items-center gap-2 cursor-pointer"
+                  className="px-5 py-3 bg-neutral-900 text-white text-xs font-mono uppercase tracking-wider hover:bg-black transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs"
                 >
-                  <ExternalLink className="w-3.5 h-3.5" />
+                  <ExternalLink className="w-4 h-4" />
                   <span>Открыть страницу реквизитов</span>
                 </button>
               )}
 
               <button
                 onClick={() => copyToClipboard(fullRequisitesText, 'all')}
-                className="px-4 py-2.5 bg-white border border-neutral-300 text-neutral-900 text-xs font-mono uppercase tracking-wider hover:border-black transition-colors flex items-center gap-2 cursor-pointer"
+                className="px-5 py-3 bg-neutral-50 border border-neutral-300 text-neutral-900 text-xs font-mono uppercase tracking-wider hover:border-black hover:bg-white transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
                 {copiedField === 'all' ? (
                   <>
@@ -597,37 +626,11 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
                   </>
                 ) : (
                   <>
-                    <Copy className="w-4 h-4 text-neutral-500" />
+                    <Copy className="w-4 h-4 text-neutral-600" />
                     <span>Скопировать все реквизиты</span>
                   </>
                 )}
               </button>
-            </div>
-          </div>
-
-          <div className="border border-neutral-200 bg-white">
-            <div className="divide-y divide-neutral-100">
-              {legalRequisites.map((req, idx) => (
-                <div key={idx} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:bg-neutral-50/60 transition-colors">
-                  <div className="text-xs font-mono uppercase text-neutral-400 sm:w-1/3">
-                    {req.label}
-                  </div>
-                  <div className="text-xs sm:text-sm font-medium text-neutral-900 sm:w-1/2 break-words">
-                    {req.value}
-                  </div>
-                  <button
-                    onClick={() => copyToClipboard(req.value, req.label)}
-                    className="text-neutral-400 hover:text-black self-end sm:self-auto p-1.5 cursor-pointer"
-                    title={`Скопировать ${req.label}`}
-                  >
-                    {copiedField === req.label ? (
-                      <Check className="w-4 h-4 text-[#55AA53]" />
-                    ) : (
-                      <Copy className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-              ))}
             </div>
           </div>
 
