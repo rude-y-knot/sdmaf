@@ -30,5 +30,45 @@ User-agent: Bingbot
 Allow: /
 Disallow: /api/
 
+# AI Search & Neural Network Crawlers (GEO / AEO)
+User-agent: YandexBot
+Allow: /
+Disallow: /api/
+
+User-agent: YandexSearchBot
+Allow: /
+
+User-agent: YandexAliceBot
+Allow: /
+
+User-agent: AliceBot
+Allow: /
+
+User-agent: Alice
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+Disallow: /api/
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
 Host: https://sdmaf.ru
 Sitemap: https://sdmaf.ru/sitemap.xml
+# LLM Context summary: https://sdmaf.ru/llms.txt
