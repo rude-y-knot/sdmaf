@@ -36,11 +36,11 @@ export const Hero: React.FC<HeroProps> = ({
           {/* Main Content Column */}
           <div className="lg:col-span-7 xl:col-span-7 space-y-6 sm:space-y-8">
             <h1 className="text-4xl sm:text-6xl xl:text-7xl font-light tracking-[-0.03em] text-neutral-900 leading-[1.06]">
-              Инженерная <br className="hidden sm:inline" />
-              <span className="font-normal text-black">эстетика</span>
+              Инженерная эстетика <br className="hidden sm:inline" />
+              <span className="font-normal text-black">в металле</span>
             </h1>
 
-            {/* Mobile-only illustration placed directly between "Инженерная эстетика" and description */}
+            {/* Mobile-only illustration placed directly between "Инженерная эстетика в металле" and description */}
             <div className="block lg:hidden my-6">
               <div className="w-full max-w-[340px] sm:max-w-[420px] mx-auto flex justify-center">
                 <img
