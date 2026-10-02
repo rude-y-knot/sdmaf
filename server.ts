@@ -169,7 +169,7 @@ app.get("/llms-full.txt", (_req, res) => {
   res.sendFile(filePath);
 });
 
-app.get(["/ai-catalog.json", "/.well-known/ai-catalog.json"], (_req, res) => {
+app.get(["/ai-catalog.json", "/.well-known/ai-catalog.json", "/ard.json", "/.well-known/ard.json"], (_req, res) => {
   const filePath = path.join(process.cwd(), "public", "ai-catalog.json");
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   res.setHeader("Cache-Control", "public, max-age=3600");
