@@ -71,4 +71,7 @@ Allow: /
 
 Host: https://sdmaf.ru
 Sitemap: https://sdmaf.ru/sitemap.xml
-# LLM Context summary: https://sdmaf.ru/llms.txt
+# LLMs context: https://sdmaf.ru/llms.txt
+# LLMs full context: https://sdmaf.ru/llms-full.txt
+# AI Agent Catalog: https://sdmaf.ru/ai-catalog.json
+

@@ -1,0 +1,80 @@
+{
+  "$schema": "https://agentcatalog.org/schema/v1/ai-catalog.json",
+  "name": "Стальное Дело",
+  "legal_name": "ООО «Стальное Дело»",
+  "description": "Завод металлоконструкций, малых архитектурных форм (МАФ) и сертифицированного детского игрового оборудования из нержавеющей стали в Санкт-Петербурге (Колпино).",
+  "url": "https://sdmaf.ru",
+  "version": "1.0.0",
+  "contact": {
+    "organization": "Завод «Стальное Дело»",
+    "address": "Россия, 196653, г. Санкт-Петербург, г. Колпино, ул. Финляндская, д. 3",
+    "email": "info@sdmaf.ru",
+    "phone": "+7 (812) 648-52-99",
+    "url": "https://sdmaf.ru/contacts"
+  },
+  "resources": [
+    {
+      "type": "website",
+      "name": "Официальный сайт завода «Стальное Дело»",
+      "description": "Основной веб-сайт с каталогом МАФ, описанием производственных линий, калькулятором сметы и 3D-моделями",
+      "url": "https://sdmaf.ru"
+    },
+    {
+      "type": "llms_txt",
+      "name": "LLMs Context Manifest",
+      "description": "Машиночитаемый манифест и структурированная техническая информация для LLM и AI-агентов",
+      "url": "https://sdmaf.ru/llms.txt"
+    },
+    {
+      "type": "catalog",
+      "name": "Каталог продукции и МАФ",
+      "description": "Скаты для детских горок из нержавеющей стали AISI 304, уличные скамьи с термобрусом, урны, перголы, навесы, спа-купели и банные чаны от 2 до 10 персон",
+      "url": "https://sdmaf.ru/catalog"
+    },
+    {
+      "type": "production",
+      "name": "Производственные мощности и станки",
+      "description": "Лазерные комплексы Knoppo KF 3кВт (до 6м), ЧПУ листогибы HACO и MAIHONG 160т, 4-валковый станок Keepler 1500x4, 18 сварочных постов НАКС, комплекс порошковой окраски 6м",
+      "url": "https://sdmaf.ru/production"
+    },
+    {
+      "type": "engineering",
+      "name": "Конструкторское бюро (ЕСКД / BIM)",
+      "description": "Проектирование строго по ЕСКД, расчет нагрузок по СП 16.13330, разработка разделов КМ/КМД, SolidWorks, КОМПАС-3D, BIM (IFC, RVT)",
+      "url": "https://sdmaf.ru/engineering"
+    },
+    {
+      "type": "b2b",
+      "name": "Тендерный отдел и девелопмент (B2B)",
+      "description": "Поставки по 44-ФЗ и 223-ФЗ, НДС 22%, сертификаты ТР ЕАЭС 042/2017, банковские гарантии",
+      "url": "https://sdmaf.ru/b2b"
+    },
+    {
+      "type": "faq",
+      "name": "Техническая база знаний и FAQ",
+      "description": "Ответы на частые вопросы по допускам, маркам сталей, контролю ВИК/УЗК, срокам и доставке",
+      "url": "https://sdmaf.ru/faq"
+    }
+  ],
+  "capabilities": [
+    "fiber_laser_cutting",
+    "cnc_press_brake_bending",
+    "4_roll_sheet_rolling",
+    "naks_certified_welding",
+    "powder_polymer_coating",
+    "eskd_engineering_design",
+    "bim_3d_modeling",
+    "stainless_steel_slides_production",
+    "urban_street_furniture_fabrication"
+  ],
+  "compliance": [
+    "ТР ЕАЭС 042/2017",
+    "ГОСТ Р 52169-2012",
+    "НАКС (СК, КО)",
+    "ГОСТ 23118-2019",
+    "ГОСТ 23120-2016",
+    "СП 16.13330.2017",
+    "ЕСКД",
+    "ISO 9001:2015"
+  ]
+}

@@ -86,6 +86,13 @@ app.get("/sitemap.xml", (req, res) => {
 
 // Dynamic robots.txt
 app.get("/robots.txt", (req, res) => {
+  const robotsPath = path.join(process.cwd(), "public", "robots.txt");
+  if (fs.existsSync(robotsPath)) {
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    return res.sendFile(robotsPath);
+  }
+  
   const host = req.get("host") || `localhost:${PORT}`;
   const protocol = req.headers["x-forwarded-proto"] || req.protocol || "http";
   const baseUrl = `${protocol}://${host}`;
@@ -101,33 +108,72 @@ User-agent: Googlebot
 Allow: /
 Disallow: /api/
 
-User-agent: Googlebot-Image
-Allow: /
-Allow: /images/
-Allow: /assets/
-
-User-agent: Yandex
+User-agent: YandexBot
 Allow: /
 Disallow: /api/
-Clean-param: ref /
-Clean-param: source /
-Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term /
 
-User-agent: YandexImages
+User-agent: YandexAliceBot
 Allow: /
-Allow: /images/
-Allow: /assets/
 
-User-agent: Bingbot
+User-agent: AliceBot
+Allow: /
+
+User-agent: Alice
+Allow: /
+
+User-agent: GPTBot
 Allow: /
 Disallow: /api/
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
 
 Host: ${domain}
 Sitemap: ${domain}/sitemap.xml
+# LLMs context: ${domain}/llms.txt
+# LLMs full context: ${domain}/llms-full.txt
+# AI Agent Catalog: ${domain}/ai-catalog.json
 `;
 
   res.setHeader("Content-Type", "text/plain; charset=utf-8");
   res.send(robots);
+});
+
+// Explicit routes for AI manifests and catalogs (ARD / llmstxt specifications)
+app.get("/llms.txt", (_req, res) => {
+  const filePath = path.join(process.cwd(), "public", "llms.txt");
+  res.setHeader("Content-Type", "text/plain; charset=utf-8");
+  res.setHeader("Cache-Control", "public, max-age=3600");
+  res.sendFile(filePath);
+});
+
+app.get("/llms-full.txt", (_req, res) => {
+  const filePath = path.join(process.cwd(), "public", "llms-full.txt");
+  res.setHeader("Content-Type", "text/plain; charset=utf-8");
+  res.setHeader("Cache-Control", "public, max-age=3600");
+  res.sendFile(filePath);
+});
+
+app.get(["/ai-catalog.json", "/.well-known/ai-catalog.json"], (_req, res) => {
+  const filePath = path.join(process.cwd(), "public", "ai-catalog.json");
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.setHeader("Cache-Control", "public, max-age=3600");
+  res.sendFile(filePath);
 });
 
 // File upload endpoint: accepts multiple or single files (field 'files' or 'file')
