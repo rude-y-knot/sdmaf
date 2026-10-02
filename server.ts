@@ -56,18 +56,54 @@ const upload = multer({
   }
 });
 
+// Static file caching helper for optimal Lighthouse score (1 year immutable for hashed assets/images)
+const setCacheHeaders = (res: express.Response, filePath: string) => {
+  const ext = path.extname(filePath).toLowerCase();
+  
+  // Hashed JS/CSS in /assets directory -> 1 year immutable
+  if (filePath.includes(path.sep + 'assets' + path.sep) || filePath.includes('/assets/')) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    return;
+  }
+  
+  // Image and font formats -> 1 year immutable
+  if (['.webp', '.png', '.jpg', '.jpeg', '.svg', '.gif', '.ico', '.woff', '.woff2', '.ttf'].includes(ext)) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    return;
+  }
+
+  // CAD drawings
+  if (['.dxf', '.dwg', '.step', '.stp', '.igs'].includes(ext)) {
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    return;
+  }
+
+  // Web manifest / JSON / XML / TXT
+  if (['.webmanifest', '.json', '.xml', '.txt'].includes(ext)) {
+    res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+    return;
+  }
+};
+
 // Middleware
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
+// Explicit static serving for /images with 1-year caching
+const imagesDir = path.join(process.cwd(), "public", "images");
+if (fs.existsSync(imagesDir)) {
+  app.use("/images", express.static(imagesDir, {
+    maxAge: "365d",
+    immutable: true,
+    setHeaders: setCacheHeaders
+  }));
+}
+
 // Static serving for uploaded files so managers in Bitrix24 can download via direct URL
 app.use("/uploads", express.static(uploadsDir, {
   setHeaders: (res, filePath) => {
-    // Enable direct download and browser viewing
-    const ext = path.extname(filePath).toLowerCase();
-    if (ext === '.dxf' || ext === '.dwg' || ext === '.step' || ext === '.stp' || ext === '.igs') {
-      res.setHeader('Content-Type', 'application/octet-stream');
-    }
+    setCacheHeaders(res, filePath);
     res.setHeader('Access-Control-Allow-Origin', '*');
   }
 }));
@@ -283,7 +319,11 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
+    app.use(express.static(distPath, {
+      maxAge: "365d",
+      immutable: true,
+      setHeaders: setCacheHeaders
+    }));
     app.get("*", (_req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
     });
