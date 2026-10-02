@@ -19,6 +19,7 @@ import { ContactsPage } from './pages/ContactsPage';
 import { RequisitesPage } from './pages/RequisitesPage';
 import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
 import { PublicOfferPage } from './pages/PublicOfferPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 import { CookieConsentBanner } from './components/CookieConsentBanner';
 import { LegalPolicyModal } from './components/LegalPolicyModal';
 import { EstimateProvider, useEstimate } from './context/EstimateContext';
@@ -568,8 +569,25 @@ export default function App() {
               }
             />
 
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            {/* 9. 404 Not Found Page */}
+            <Route
+              path="/404"
+              element={
+                <NotFoundPage
+                  onOpenCalculator={() => setIsCalculatorModalOpen(true)}
+                  onOpenMeasurerModal={() => setIsMeasurerModalOpen(true)}
+                />
+              }
+            />
+            <Route
+              path="*"
+              element={
+                <NotFoundPage
+                  onOpenCalculator={() => setIsCalculatorModalOpen(true)}
+                  onOpenMeasurerModal={() => setIsMeasurerModalOpen(true)}
+                />
+              }
+            />
           </Routes>
         </main>
 

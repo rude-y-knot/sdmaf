@@ -135,7 +135,6 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
       title: 'Отдел продаж и клиентский сервис',
       desc: 'Расчет стоимости изделий МАФ, выставление счетов, типовые и индивидуальные заказы',
       phone: '+7 (812) 642-88-90',
-      phoneExt: 'доб. 101',
       email: 'info@sdmaf.ru',
       hours: 'Пн–Пт: 08:30 – 18:00',
     },
@@ -143,7 +142,6 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
       title: 'Тендерный отдел (44-ФЗ и 223-ФЗ)',
       desc: 'Подготовка конкурсных заявок, госконтракты, казначейское и банковское сопровождение',
       phone: '+7 (812) 642-88-90',
-      phoneExt: 'доб. 104',
       email: 'tender@sdmaf.ru',
       hours: 'Пн–Пт: 08:30 – 18:00',
     },
@@ -151,7 +149,6 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
       title: 'Конструкторское бюро и прием чертежей',
       desc: 'Проверка файлов DXF/DWG/STEP, разработка КМ/КМД, 3D-моделирование и BIM',
       phone: '+7 (812) 642-88-90',
-      phoneExt: 'доб. 106',
       email: 'kb@sdmaf.ru',
       hours: 'Пн–Пт: 08:30 – 17:30',
     },
@@ -159,7 +156,6 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
       title: 'Служба логистики и склад готовой продукции',
       desc: 'Оформление пропусков на территорию завода, согласование времени подачи шаланд',
       phone: '+7 (812) 642-88-90',
-      phoneExt: 'доб. 108',
       email: 'logist@sdmaf.ru',
       hours: 'Доставка по всей России (Пн–Пт 08:00 – 17:00)',
     },
@@ -335,12 +331,9 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
                   <div className="space-y-3 font-mono text-xs border-t border-neutral-100 pt-4">
                     <div className="flex items-center justify-between">
                       <span className="text-neutral-400 uppercase text-[10px]">Телефон:</span>
-                      <div className="flex items-center gap-2">
-                        <a href={`tel:${dept.phone}`} className="text-neutral-900 font-medium hover:underline">
-                          {dept.phone}
-                        </a>
-                        <span className="text-neutral-400 text-[11px]">{dept.phoneExt}</span>
-                      </div>
+                      <a href={`tel:${dept.phone}`} className="text-neutral-900 font-medium hover:underline">
+                        {dept.phone}
+                      </a>
                     </div>
 
                     <div className="flex items-center justify-between">
