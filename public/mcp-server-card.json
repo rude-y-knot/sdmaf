@@ -1,0 +1,14 @@
+{
+  "name": "Инженерный MCP сервер завода «Стальное Дело»",
+  "description": "Model Context Protocol сервер для технологических расчетов и формирования КП",
+  "version": "1.0.0",
+  "transport": {
+    "type": "sse",
+    "url": "https://sdmaf.ru/api/mcp/sse"
+  },
+  "capabilities": {
+    "tools": true,
+    "resources": true,
+    "prompts": true
+  }
+}

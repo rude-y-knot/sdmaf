@@ -38,8 +38,8 @@ export const EstimateProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-    } catch (e) {
-      console.error('Failed to persist estimate items', e);
+    } catch {
+      // Ignore localStorage access restrictions in private/audit environments
     }
   }, [items]);
 

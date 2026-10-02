@@ -6,8 +6,20 @@ import multer from "multer";
 import { createServer as createViteServer } from "vite";
 import { generateSitemapXml } from "./src/utils/sitemapGenerator";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const getFileAndDir = () => {
+  if (typeof __dirname !== "undefined" && typeof __filename !== "undefined") {
+    return { filename: __filename, dirname: __dirname };
+  }
+  try {
+    const filename = fileURLToPath(import.meta.url);
+    const dirname = path.dirname(filename);
+    return { filename, dirname };
+  } catch {
+    return { filename: "", dirname: process.cwd() };
+  }
+};
+
+const { filename: _currentFilename, dirname: _currentDirname } = getFileAndDir();
 
 const app = express();
 const PORT = 3000;
@@ -172,6 +184,20 @@ app.get("/llms-full.txt", (_req, res) => {
 app.get(["/ai-catalog.json", "/.well-known/ai-catalog.json", "/ard.json", "/.well-known/ard.json"], (_req, res) => {
   const filePath = path.join(process.cwd(), "public", "ai-catalog.json");
   res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.setHeader("Cache-Control", "public, max-age=3600");
+  res.sendFile(filePath);
+});
+
+app.get(["/agent-card.json", "/.well-known/agent-card.json", "/a2a-agent-card.json"], (_req, res) => {
+  const filePath = path.join(process.cwd(), "public", "agent-card.json");
+  res.setHeader("Content-Type", "application/a2a-agent-card+json; charset=utf-8");
+  res.setHeader("Cache-Control", "public, max-age=3600");
+  res.sendFile(filePath);
+});
+
+app.get(["/mcp-server-card.json", "/.well-known/mcp-server-card.json"], (_req, res) => {
+  const filePath = path.join(process.cwd(), "public", "mcp-server-card.json");
+  res.setHeader("Content-Type", "application/mcp-server-card+json; charset=utf-8");
   res.setHeader("Cache-Control", "public, max-age=3600");
   res.sendFile(filePath);
 });

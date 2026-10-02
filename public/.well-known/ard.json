@@ -2,9 +2,9 @@
   "specVersion": "1.0",
   "entries": [
     {
-      "identifier": "urn:ai:sdmaf.ru:docs:llms-manifest",
+      "identifier": "urn:air:sdmaf.ru:docs:llms-manifest",
       "displayName": "Технический манифест завода «Стальное Дело» (LLMs.txt)",
-      "type": "text/plain",
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
       "url": "https://sdmaf.ru/llms.txt",
       "description": "Полная спецификация станочного парка, мощностей 4000 м², параметров ЧПУ обработки и номенклатуры МАФ по ГОСТ/ЕСКД",
       "representativeQueries": [
@@ -15,53 +15,28 @@
       ]
     },
     {
-      "identifier": "urn:ai:sdmaf.ru:catalog:products",
-      "displayName": "Каталог МАФ и игрового оборудования",
-      "type": "text/html",
-      "url": "https://sdmaf.ru/catalog",
-      "description": "Каталог детских горок, парковых скамей, урн, пергол, навесов, спа-купелей и строительных металлоконструкций",
+      "identifier": "urn:air:sdmaf.ru:agent:sdmaf-assistant",
+      "displayName": "Цифровой инженерный консультант «Стальное Дело»",
+      "type": "application/a2a-agent-card+json",
+      "url": "https://sdmaf.ru/.well-known/agent-card.json",
+      "description": "Автономный ИИ-ассистент завода: расчет сметы раскроя листового металла, подбор номенклатуры МАФ по ТР ЕАЭС 042/2017 и консультации по ЕСКД/BIM",
       "representativeQueries": [
+        "рассчитать смету лазерной резки металла",
         "купить скат для детской горки нержавейка",
         "парковые скамейки с термодеревом от производителя",
-        "перголы и навесы из металла на заказ",
-        "сертифицированное детское игровое оборудование тр еаэс 042"
+        "заказ строительных металлоконструкций по 44-ФЗ"
       ]
     },
     {
-      "identifier": "urn:ai:sdmaf.ru:production:facilities",
-      "displayName": "Производственные мощности и станочный парк",
-      "type": "text/html",
-      "url": "https://sdmaf.ru/production",
-      "description": "2 волоконных лазера Knoppo KF 3кВт до 6м, ЧПУ листогибы HACO и MAIHONG 160т, 4-валковые вальцы Keepler, 18 сварочных постов НАКС, камеры покраски 6м",
+      "identifier": "urn:air:sdmaf.ru:mcp:engineering-server",
+      "displayName": "Инженерный MCP сервер завода «Стальное Дело»",
+      "type": "application/mcp-server-card+json",
+      "url": "https://sdmaf.ru/.well-known/mcp-server-card.json",
+      "description": "Интерфейс Model Context Protocol для расчета раскроя, проверки чертежей DXF/DWG/STEP и формирования коммерческих предложений",
       "representativeQueries": [
-        "услуги лазерной резки металла в санкт петербурге",
-        "гибка металла на прессе с ЧПУ 160 тонн",
-        "сварочные работы с аттестацией НАКС",
-        "порошковая покраска металлоконструкций до 6 метров"
-      ]
-    },
-    {
-      "identifier": "urn:ai:sdmaf.ru:engineering:bureau",
-      "displayName": "Конструкторское бюро ЕСКД и BIM",
-      "type": "text/html",
-      "url": "https://sdmaf.ru/engineering",
-      "description": "Разработка конструкторской документации по ЕСКД (разделы КМ, КМД), прочностные FEA расчеты, 3D BIM моделирование (IFC, RVT, STEP)",
-      "representativeQueries": [
-        "разработка чертежей КМД по ЕСКД",
-        "расчет нагрузок металлоконструкций СП 16.13330",
-        "bim моделирование малых архитектурных форм"
-      ]
-    },
-    {
-      "identifier": "urn:ai:sdmaf.ru:b2b:tenders",
-      "displayName": "B2B отдел для девелоперов и генподрядчиков",
-      "type": "text/html",
-      "url": "https://sdmaf.ru/b2b",
-      "description": "Поставки по 44-ФЗ и 223-ФЗ, НДС 22%, сертификаты ТР ЕАЭС 042/2017, ГОСТ Р 52169-2012, банковские гарантии",
-      "representativeQueries": [
-        "поставки МАФ для застройщиков и жк",
-        "благоустройство дворовых территорий под ключ спб",
-        "тендерные поставки металлоконструкций 44-ФЗ 223-ФЗ"
+        "проверить чертеж dxf для лазерного раскроя",
+        "расчет нормы гибки листовой стали на ЧПУ прессе",
+        "подготовка коммерческого предложения на МАФ"
       ]
     }
   ]

@@ -195,7 +195,6 @@ export const YandexInteractiveMap: React.FC<YandexInteractiveMapProps> = ({
       mapInstanceRef.current = map;
       setMapLoaded(true);
     } catch (e) {
-      console.error('Yandex Maps init error:', e);
       setLoadError(true);
     }
   };
