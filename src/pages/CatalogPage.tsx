@@ -782,13 +782,13 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
       <SEOHead
         title={
           routeCategory
-            ? `${currentSection.title} — Каталог завода «Стальное Дело» СПб`
-            : 'Каталог продукции и МАФ от производителя | Завод «Стальное Дело» СПб'
+            ? `${currentSection.title} — Завод «Стальное Дело» СПб`
+            : 'Каталог МАФ и уличной мебели | Завод «Стальное Дело» СПб'
         }
         description={
           routeCategory
-            ? currentSection.lead.slice(0, 160)
-            : 'Каталог сертифицированной продукции завода «Стальное Дело» (СПб, Колпино): уличная мебель, детские горки AISI 304, банные чаны, вывески, сувениры, POS-материалы и велопарковки.'
+            ? (currentSection.lead.length > 155 ? `${currentSection.lead.slice(0, 155).trim()}...` : currentSection.lead)
+            : 'Каталог малых архитектурных форм завода «Стальное Дело» (СПб): уличная мебель, детские горки AISI 304, банные чаны, велопарковки, стелы и ограждения по ГОСТ.'
         }
         keywords={
           routeCategory

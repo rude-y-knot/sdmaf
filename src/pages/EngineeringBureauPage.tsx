@@ -169,8 +169,8 @@ export const EngineeringBureauPage: React.FC<EngineeringBureauPageProps> = ({
   return (
     <div className="bg-white min-h-screen selection:bg-black selection:text-white">
       <SEOHead
-        title="Конструкторское бюро завода «Стальное Дело» | Разработка КМ, КМД, ТУ по ЕСКД"
-        description="Проектирование металлоконструкций и МАФ: разработка рабочих чертежей КМ/КМД, 3D-моделирование SolidWorks/КОМПАС, подготовка разверток под лазерный раскрой ЧПУ."
+        title="Конструкторское бюро завода (ЕСКД, BIM) | «Стальное Дело»"
+        description="Проектирование металлоконструкций и МАФ: разработка чертежей КМ/КМД, 3D-моделирование SolidWorks/КОМПАС, подготовка разверток под лазерный раскрой ЧПУ."
         keywords="конструкторское бюро спб, разработка кмд, проектирование металлоконструкций, чертежи dxf для лазера, solidworks, компас-3d, стальное дело"
         canonicalPath="/engineering"
         jsonLd={{

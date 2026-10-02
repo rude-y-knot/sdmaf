@@ -98,9 +98,9 @@ export const ProductionUnitDetailPage: React.FC<ProductionUnitDetailPageProps> =
   return (
     <div className="bg-white min-h-screen selection:bg-black selection:text-white">
       <SEOHead
-        title={`${unit.title} | Завод «Стальное Дело» Колпино (СПб)`}
-        description={unit.description.slice(0, 160)}
-        keywords={`${unit.shortTitle.toLowerCase()}, ${unit.brand.toLowerCase()}, металлообработка спб, колпино, завод стальное дело, станки чпу`}
+        title={`${unit.shortTitle} — Завод «Стальное Дело» СПб`}
+        description={unit.description.length > 155 ? `${unit.description.slice(0, 155).trim()}...` : unit.description}
+        keywords={`${unit.shortTitle.toLowerCase()}, ${unit.brand.toLowerCase()}, металлообработка спб, колпино, завод стальное дело, станки чпу, услуги производства`}
         canonicalPath={location.pathname || `/production/${unit.id}`}
         jsonLd={{
           '@context': 'https://schema.org',
