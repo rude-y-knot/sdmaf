@@ -6,93 +6,212 @@
     <meta name="robots" content="noindex, follow" />
     <title>404 — Страница не найдена | Завод «Стальное Дело»</title>
     <style>
+      * {
+        box-sizing: border-box;
+      }
       body {
         margin: 0;
         padding: 0;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
         background-color: #ffffff;
         color: #171717;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         min-height: 100vh;
-        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
       }
-      .container {
-        max-width: 600px;
-        padding: 40px 20px;
+      header {
+        border-bottom: 1px solid #e5e5e5;
+        padding: 12px 24px;
+        background-color: #fafafa;
+        font-family: monospace;
+        font-size: 12px;
+        color: #737373;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .logo-tag {
+        font-weight: 700;
+        color: #171717;
+      }
+      main {
+        flex: 1;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 48px 24px;
+        width: 100%;
+      }
+      .card {
+        border: 1px solid #e5e5e5;
+        background-color: #fafafa;
+        padding: 40px;
+        margin-bottom: 32px;
       }
       .badge {
         display: inline-block;
-        padding: 4px 12px;
+        padding: 4px 10px;
         background: #fef3c7;
+        border: 1px solid #fde68a;
         color: #78350f;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 700;
         font-family: monospace;
-        border-radius: 9999px;
-        margin-bottom: 20px;
         text-transform: uppercase;
+        margin-bottom: 16px;
       }
       h1 {
-        font-size: 72px;
-        margin: 0 0 10px 0;
-        font-weight: 900;
-        font-family: monospace;
-      }
-      h2 {
-        font-size: 22px;
+        font-size: 42px;
+        font-weight: 300;
+        line-height: 1.1;
         margin: 0 0 16px 0;
-        color: #171717;
+        letter-spacing: -0.02em;
+      }
+      h1 span {
+        font-family: monospace;
+        font-weight: 700;
       }
       p {
         font-size: 15px;
         color: #525252;
         line-height: 1.6;
-        margin-bottom: 30px;
+        margin: 0 0 24px 0;
       }
-      .btn-group {
+      .btn-row {
         display: flex;
         gap: 12px;
-        justify-content: center;
         flex-wrap: wrap;
+        border-top: 1px solid #e5e5e5;
+        padding-top: 24px;
       }
       .btn {
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 600;
+        padding: 12px 20px;
+        font-size: 12px;
+        font-family: monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
         text-decoration: none;
-        transition: all 0.2s ease;
+        font-weight: 600;
+        transition: all 0.15s ease;
+        display: inline-flex;
+        align-items: center;
       }
       .btn-primary {
-        background: #0a0a0a;
+        background: #171717;
         color: #ffffff;
       }
       .btn-primary:hover {
-        background: #262626;
+        background: #000000;
       }
       .btn-secondary {
-        background: #f5f5f5;
+        background: #ffffff;
         color: #171717;
-        border: 1px solid #e5e5e5;
+        border: 1px solid #d4d4d4;
       }
       .btn-secondary:hover {
-        background: #e5e5e5;
+        background: #f5f5f5;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 16px;
+      }
+      .grid-item {
+        border: 1px solid #e5e5e5;
+        background: #ffffff;
+        padding: 20px;
+        text-decoration: none;
+        color: inherit;
+        transition: border-color 0.15s ease;
+      }
+      .grid-item:hover {
+        border-color: #171717;
+      }
+      .grid-badge {
+        font-family: monospace;
+        font-size: 10px;
+        color: #a3a3a3;
+        margin-bottom: 6px;
+      }
+      .grid-title {
+        font-size: 14px;
+        font-weight: 700;
+        margin: 0 0 4px 0;
+      }
+      .grid-desc {
+        font-size: 12px;
+        color: #737373;
+        margin: 0;
+      }
+      footer {
+        border-top: 1px solid #e5e5e5;
+        padding: 20px 24px;
+        background-color: #fafafa;
+        font-family: monospace;
+        font-size: 12px;
+        color: #737373;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      footer a {
+        color: #171717;
+        text-decoration: none;
+        font-weight: 600;
+      }
+      @media (max-width: 640px) {
+        .card { padding: 24px; }
+        h1 { font-size: 32px; }
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="badge">Ошибка 404 • Ресурс не найден</div>
-      <h1>404</h1>
-      <h2>Чертеж не найден или страница была перемещена</h2>
-      <p>Запрашиваемая страница не существует. Воспользуйтесь ссылками ниже для перехода в нужный раздел завода «Стальное Дело».</p>
-      <div class="btn-group">
-        <a href="/" class="btn btn-primary">На главную страницу</a>
-        <a href="/catalog" class="btn btn-secondary">Каталог МАФ и мебели</a>
-        <a href="/contacts" class="btn btn-secondary">Контакты завода</a>
+    <header>
+      <div class="logo-tag">ЗМК «СТАЛЬНОЕ ДЕЛО» • САНКТ-ПЕТЕРБУРГ</div>
+      <div>HTTP/2 404 NOT FOUND</div>
+    </header>
+
+    <main>
+      <div class="card">
+        <div class="badge">[ Ошибка 404 ] Чертеж узла не найден</div>
+        <h1>Запрашиваемый адрес <span>не существует</span></h1>
+        <p>Страница была перемещена, удалена или в адресе допущена ошибка. Выберите нужный раздел завода из меню ниже:</p>
+        
+        <div class="btn-row">
+          <a href="/" class="btn btn-primary">На главную страницу</a>
+          <a href="/catalog" class="btn btn-secondary">Каталог МАФ</a>
+          <a href="/laser" class="btn btn-secondary">Лазерный раскрой 22 кВт</a>
+          <a href="/contacts" class="btn btn-secondary">Контакты завода</a>
+        </div>
       </div>
-    </div>
+
+      <div class="grid">
+        <a href="/catalog/slides" class="grid-item">
+          <div class="grid-badge">01. КАТАЛОГ</div>
+          <div class="grid-title">Горки и тоннели из нержавейки</div>
+          <div class="grid-desc">Прямые, винтовые и геопластические скаты AISI 304</div>
+        </a>
+        <a href="/catalog/furniture" class="grid-item">
+          <div class="grid-badge">02. КАТАЛОГ</div>
+          <div class="grid-title">Парковая мебель и перголы</div>
+          <div class="grid-desc">Скамьи, шезлонги, урны и теневые навесы</div>
+        </a>
+        <a href="/catalog/vats" class="grid-item">
+          <div class="grid-badge">03. КАТАЛОГ</div>
+          <div class="grid-title">Банные чаны и купели</div>
+          <div class="grid-desc">Премиальные чаны с гидромассажем и отделкой лиственницей</div>
+        </a>
+      </div>
+    </main>
+
+    <footer>
+      <div>СПб, г. Колпино, ул. Финляндская, 3 (Ижорские заводы)</div>
+      <div>
+        Тел: <a href="tel:+78126428890">+7 (812) 642-88-90</a> | 
+        Email: <a href="mailto:info@sdmaf.ru">info@sdmaf.ru</a>
+      </div>
+    </footer>
   </body>
 </html>
