@@ -22,6 +22,8 @@ import {
   Database
 } from 'lucide-react';
 import { ConsentCheckbox } from '../components/ConsentCheckbox';
+import { SmartCaptchaWidget } from '../components/SmartCaptchaWidget';
+import { validateAntiSpam, recordSubmissionTimestamp } from '../services/antiSpamService';
 import { sendLeadToBitrix24, buildBitrixLeadTitle } from '../services/bitrixService';
 import { SEOHead } from '../components/SEOHead';
 
@@ -56,6 +58,10 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
   const [isSubmittingVisit, setIsSubmittingVisit] = useState(false);
   const [visitSubmitted, setVisitSubmitted] = useState(false);
   const [createdLeadId, setCreatedLeadId] = useState<string | number | null>(null);
+  const [visitorCaptchaToken, setVisitorCaptchaToken] = useState('');
+  const [visitorHoneypot, setVisitorHoneypot] = useState('');
+  const [visitorStartTime] = useState<number>(() => Date.now());
+  const [visitorCooldownError, setVisitorCooldownError] = useState<string | null>(null);
 
   // Quick Callback Form
   const [cbName, setCbName] = useState('');
@@ -72,7 +78,27 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
 
   const handleVisitSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setVisitorCooldownError(null);
     if (!visitorPhone || !visitorConsent) return;
+
+    // Anti-spam check
+    const spamCheck = validateAntiSpam({
+      honeypotValue: visitorHoneypot,
+      formStartTime: visitorStartTime,
+      captchaToken: visitorCaptchaToken,
+    });
+
+    if (!spamCheck.allowed) {
+      if (spamCheck.waitRemainingSeconds) {
+        setVisitorCooldownError(`Заявка уже отправлена. Повторная отправка через ${spamCheck.waitRemainingSeconds} сек.`);
+        return;
+      } else {
+        setVisitSubmitted(true);
+        setCreatedLeadId(`PROT-${Date.now().toString().slice(-4)}`);
+        return;
+      }
+    }
+
     setIsSubmittingVisit(true);
 
     const leadTitle = buildBitrixLeadTitle(
@@ -89,6 +115,7 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
         company: visitorCompany,
         department: 'Служба безопасности завода и дирекция по производству',
         pageSource: 'Страница: Контакты / Запись на экскурсию на производство в Колпино',
+        captchaToken: visitorCaptchaToken,
         details: {
           'Цель экскурсии': visitorPurpose,
           'Запланированная дата': visitorDate || 'Ближайший рабочий день',
@@ -101,6 +128,7 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
       if (result.leadId) {
         setCreatedLeadId(result.leadId);
       }
+      recordSubmissionTimestamp();
     } catch (err) {
       console.warn('Bitrix lead error:', err);
     } finally {
@@ -537,6 +565,31 @@ export const ContactsPage: React.FC<ContactsPageProps> = ({
                         <option value="Согласование КМД с конструкторским отделом">Согласование КМД с конструкторским отделом</option>
                       </select>
                     </div>
+
+                    {visitorCooldownError && (
+                      <div className="p-2.5 bg-red-50 border border-red-200 text-red-700 text-xs font-mono">
+                        {visitorCooldownError}
+                      </div>
+                    )}
+
+                    {/* Honeypot invisible trap */}
+                    <div style={{ display: 'none', position: 'absolute', left: '-9999px' }} aria-hidden="true">
+                      <input
+                        type="text"
+                        name="excursion_site_trap"
+                        tabIndex={-1}
+                        autoComplete="off"
+                        value={visitorHoneypot}
+                        onChange={(e) => setVisitorHoneypot(e.target.value)}
+                      />
+                    </div>
+
+                    {/* Yandex SmartCaptcha */}
+                    <SmartCaptchaWidget
+                      theme="light"
+                      onSuccess={(token) => setVisitorCaptchaToken(token)}
+                      onReset={() => setVisitorCaptchaToken('')}
+                    />
 
                     <ConsentCheckbox
                       id="contacts-excursion-consent"

@@ -20,6 +20,8 @@ import {
 import { MAFProduct } from '../types';
 import { useEstimate } from '../context/EstimateContext';
 import { ConsentCheckbox } from './ConsentCheckbox';
+import { SmartCaptchaWidget } from './SmartCaptchaWidget';
+import { validateAntiSpam, recordSubmissionTimestamp } from '../services/antiSpamService';
 import { sendLeadToBitrix24, buildBitrixLeadTitle } from '../services/bitrixService';
 
 interface ProductQuoteModalProps {
@@ -60,6 +62,10 @@ export const ProductQuoteModal: React.FC<ProductQuoteModalProps> = ({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [createdLeadId, setCreatedLeadId] = useState<string | number | null>(null);
   const [addedToBatchSuccess, setAddedToBatchSuccess] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState('');
+  const [honeypotTrap, setHoneypotTrap] = useState('');
+  const [formStartTime] = useState<number>(() => Date.now());
+  const [cooldownError, setCooldownError] = useState<string | null>(null);
 
   if (!isOpen || !product) return null;
 
@@ -67,7 +73,27 @@ export const ProductQuoteModal: React.FC<ProductQuoteModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setCooldownError(null);
     if (!contactPhone.trim() || !consentChecked) return;
+
+    // Anti-spam validation
+    const spamCheck = validateAntiSpam({
+      honeypotValue: honeypotTrap,
+      formStartTime: formStartTime,
+      captchaToken: captchaToken,
+    });
+
+    if (!spamCheck.allowed) {
+      if (spamCheck.waitRemainingSeconds) {
+        setCooldownError(`Заявка уже отправлена. Повторная отправка через ${spamCheck.waitRemainingSeconds} сек.`);
+        return;
+      } else {
+        // Honeypot trap: simulate success silently
+        setIsSubmitted(true);
+        setCreatedLeadId(`PROT-${Date.now().toString().slice(-4)}`);
+        return;
+      }
+    }
 
     setIsSubmitting(true);
 
@@ -87,6 +113,7 @@ export const ProductQuoteModal: React.FC<ProductQuoteModalProps> = ({
         company: contactCompany,
         department: 'Отдел продаж и комплектации МАФ',
         pageSource: `Каталог МАФ / Модель ${product.name} (${product.article})`,
+        captchaToken: captchaToken,
         details: {
           'Модель МАФ': product.name,
           'Артикул': product.article,
@@ -106,6 +133,7 @@ export const ProductQuoteModal: React.FC<ProductQuoteModalProps> = ({
       if (result.leadId) {
         setCreatedLeadId(result.leadId);
       }
+      recordSubmissionTimestamp();
     } catch (err) {
       console.warn('Bitrix lead dispatch error:', err);
     } finally {
@@ -632,6 +660,31 @@ export const ProductQuoteModal: React.FC<ProductQuoteModalProps> = ({
                       <option value="express">Экспресс: 2-3 раб.дня</option>
                     </select>
                   </div>
+
+                  {cooldownError && (
+                    <div className="p-2.5 bg-red-50 border border-red-200 text-red-700 text-xs font-mono">
+                      {cooldownError}
+                    </div>
+                  )}
+
+                  {/* Honeypot invisible trap */}
+                  <div style={{ display: 'none', position: 'absolute', left: '-9999px' }} aria-hidden="true">
+                    <input
+                      type="text"
+                      name="site_trap_field"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={honeypotTrap}
+                      onChange={(e) => setHoneypotTrap(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Yandex SmartCaptcha */}
+                  <SmartCaptchaWidget
+                    theme="light"
+                    onSuccess={(token) => setCaptchaToken(token)}
+                    onReset={() => setCaptchaToken('')}
+                  />
 
                   <ConsentCheckbox
                     id="product-quote-consent"

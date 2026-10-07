@@ -17,6 +17,8 @@ import {
   Info
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { SmartCaptchaWidget } from './SmartCaptchaWidget';
+import { validateAntiSpam, recordSubmissionTimestamp } from '../services/antiSpamService';
 import { sendLeadToBitrix24, buildBitrixLeadTitle } from '../services/bitrixService';
 
 interface SmartQuoteCalculatorProps {
@@ -63,6 +65,9 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [createdLeadId, setCreatedLeadId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string>('');
+  const [honeypotTrap, setHoneypotTrap] = useState<string>('');
+  const [formStartTime] = useState<number>(() => Date.now());
 
   useEffect(() => {
     if (initialService) {
@@ -160,6 +165,24 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
       return;
     }
 
+    // Anti-spam validation (Honeypot + Cooldown check)
+    const spamCheck = validateAntiSpam({
+      honeypotValue: honeypotTrap,
+      formStartTime: formStartTime,
+      captchaToken: captchaToken,
+    });
+
+    if (!spamCheck.allowed) {
+      if (spamCheck.waitRemainingSeconds) {
+        setErrorMessage(`Заявка уже отправлена. Повторная отправка возможна через ${spamCheck.waitRemainingSeconds} сек.`);
+      } else {
+        // Honeypot or bot speed detected: show graceful simulation without polluting CRM
+        setIsSubmitted(true);
+        setCreatedLeadId(`PROT-${Date.now().toString().slice(-4)}`);
+      }
+      return;
+    }
+
     setIsSubmitting(true);
 
     const selectedTaskObj = tasks.find((t) => t.id === taskType);
@@ -171,22 +194,6 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
 
     const leadTitle = `Расчет: ${selectedTaskObj?.title || 'Изделие'} (${estimatedQuantity} шт.) - ${contactName || 'Заказчик'}`;
 
-    const leadComments = `
---- ЗАЯВКА ИЗ ОНЛАЙН-КАЛЬКУЛЯТОРА ЗАВОДА ---
-Тип продукции/задачи: ${selectedTaskObj?.title}
-Марка стали: ${selectedAlloyObj?.title} (${selectedAlloyObj?.grade})
-Количество/Тираж: ${estimatedQuantity} шт.
-Давальческое сырье / Металл завода: ${materialSupply === 'customer' ? 'Давальческий металл заказчика' : 'Собственный сертифицированный металл завода'}
-Технологические операции: ${selectedOpsTitles}
-Наличие КД/чертежей: ${hasDrawings ? 'Чертежи предоставлены' : 'Требуется разработка КБ завода'}
-Срочность заказа: ${urgency === 'urgent' ? 'СРОЧНО (24–48 часов, приоритет)' : urgency === 'express' ? 'Ускоренно (3–5 дней)' : 'Стандартный график'}
-Прикрепленный файл КД: ${fileName || 'Не прикреплен'}
-Компания: ${contactCompany || 'Не указана'}
-Контактное лицо: ${contactName}
-Телефон: ${contactPhone}
-Дополнительный комментарий: ${comment || '—'}
-    `.trim();
-
     try {
       const result = await sendLeadToBitrix24({
         sourceType: 'laser_calculator',
@@ -194,6 +201,7 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
         name: contactName,
         phone: contactPhone,
         company: contactCompany,
+        captchaToken: captchaToken,
         details: {
           'Тип продукции': selectedTaskObj?.title || 'Изделие',
           'Марка стали': `${selectedAlloyObj?.title || 'Сталь'} (${selectedAlloyObj?.grade || ''})`,
@@ -208,6 +216,7 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
       });
 
       if (result.success) {
+        recordSubmissionTimestamp();
         setIsSubmitted(true);
         if (result.leadId) {
           setCreatedLeadId(String(result.leadId));
@@ -769,6 +778,25 @@ export const SmartQuoteCalculator: React.FC<SmartQuoteCalculatorProps> = ({
                       className="w-full px-3.5 py-2.5 bg-white border border-neutral-300 focus:border-black focus:outline-none text-xs text-neutral-900 resize-none"
                     />
                   </div>
+
+                  {/* Honeypot anti-spam invisible field */}
+                  <div style={{ display: 'none', position: 'absolute', left: '-9999px' }} aria-hidden="true">
+                    <input
+                      type="text"
+                      name="website_url_check"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={honeypotTrap}
+                      onChange={(e) => setHoneypotTrap(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Yandex SmartCaptcha Widget */}
+                  <SmartCaptchaWidget
+                    theme="light"
+                    onSuccess={(token) => setCaptchaToken(token)}
+                    onReset={() => setCaptchaToken('')}
+                  />
 
                   <div className="pt-2">
                     <button

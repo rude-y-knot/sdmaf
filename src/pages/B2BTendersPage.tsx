@@ -23,6 +23,8 @@ import {
   Database
 } from 'lucide-react';
 import { ConsentCheckbox } from '../components/ConsentCheckbox';
+import { SmartCaptchaWidget } from '../components/SmartCaptchaWidget';
+import { validateAntiSpam, recordSubmissionTimestamp } from '../services/antiSpamService';
 import { sendLeadToBitrix24 } from '../services/bitrixService';
 import { SEOHead } from '../components/SEOHead';
 
@@ -62,13 +64,37 @@ export const B2BTendersPage: React.FC<B2BTendersPageProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [createdLeadId, setCreatedLeadId] = useState<string | number | null>(null);
+  const [captchaToken, setCaptchaToken] = useState('');
+  const [honeypotTrap, setHoneypotTrap] = useState('');
+  const [formStartTime] = useState<number>(() => Date.now());
+  const [cooldownError, setCooldownError] = useState<string | null>(null);
 
   // Active Audience Tab
   const [activeAudience, setActiveAudience] = useState<number>(0);
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setCooldownError(null);
     if ((!formPhone && !formEmail) || !consentChecked) return;
+
+    // Anti-spam check
+    const spamCheck = validateAntiSpam({
+      honeypotValue: honeypotTrap,
+      formStartTime: formStartTime,
+      captchaToken: captchaToken,
+    });
+
+    if (!spamCheck.allowed) {
+      if (spamCheck.waitRemainingSeconds) {
+        setCooldownError(`Заявка уже отправлена. Повторная отправка через ${spamCheck.waitRemainingSeconds} сек.`);
+        return;
+      } else {
+        setFormSubmitted(true);
+        setCreatedLeadId(`PROT-${Date.now().toString().slice(-4)}`);
+        return;
+      }
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -81,6 +107,7 @@ export const B2BTendersPage: React.FC<B2BTendersPageProps> = ({
         company: formCompany,
         department: 'Тендерный отдел 44-ФЗ/223-ФЗ и сопровождения госзакупок',
         pageSource: 'Страница: B2B и Тендерный отдел (44-ФЗ / 223-ФЗ / ГОЗ)',
+        captchaToken: captchaToken,
         details: {
           'Тип контракта': contractType,
           'Срочность выпуска': urgency === 'express' ? 'Экспресс: 2–3 раб. дня' : 'Стандарт: 10–15 раб. дней',
@@ -97,6 +124,7 @@ export const B2BTendersPage: React.FC<B2BTendersPageProps> = ({
       if (result.leadId) {
         setCreatedLeadId(result.leadId);
       }
+      recordSubmissionTimestamp();
     } catch (err) {
       console.warn('Bitrix lead dispatch error:', err);
     } finally {
@@ -919,6 +947,31 @@ export const B2BTendersPage: React.FC<B2BTendersPageProps> = ({
                       <option value="express">Экспресс: 2-3 раб.дня</option>
                     </select>
                   </div>
+
+                  {cooldownError && (
+                    <div className="p-2.5 bg-red-950/60 border border-red-800 text-red-300 text-xs font-mono">
+                      {cooldownError}
+                    </div>
+                  )}
+
+                  {/* Honeypot invisible trap */}
+                  <div style={{ display: 'none', position: 'absolute', left: '-9999px' }} aria-hidden="true">
+                    <input
+                      type="text"
+                      name="b2b_tender_trap"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={honeypotTrap}
+                      onChange={(e) => setHoneypotTrap(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Yandex SmartCaptcha */}
+                  <SmartCaptchaWidget
+                    theme="dark"
+                    onSuccess={(token) => setCaptchaToken(token)}
+                    onReset={() => setCaptchaToken('')}
+                  />
 
                   <ConsentCheckbox
                     id="b2b-tender-consent"

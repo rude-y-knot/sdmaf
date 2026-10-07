@@ -20,6 +20,8 @@ import {
 } from 'lucide-react';
 import { useEstimate } from '../context/EstimateContext';
 import { ConsentCheckbox } from './ConsentCheckbox';
+import { SmartCaptchaWidget } from './SmartCaptchaWidget';
+import { validateAntiSpam, recordSubmissionTimestamp } from '../services/antiSpamService';
 import { sendLeadToBitrix24, buildBitrixLeadTitle } from '../services/bitrixService';
 
 interface BatchEstimateDrawerProps {
@@ -55,6 +57,10 @@ export const BatchEstimateDrawer: React.FC<BatchEstimateDrawerProps> = ({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [requestNumber, setRequestNumber] = useState('');
   const [createdLeadId, setCreatedLeadId] = useState<string | number | null>(null);
+  const [captchaToken, setCaptchaToken] = useState('');
+  const [honeypotTrap, setHoneypotTrap] = useState('');
+  const [formStartTime] = useState<number>(() => Date.now());
+  const [cooldownError, setCooldownError] = useState<string | null>(null);
 
   if (!isBatchDrawerOpen) return null;
 
@@ -65,7 +71,26 @@ export const BatchEstimateDrawer: React.FC<BatchEstimateDrawerProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setCooldownError(null);
     if (!contactPhone.trim() || items.length === 0 || !consentChecked) return;
+
+    // Anti-spam check
+    const spamCheck = validateAntiSpam({
+      honeypotValue: honeypotTrap,
+      formStartTime: formStartTime,
+      captchaToken: captchaToken,
+    });
+
+    if (!spamCheck.allowed) {
+      if (spamCheck.waitRemainingSeconds) {
+        setCooldownError(`Заявка уже отправлена. Повторная отправка через ${spamCheck.waitRemainingSeconds} сек.`);
+        return;
+      } else {
+        setIsSubmitted(true);
+        setCreatedLeadId(`PROT-${Date.now().toString().slice(-4)}`);
+        return;
+      }
+    }
 
     setIsSubmitting(true);
     const orderNum = `СД-СМЕТА-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -89,6 +114,7 @@ export const BatchEstimateDrawer: React.FC<BatchEstimateDrawerProps> = ({
         company: contactCompany,
         department: 'Отдел оптовых поставок и проектов благоустройства',
         pageSource: 'Сводная проектная смета (Корзина спецификации МАФ)',
+        captchaToken: captchaToken,
         details: {
           'Номер сметы на сайте': orderNum,
           'Всего изделий': `${totalCount} шт.`,
@@ -104,6 +130,7 @@ export const BatchEstimateDrawer: React.FC<BatchEstimateDrawerProps> = ({
       if (result.leadId) {
         setCreatedLeadId(result.leadId);
       }
+      recordSubmissionTimestamp();
     } catch (err) {
       console.warn('Bitrix lead error:', err);
     } finally {
@@ -492,6 +519,31 @@ export const BatchEstimateDrawer: React.FC<BatchEstimateDrawerProps> = ({
                       <option value="express">Экспресс: 2-3 раб.дня</option>
                     </select>
                   </div>
+
+                  {cooldownError && (
+                    <div className="p-2.5 bg-red-50 border border-red-200 text-red-700 text-xs font-mono">
+                      {cooldownError}
+                    </div>
+                  )}
+
+                  {/* Honeypot invisible trap */}
+                  <div style={{ display: 'none', position: 'absolute', left: '-9999px' }} aria-hidden="true">
+                    <input
+                      type="text"
+                      name="batch_estimate_trap"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={honeypotTrap}
+                      onChange={(e) => setHoneypotTrap(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Yandex SmartCaptcha */}
+                  <SmartCaptchaWidget
+                    theme="light"
+                    onSuccess={(token) => setCaptchaToken(token)}
+                    onReset={() => setCaptchaToken('')}
+                  />
 
                   <ConsentCheckbox
                     id="batch-estimate-consent"

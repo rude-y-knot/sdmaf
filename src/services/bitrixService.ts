@@ -30,6 +30,7 @@ export interface BitrixLeadPayload {
   opportunity?: number; // Kept for backwards compatibility if needed, but not sent to CRM fields
   department?: string;
   pageSource?: string;
+  captchaToken?: string;
   details: Record<string, string | number | boolean | null | undefined | string[]>;
   files?: Array<{ name: string; size?: string; url?: string; fileName?: string }>;
 }
@@ -67,6 +68,7 @@ function formatLeadCommentsHtml(payload: BitrixLeadPayload): string {
   if (payload.company) contactsList.push(`<li><b>Организация / Компания:</b> ${escapeHtml(payload.company)}</li>`);
   if (payload.inn) contactsList.push(`<li><b>ИНН:</b> ${escapeHtml(payload.inn)}</li>`);
   if (payload.department) contactsList.push(`<li><b>Профильный отдел:</b> ${escapeHtml(payload.department)}</li>`);
+  contactsList.push(`<li><b>Антиспам защита:</b> ${payload.captchaToken ? '<span style="color: #16a34a; font-weight: bold;">Яндекс SmartCaptcha пройдена ✓</span>' : '<span style="color: #64748b;">Проверено встроенным фильтром</span>'}</li>`);
 
   const detailsList: string[] = [];
   if (payload.details && Object.keys(payload.details).length > 0) {
