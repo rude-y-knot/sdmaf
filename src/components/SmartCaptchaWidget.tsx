@@ -43,41 +43,59 @@ export const SmartCaptchaWidget: React.FC<SmartCaptchaWidgetProps> = ({
   theme = 'light',
   className = '',
 }) => {
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const mountRef = useRef<HTMLDivElement | null>(null);
   const widgetIdRef = useRef<number | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+
+  // Store callbacks in refs to avoid re-rendering/re-initializing captcha on parent state changes (e.g. typing)
+  const onSuccessRef = useRef(onSuccess);
+  const onResetRef = useRef(onReset);
+
+  useEffect(() => {
+    onSuccessRef.current = onSuccess;
+    onResetRef.current = onReset;
+  }, [onSuccess, onReset]);
 
   useEffect(() => {
     let intervalId: any = null;
     let isMounted = true;
 
     const tryInitCaptcha = () => {
-      if (typeof window !== 'undefined' && window.smartCaptcha && containerRef.current) {
-        // Clear previous instances if any
+      if (typeof window !== 'undefined' && window.smartCaptcha && mountRef.current) {
+        // Destroy previous widget instance if exists
         if (widgetIdRef.current !== null) {
           try {
             window.smartCaptcha.destroy(widgetIdRef.current);
           } catch {
-            // Ignore reset issues
+            // Ignore error if already destroyed
           }
           widgetIdRef.current = null;
         }
 
+        // Clean mount container
+        if (mountRef.current) {
+          mountRef.current.innerHTML = '';
+        }
+
         try {
-          const id = window.smartCaptcha.render(containerRef.current, {
+          const id = window.smartCaptcha.render(mountRef.current, {
             sitekey: YANDEX_SMARTCAPTCHA_SITEKEY,
             hl: 'ru',
             theme: theme === 'dark' ? 'dark' : 'light',
             callback: (token: string) => {
               if (!isMounted) return;
               setIsVerified(true);
-              onSuccess(token);
+              if (onSuccessRef.current) {
+                onSuccessRef.current(token);
+              }
             },
             'token-expired-callback': () => {
               if (!isMounted) return;
               setIsVerified(false);
-              if (onReset) onReset();
+              if (onResetRef.current) {
+                onResetRef.current();
+              }
             },
             'error-callback': () => {
               if (!isMounted) return;
@@ -86,7 +104,9 @@ export const SmartCaptchaWidget: React.FC<SmartCaptchaWidgetProps> = ({
           });
 
           widgetIdRef.current = id;
-          setIsLoaded(true);
+          if (isMounted) {
+            setIsLoaded(true);
+          }
           return true;
         } catch (err) {
           console.warn('SmartCaptcha render note:', err);
@@ -97,32 +117,33 @@ export const SmartCaptchaWidget: React.FC<SmartCaptchaWidgetProps> = ({
 
     // Try immediately
     if (!tryInitCaptcha()) {
-      // Poll until captcha.js script is loaded from CDN
       let retries = 0;
       intervalId = setInterval(() => {
         retries++;
-        if (tryInitCaptcha() || retries > 25) {
+        if (tryInitCaptcha() || retries > 30) {
           clearInterval(intervalId);
-          if (retries > 25 && isMounted) {
-            // If offline or blocked by adblock, allow smooth fallback
+          if (retries > 30 && isMounted) {
             setIsLoaded(true);
           }
         }
-      }, 200);
+      }, 150);
     }
 
     return () => {
       isMounted = false;
-      if (intervalId) clearInterval(intervalId);
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
       if (widgetIdRef.current !== null && window.smartCaptcha) {
         try {
           window.smartCaptcha.destroy(widgetIdRef.current);
         } catch {
-          // ignore
+          // Ignore destruction errors
         }
+        widgetIdRef.current = null;
       }
     };
-  }, [theme, onSuccess, onReset]);
+  }, [theme]); // Only recreate if theme changes
 
   return (
     <div className={`smart-captcha-wrapper my-3 ${className}`}>
@@ -136,16 +157,18 @@ export const SmartCaptchaWidget: React.FC<SmartCaptchaWidgetProps> = ({
         )}
       </div>
 
-      <div 
-        ref={containerRef} 
-        className="min-h-[100px] flex items-center justify-start rounded-xs overflow-hidden bg-neutral-50 border border-neutral-200"
-      >
+      <div className={`relative min-h-[102px] flex items-center justify-start rounded-xs border ${
+        theme === 'dark' ? 'bg-neutral-900 border-neutral-800' : 'bg-neutral-50 border-neutral-200'
+      }`}>
         {!isLoaded && (
-          <div className="p-4 text-xs font-mono text-neutral-400 flex items-center gap-2">
+          <div className="absolute inset-0 flex items-center justify-center p-4 text-xs font-mono text-neutral-400 gap-2">
             <RefreshCw className="w-3.5 h-3.5 animate-spin text-neutral-500" />
             <span>Загрузка безопасного модуля проверки...</span>
           </div>
         )}
+        
+        {/* Dedicated empty host element for Yandex SmartCaptcha DOM (NO React VDOM children inside) */}
+        <div ref={mountRef} className="w-full" />
       </div>
     </div>
   );
