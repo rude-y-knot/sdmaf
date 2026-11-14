@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 import path from "path";
 import fs from "fs";
@@ -22,7 +23,7 @@ const getFileAndDir = () => {
 const { filename: _currentFilename, dirname: _currentDirname } = getFileAndDir();
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 // Ensure uploads directory exists
 const uploadsDir = path.join(process.cwd(), "uploads");

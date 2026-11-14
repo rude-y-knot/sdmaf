@@ -5,13 +5,14 @@ on:
     branches:
       - main
       - master
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy via SSH (isolated user)
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -21,18 +22,28 @@ jobs:
           script: |
             set -e
             echo "--> Переход в рабочую папку проекта..."
-            cd /home/sdmaf/app
+            cd /var/www/sdmaf
 
-            echo "--> Забираем последние изменения из Git..."
-            git pull origin $(git rev-parse --abbrev-ref HEAD)
+            echo "--> Забираем последние изменения из приватного Git..."
+            BRANCH=$(git rev-parse --abbrev-ref HEAD)
+            git fetch origin "$BRANCH"
+            git reset --hard "origin/$BRANCH"
 
             echo "--> Установка зависимостей..."
-            npm install --silent
+            npm ci --silent
 
-            echo "--> Сборка продакшн-бандла..."
+            echo "--> Сборка продакшн-бандла (Vite + Express)..."
             npm run build
 
-            echo "--> Перезагрузка Nginx..."
-            sudo /bin/systemctl reload nginx
+            echo "--> Перезапуск только процесса sdmaf в PM2 (без влияния на другие сервисы)..."
+            if pm2 describe sdmaf > /dev/null 2>&1; then
+              NODE_ENV=production pm2 reload sdmaf --update-env
+            else
+              NODE_ENV=production pm2 start dist/server.cjs --name sdmaf
+            fi
+            pm2 save
 
-            echo "--> Готово! Сайт успешно обновлен на sdmaf.magmastack.ru"
+            echo "--> Проверка конфигурации и плавная перезагрузка Nginx..."
+            nginx -t && systemctl reload nginx
+
+            echo "--> Готово! Сайт sdmaf.ru успешно обновлен."
