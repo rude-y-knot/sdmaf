@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   AlertTriangle, 
   Home, 
@@ -106,20 +106,19 @@ export function NotFoundPage({ onOpenCalculator, onOpenMeasurerModal }: NotFound
         description="Страница не найдена (код 404). Запрашиваемый адрес отсутствует или был перемещен. Воспользуйтесь навигацией по каталогу МАФ и услугам металлообработки завода «Стальное Дело»."
         keywords="404 страница не найдена, ошибка 404 стальное дело, каталог маф спб"
         canonicalPath="/404"
+        robots="noindex, follow"
       />
-      {/* Search Engines Directive */}
-      <meta name="robots" content="noindex, follow" />
 
       {/* Top Technical Breadcrumbs */}
       <div className="border-b border-neutral-200 bg-neutral-50/70">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between text-xs font-mono text-neutral-500">
           <div className="flex items-center gap-2">
-            <button 
-              onClick={() => navigate('/')}
+            <Link
+              to="/"
               className="hover:text-black transition-colors flex items-center gap-1 cursor-pointer"
             >
               <span>Главная</span>
-            </button>
+            </Link>
             <ChevronRight className="w-3.5 h-3.5 text-neutral-300" />
             <span className="text-neutral-900 font-medium">Статус 404: Ошибка адресации</span>
           </div>
@@ -198,21 +197,21 @@ export function NotFoundPage({ onOpenCalculator, onOpenMeasurerModal }: NotFound
 
             {/* Quick Actions Row */}
             <div className="mt-8 pt-8 border-t border-neutral-200 flex flex-wrap items-center gap-3">
-              <button
-                onClick={() => navigate('/')}
+              <Link
+                to="/"
                 className="inline-flex items-center gap-2 px-5 py-3 bg-neutral-950 hover:bg-neutral-800 text-white text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer group"
               >
                 <Home className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
                 <span>На главную страницу</span>
-              </button>
+              </Link>
 
-              <button
-                onClick={() => navigate('/catalog')}
+              <Link
+                to="/catalog"
                 className="inline-flex items-center gap-2 px-5 py-3 bg-white hover:bg-neutral-100 text-neutral-900 text-xs font-mono uppercase tracking-wider border border-neutral-300 transition-colors cursor-pointer"
               >
                 <Layers className="w-4 h-4 text-neutral-700" />
                 <span>Каталог продукции МАФ</span>
-              </button>
+              </Link>
 
               <button
                 onClick={() => {
@@ -248,9 +247,9 @@ export function NotFoundPage({ onOpenCalculator, onOpenMeasurerModal }: NotFound
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {directCategories.map((cat, idx) => (
-                <div
+                <Link
                   key={idx}
-                  onClick={() => navigate(cat.link)}
+                  to={cat.link}
                   className="p-5 border border-neutral-200 bg-white hover:border-black hover:shadow-xs transition-all cursor-pointer group flex flex-col justify-between"
                 >
                   <div>
@@ -274,7 +273,7 @@ export function NotFoundPage({ onOpenCalculator, onOpenMeasurerModal }: NotFound
                   <div className="mt-4 pt-3 border-t border-neutral-100 text-[11px] font-mono text-neutral-400 group-hover:text-neutral-900 transition-colors">
                     Перейти в раздел &rarr;
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>

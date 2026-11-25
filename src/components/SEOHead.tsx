@@ -1,26 +1,77 @@
-import React, { useEffect } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 
 export interface SEOProps {
   title: string;
   description: string;
   keywords?: string;
   canonicalPath?: string;
+  robots?: string;
   ogType?: 'website' | 'article' | 'product';
   ogImage?: string;
   jsonLd?: Record<string, any> | Array<Record<string, any>>;
 }
 
+export interface CollectedSEOData {
+  title: string;
+  description: string;
+  keywords?: string;
+  canonicalUrl: string;
+  robots: string;
+  ogType: 'website' | 'article' | 'product';
+  ogImage: string;
+  jsonLd?: Record<string, any> | Array<Record<string, any>>;
+}
+
 const BASE_URL = 'https://sdmaf.ru';
+const DEFAULT_ROBOTS =
+  'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
+
+const SEOCollectorContext = createContext<{ current: CollectedSEOData | null } | null>(null);
+
+export const SEOProvider: React.FC<{
+  collector: { current: CollectedSEOData | null };
+  children: React.ReactNode;
+}> = ({ collector, children }) => (
+  <SEOCollectorContext.Provider value={collector}>
+    {children}
+  </SEOCollectorContext.Provider>
+);
+
+function buildCanonicalUrl(canonicalPath: string): string {
+  if (!canonicalPath || canonicalPath === '/') {
+    return `${BASE_URL}/`;
+  }
+  const normalized = canonicalPath.startsWith('/') ? canonicalPath : `/${canonicalPath}`;
+  return `${BASE_URL}${normalized.replace(/\/+$/, '')}`;
+}
 
 export const SEOHead: React.FC<SEOProps> = ({
   title,
   description,
   keywords,
-  canonicalPath = '',
+  canonicalPath = '/',
+  robots = DEFAULT_ROBOTS,
   ogType = 'website',
   ogImage = 'https://sdmaf.ru/logo.png',
   jsonLd,
 }) => {
+  const collector = useContext(SEOCollectorContext);
+  const canonicalUrl = buildCanonicalUrl(canonicalPath);
+
+  // Synchronously collect head metadata during Vite SSG / SSR rendering
+  if (collector) {
+    collector.current = {
+      title,
+      description,
+      keywords,
+      canonicalUrl,
+      robots,
+      ogType,
+      ogImage,
+      jsonLd,
+    };
+  }
+
   useEffect(() => {
     // 1. Update Document Title
     document.title = title;
@@ -38,6 +89,7 @@ export const SEOHead: React.FC<SEOProps> = ({
 
     // 2. Standard Meta Tags
     setMetaTag('name', 'description', description);
+    setMetaTag('name', 'robots', robots);
     if (keywords) {
       setMetaTag('name', 'keywords', keywords);
     }
@@ -48,8 +100,6 @@ export const SEOHead: React.FC<SEOProps> = ({
     setMetaTag('property', 'og:type', ogType);
     setMetaTag('property', 'og:site_name', 'Завод металлоконструкций и МАФ «Стальное Дело»');
     setMetaTag('property', 'og:locale', 'ru_RU');
-
-    const canonicalUrl = `${BASE_URL}${canonicalPath.startsWith('/') ? canonicalPath : `/${canonicalPath}`}`;
     setMetaTag('property', 'og:url', canonicalUrl);
     if (ogImage) {
       setMetaTag('property', 'og:image', ogImage);
@@ -94,7 +144,7 @@ export const SEOHead: React.FC<SEOProps> = ({
         currentScript.remove();
       }
     };
-  }, [title, description, keywords, canonicalPath, ogType, ogImage, jsonLd]);
+  }, [title, description, keywords, canonicalUrl, robots, ogType, ogImage, jsonLd]);
 
   return null;
 };

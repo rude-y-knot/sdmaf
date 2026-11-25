@@ -23,25 +23,36 @@ const STORAGE_KEY = 'stalnoe_delo_estimate_items';
 const EstimateContext = createContext<EstimateContextType | undefined>(undefined);
 
 export const EstimateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [items, setItems] = useState<EstimateItem[]>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [items, setItems] = useState<EstimateItem[]>([]);
+  const [isStorageHydrated, setIsStorageHydrated] = useState<boolean>(false);
 
   const [isBatchDrawerOpen, setIsBatchDrawerOpen] = useState<boolean>(false);
   const [calculatingProduct, setCalculatingProduct] = useState<MAFProduct | null>(null);
 
   useEffect(() => {
     try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setItems(parsed);
+        }
+      }
+    } catch {
+      // Ignore localStorage access restrictions in private/audit environments
+    } finally {
+      setIsStorageHydrated(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isStorageHydrated) return;
+    try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     } catch {
       // Ignore localStorage access restrictions in private/audit environments
     }
-  }, [items]);
+  }, [items, isStorageHydrated]);
 
   const addItem = (product: MAFProduct, quantity = 1) => {
     setItems((prev) => {

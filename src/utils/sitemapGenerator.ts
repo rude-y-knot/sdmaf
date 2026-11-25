@@ -179,51 +179,6 @@ export const SITEMAP_ROUTES: SitemapRoute[] = [
       { url: '/images/welding.png', title: 'Сварочный пост НАКС EWM' }
     ]
   },
-  {
-    path: '/production/laser-22kw-6m',
-    name: 'Паспорт оборудования: Лазерный комплекс Knoppo KF 3 кВт',
-    category: 'Производство и цеха',
-    priority: 0.80,
-    changefreq: 'monthly',
-    lastmod: '2026-09-28',
-    description: 'Технические характеристики, разрезаемые толщины и режимы работы лазерного раскроя Knoppo.',
-  },
-  {
-    path: '/production/bending-250t',
-    name: 'Паспорт оборудования: Листогибочный пресс 250т / 4000мм',
-    category: 'Производство и цеха',
-    priority: 0.80,
-    changefreq: 'monthly',
-    lastmod: '2026-09-28',
-    description: 'Технические характеристики и возможности гибки листовой стали, нержавейки и алюминия.',
-  },
-  {
-    path: '/production/rolling-faccin',
-    name: 'Паспорт оборудования: Вальцы листогибочные Faccin 4HEL',
-    category: 'Производство и цеха',
-    priority: 0.80,
-    changefreq: 'monthly',
-    lastmod: '2026-09-28',
-    description: 'Параметры вальцовки обечаек банных чанов, трубных спусков и резервуаров.',
-  },
-  {
-    path: '/production/coating-ral',
-    name: 'Паспорт оборудования: Порошковый комплекс с печью 7м',
-    category: 'Производство и цеха',
-    priority: 0.80,
-    changefreq: 'monthly',
-    lastmod: '2026-09-28',
-    description: 'Технология подготовки поверхности, фосфатирования, цинкового праймера и запекания порошка.',
-  },
-  {
-    path: '/production/welding-naks',
-    name: 'Паспорт оборудования: Сварочные аппараты EWM и посты НАКС',
-    category: 'Производство и цеха',
-    priority: 0.80,
-    changefreq: 'monthly',
-    lastmod: '2026-09-28',
-    description: 'Технологические карты сварки, контроль неразрушающими методами (ВИК, УЗК).',
-  },
 
   // 4. B2B, FAQ и Сервисы
   {

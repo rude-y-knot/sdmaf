@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   Phone, 
   Clock, 
@@ -166,25 +167,29 @@ export const Header: React.FC<HeaderProps> = ({
       <div className={`glass-nav transition-all duration-300 border-b border-neutral-200 ${isScrolled ? 'py-2.5 shadow-none' : 'py-3.5'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           {/* Brand Logo SVG */}
-          <button 
-            type="button"
+          <Link
+            to="/"
             data-no-hover="true"
-            onClick={() => handleLinkClick('hero')} 
+            onClick={() => {
+              setActiveMegaTab(null);
+              setMobileMenuOpen(false);
+            }}
             className="flex items-center cursor-pointer group py-1 focus:outline-none transition-opacity hover:opacity-80 text-left shrink-0 mr-6 lg:mr-10"
             aria-label="Завод Стальное Дело — перейти к началу"
           >
             <BrandLogo 
               className="h-8 sm:h-9 w-auto origin-left" 
-              textColor="#34363B" 
+              textColor="#34363B"
             />
-          </button>
+          </Link>
 
           {/* Desktop Navigation with Minimalist Dropdowns */}
           <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
-            <button
+            <Link
+              to="/production"
               data-no-hover="true"
               onMouseEnter={() => setActiveMegaTab('metall')}
-              onClick={() => handleLinkClick('production')}
+              onClick={() => setActiveMegaTab(null)}
               className={`flex items-center gap-1.5 py-2 text-[12px] uppercase tracking-[0.14em] font-medium transition-colors cursor-pointer ${
                 currentPage === 'production'
                   ? 'text-black font-semibold border-b-2 border-black -mb-[2px]'
@@ -195,12 +200,13 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <span>Производство</span>
               <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${activeMegaTab === 'metall' ? 'rotate-180 text-black' : 'text-neutral-400'}`} />
-            </button>
+            </Link>
 
-            <button
+            <Link
+              to="/catalog"
               data-no-hover="true"
               onMouseEnter={() => setActiveMegaTab('maf')}
-              onClick={() => handleLinkClick('catalog')}
+              onClick={() => setActiveMegaTab(null)}
               className={`flex items-center gap-1.5 py-2 text-[12px] uppercase tracking-[0.14em] font-medium transition-colors cursor-pointer ${
                 currentPage === 'catalog'
                   ? 'text-black font-semibold border-b-2 border-black -mb-[2px]'
@@ -211,12 +217,13 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <span>Продукция завода</span>
               <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${activeMegaTab === 'maf' ? 'rotate-180 text-black' : 'text-neutral-400'}`} />
-            </button>
+            </Link>
 
-            <button
+            <Link
+              to="/faq"
               data-no-hover="true"
               onMouseEnter={() => setActiveMegaTab('faq')}
-              onClick={() => handleLinkClick('faq')}
+              onClick={() => setActiveMegaTab(null)}
               className={`flex items-center gap-1.5 py-2 text-[12px] uppercase tracking-[0.14em] font-medium transition-colors cursor-pointer ${
                 currentPage === 'faq'
                   ? 'text-black font-semibold border-b-2 border-black -mb-[2px]'
@@ -227,11 +234,12 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <span>Частые вопросы</span>
               <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${activeMegaTab === 'faq' ? 'rotate-180 text-black' : 'text-neutral-400'}`} />
-            </button>
+            </Link>
 
-            <button
+            <Link
+              to="/b2b"
               data-no-hover="true"
-              onClick={() => handleLinkClick('b2b')}
+              onClick={() => setActiveMegaTab(null)}
               className={`py-2 text-[12px] uppercase tracking-[0.14em] font-medium transition-colors cursor-pointer ${
                 currentPage === 'b2b'
                   ? 'text-black font-semibold border-b-2 border-black -mb-[2px]'
@@ -239,11 +247,12 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               B2B / Тендеры
-            </button>
+            </Link>
 
-            <button
+            <Link
+              to="/contacts"
               data-no-hover="true"
-              onClick={() => handleLinkClick('contacts')}
+              onClick={() => setActiveMegaTab(null)}
               className={`py-2 text-[12px] uppercase tracking-[0.14em] font-medium transition-colors cursor-pointer ${
                 currentPage === 'contacts'
                   ? 'text-black font-semibold border-b-2 border-black -mb-[2px]'
@@ -251,7 +260,7 @@ export const Header: React.FC<HeaderProps> = ({
               }`}
             >
               Контакты
-            </button>
+            </Link>
           </nav>
 
           {/* Mobile menu trigger */}

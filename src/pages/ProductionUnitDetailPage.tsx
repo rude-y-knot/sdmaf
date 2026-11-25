@@ -95,13 +95,23 @@ export const ProductionUnitDetailPage: React.FC<ProductionUnitDetailPageProps> =
   const prevUnit = PRODUCTION_UNITS[(currentIndex - 1 + PRODUCTION_UNITS.length) % PRODUCTION_UNITS.length];
   const nextUnit = PRODUCTION_UNITS[(currentIndex + 1) % PRODUCTION_UNITS.length];
 
+  const unitCanonicalMap: Record<string, string> = {
+    'laser-22kw-6m': '/laser',
+    'bending-250t': '/bending',
+    'rolling-faccin': '/rolling',
+    'coating-ral': '/coating',
+    'welding-naks': '/welding',
+    'engineering-bureau': '/engineering',
+  };
+  const canonicalPath = unitCanonicalMap[unit.id] || location.pathname || `/production/${unit.id}`;
+
   return (
     <div className="bg-white min-h-screen selection:bg-black selection:text-white">
       <SEOHead
         title={`${unit.shortTitle} — Завод «Стальное Дело» СПб`}
         description={unit.description.length > 155 ? `${unit.description.slice(0, 155).trim()}...` : unit.description}
         keywords={`${unit.shortTitle.toLowerCase()}, ${unit.brand.toLowerCase()}, металлообработка спб, колпино, завод стальное дело, станки чпу, услуги производства`}
-        canonicalPath={location.pathname || `/production/${unit.id}`}
+        canonicalPath={canonicalPath}
         jsonLd={{
           '@context': 'https://schema.org',
           '@type': 'Service',

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   MapPin, 
   Phone, 
@@ -181,14 +182,14 @@ export const Footer: React.FC<FooterProps> = ({
           {/* Col 1: About & Logo */}
           <div className="space-y-4">
             <div>
-              <button 
+              <Link
+                to="/"
                 data-no-hover="true"
-                onClick={onNavigateHome}
-                className="text-left cursor-pointer hover:opacity-80 transition-opacity"
+                className="inline-block text-left cursor-pointer hover:opacity-80 transition-opacity"
                 title="На главную"
               >
                 <BrandLogo className="h-9 w-auto mb-3" textColor="#FFFFFF" />
-              </button>
+              </Link>
               <div className="text-[11px] font-mono text-neutral-400 tracking-wider uppercase">
                 sdmaf.ru • Завод металлоконструкций и МАФ
               </div>
@@ -210,94 +211,112 @@ export const Footer: React.FC<FooterProps> = ({
             </h4>
             <ul className="space-y-2.5 font-light">
               <li>
-                <button
+                <Link
+                  to="/laser"
                   data-no-hover="true"
-                  onClick={() => onNavigateToLaser ? onNavigateToLaser() : onNavigateToProduction ? onNavigateToProduction('laser-22kw-6m') : null}
                   className="hover:text-white transition-colors text-left cursor-pointer"
                 >
                   Лазерный раскрой Knoppo KF 3 кВт
-                </button>
+                </Link>
               </li>
               <li>
-                <button
+                <Link
+                  to="/bending"
                   data-no-hover="true"
-                  onClick={() => onNavigateToProduction ? onNavigateToProduction('bending-250t') : null}
                   className="hover:text-white transition-colors text-left cursor-pointer"
                 >
                   Гибка металла (HACO & MAIHONG 160т)
-                </button>
+                </Link>
               </li>
               <li>
-                <button
+                <Link
+                  to="/coating"
                   data-no-hover="true"
-                  onClick={() => onNavigateToProduction ? onNavigateToProduction('coating-ral') : null}
                   className="hover:text-white transition-colors text-left cursor-pointer"
                 >
                   Порошковая окраска (камеры 3м и 6м)
-                </button>
+                </Link>
               </li>
               <li>
-                <button
+                <Link
+                  to="/rolling"
                   data-no-hover="true"
-                  onClick={() => onNavigateToProduction ? onNavigateToProduction('rolling-faccin') : null}
                   className="hover:text-white transition-colors text-left cursor-pointer"
                 >
                   Вальцовка Keepler RME 1500×4 мм
-                </button>
+                </Link>
               </li>
               <li>
-                <button 
+                <Link
+                  to="/welding"
                   data-no-hover="true"
-                  onClick={() => onNavigateToCatalog ? onNavigateToCatalog('slides') : null}
+                  className="hover:text-white transition-colors text-left cursor-pointer"
+                >
+                  Сварочный участок НАКС (TIG/MIG)
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/engineering"
+                  data-no-hover="true"
+                  className="hover:text-white transition-colors text-left cursor-pointer"
+                >
+                  Конструкторское бюро (КМ/КМД)
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/catalog/slides"
+                  data-no-hover="true"
                   className="hover:text-white transition-colors text-left cursor-pointer"
                 >
                   Детские горки, скаты и тоннели AISI 304
-                </button>
+                </Link>
               </li>
               <li>
-                <button 
+                <Link
+                  to="/catalog/furniture"
                   data-no-hover="true"
-                  onClick={() => onNavigateToCatalog ? onNavigateToCatalog('furniture') : null}
                   className="hover:text-white transition-colors text-left cursor-pointer"
                 >
                   Парковая и уличная мебель
-                </button>
+                </Link>
               </li>
               <li>
-                <button 
+                <Link
+                  to="/catalog/stainless"
                   data-no-hover="true"
-                  onClick={() => onNavigateToCatalog ? onNavigateToCatalog('stainless') : null}
                   className="hover:text-white transition-colors text-left cursor-pointer"
                 >
                   Изделия из нержавеющей стали
-                </button>
+                </Link>
               </li>
               <li>
-                <button 
+                <Link
+                  to="/catalog/vats"
                   data-no-hover="true"
-                  onClick={() => onNavigateToCatalog ? onNavigateToCatalog('vats') : null}
                   className="hover:text-white transition-colors text-left cursor-pointer"
                 >
                   Банные чаны и уличные купели
-                </button>
+                </Link>
               </li>
               <li>
-                <button 
+                <Link
+                  to="/catalog/bike"
                   data-no-hover="true"
-                  onClick={() => onNavigateToCatalog ? onNavigateToCatalog('bike') : null}
                   className="hover:text-white transition-colors text-left cursor-pointer"
                 >
                   Велосипедные парковки и велобоксы
-                </button>
+                </Link>
               </li>
               <li>
-                <button 
+                <Link
+                  to="/catalog/suvenirs"
                   data-no-hover="true"
-                  onClick={() => onNavigateToCatalog ? onNavigateToCatalog('suvenirs') : null}
                   className="hover:text-white transition-colors text-left cursor-pointer"
                 >
                   Сувенирная продукция, вывески и POS-материалы
-                </button>
+                </Link>
               </li>
             </ul>
           </div>
@@ -319,61 +338,61 @@ export const Footer: React.FC<FooterProps> = ({
                 </button>
               </li>
               <li>
-                <button 
-                  data-no-hover="true" 
-                  onClick={() => onNavigateToFAQ ? onNavigateToFAQ() : null} 
+                <Link
+                  to="/faq"
+                  data-no-hover="true"
                   className="hover:text-white text-left transition-colors cursor-pointer"
                 >
                   Частые вопросы (FAQ)
-                </button>
+                </Link>
               </li>
               <li>
-                <button 
-                  data-no-hover="true" 
-                  onClick={() => onNavigateToB2B ? onNavigateToB2B() : null} 
+                <Link
+                  to="/b2b"
+                  data-no-hover="true"
                   className="hover:text-white text-left transition-colors cursor-pointer"
                 >
                   B2B и тендерные поставки (44-ФЗ)
-                </button>
+                </Link>
               </li>
               <li>
-                <button 
-                  data-no-hover="true" 
-                  onClick={() => onNavigateToContacts ? onNavigateToContacts() : null} 
+                <Link
+                  to="/contacts"
+                  data-no-hover="true"
                   className="hover:text-white text-left transition-colors cursor-pointer"
                 >
                   Контакты служб завода
-                </button>
+                </Link>
               </li>
               <li className="pt-2 border-t border-neutral-800">
-                <button
+                <Link
+                  to="/requisites"
                   data-no-hover="true"
-                  onClick={() => onNavigateToRequisites ? onNavigateToRequisites() : null}
                   className="hover:text-white text-left transition-colors cursor-pointer flex items-center gap-1.5 text-neutral-300 font-normal"
                 >
                   <Building2 className="w-3.5 h-3.5 text-neutral-400" />
                   <span>Реквизиты ООО «Кадет СПб»</span>
-                </button>
+                </Link>
               </li>
               <li>
-                <button
+                <Link
+                  to="/privacy"
                   data-no-hover="true"
-                  onClick={() => onNavigateToPrivacy ? onNavigateToPrivacy() : null}
                   className="hover:text-white text-left transition-colors cursor-pointer flex items-center gap-1.5 text-neutral-300 font-normal"
                 >
                   <ShieldCheck className="w-3.5 h-3.5 text-neutral-400" />
                   <span>Политика конфиденциальности (152-ФЗ)</span>
-                </button>
+                </Link>
               </li>
               <li>
-                <button
+                <Link
+                  to="/offer"
                   data-no-hover="true"
-                  onClick={() => onNavigateToOffer ? onNavigateToOffer() : null}
                   className="hover:text-white text-left transition-colors cursor-pointer flex items-center gap-1.5 text-neutral-300 font-normal"
                 >
                   <FileText className="w-3.5 h-3.5 text-neutral-400" />
                   <span>Публичная оферта (ст. 437 ГК РФ)</span>
-                </button>
+                </Link>
               </li>
               {onOpenSitemapModal && (
                 <li>
@@ -438,32 +457,26 @@ export const Footer: React.FC<FooterProps> = ({
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-4 text-[11px]">
-            {onNavigateToPrivacy && (
-              <button
-                onClick={onNavigateToPrivacy}
-                className="text-neutral-400 hover:text-white underline cursor-pointer"
-              >
-                152-ФЗ Персональные данные
-              </button>
-            )}
+            <Link
+              to="/privacy"
+              className="text-neutral-400 hover:text-white underline cursor-pointer"
+            >
+              152-ФЗ Персональные данные
+            </Link>
             <span>•</span>
-            {onNavigateToOffer && (
-              <button
-                onClick={onNavigateToOffer}
-                className="text-neutral-400 hover:text-white underline cursor-pointer"
-              >
-                Условия оферты
-              </button>
-            )}
+            <Link
+              to="/offer"
+              className="text-neutral-400 hover:text-white underline cursor-pointer"
+            >
+              Условия оферты
+            </Link>
             <span>•</span>
-            {onNavigateToRequisites && (
-              <button
-                onClick={onNavigateToRequisites}
-                className="text-neutral-400 hover:text-white underline cursor-pointer"
-              >
-                Реквизиты
-              </button>
-            )}
+            <Link
+              to="/requisites"
+              className="text-neutral-400 hover:text-white underline cursor-pointer"
+            >
+              Реквизиты
+            </Link>
             {onOpenBitrixGuide && (
               <>
                 <span>•</span>

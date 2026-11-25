@@ -80,6 +80,12 @@ const setCacheHeaders = (res: express.Response, filePath: string) => {
     return;
   }
 
+  // HTML documents must revalidate on every deploy so crawlers & users never get stale SSG pages
+  if (ext === '.html') {
+    res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+    return;
+  }
+
   // Web manifest / JSON / XML / TXT
   if (['.webmanifest', '.json', '.xml', '.txt'].includes(ext)) {
     res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
@@ -320,13 +326,100 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), "dist");
+
+    // Permanent 301 redirects for alias/shortcut routes to prevent duplicate indexing
+    const permanentRedirects: Record<string, string> = {
+      "/kb": "/engineering",
+      "/production/engineering-bureau": "/engineering",
+      "/production/engineering": "/engineering",
+      "/machining": "/production",
+      "/slides": "/catalog/slides",
+      "/gorki": "/catalog/slides",
+      "/geon-slides": "/catalog/slides",
+      "/playgrounds": "/catalog/slides",
+      "/benches": "/catalog/furniture",
+      "/furniture": "/catalog/furniture",
+      "/mebel": "/catalog/furniture",
+      "/bike": "/catalog/bike",
+      "/bike-racks": "/catalog/bike",
+      "/veloparking": "/catalog/bike",
+      "/vats": "/catalog/vats",
+      "/chani": "/catalog/vats",
+      "/metal-structures": "/catalog/stainless",
+      "/stainless": "/catalog/stainless",
+      "/artobj": "/catalog/stainless",
+      "/suvenirs": "/catalog/suvenirs",
+      "/souvenirs": "/catalog/suvenirs",
+      "/pos": "/catalog/suvenirs",
+      "/signs": "/catalog/suvenirs",
+      "/merch": "/catalog/suvenirs",
+      "/vyveski": "/catalog/suvenirs",
+      "/tenders": "/b2b",
+      "/questions": "/faq",
+      "/chasto-zadavaemye-voprosy": "/faq",
+      "/portfolio": "/faq",
+      "/projects": "/faq",
+    };
+
+    // Serve static assets only (disable directory index & auto trailing-slash redirect)
     app.use(express.static(distPath, {
-      maxAge: "365d",
-      immutable: true,
+      index: false,
+      redirect: false,
       setHeaders: setCacheHeaders
     }));
-    app.get("*", (_req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
+
+    // Serve pre-rendered Vite SSG HTML pages, 301 redirects, and real HTTP 404
+    app.get("*", (req, res) => {
+      const rawPath = req.path;
+
+      // Normalize trailing slash on non-root routes with 301 redirect (canonical URLs have no trailing slash)
+      if (rawPath.length > 1 && rawPath.endsWith("/")) {
+        const stripped = rawPath.replace(/\/+$/, "");
+        const query = req.url.includes("?") ? req.url.slice(req.url.indexOf("?")) : "";
+        return res.redirect(301, `${stripped}${query}`);
+      }
+
+      const normalizedPath = rawPath.toLowerCase();
+
+      // 301 redirects for legacy/shortcut routes
+      if (permanentRedirects[normalizedPath]) {
+        return res.redirect(301, permanentRedirects[normalizedPath]);
+      }
+
+      // Explicit /404 path should return HTTP 404 status
+      if (normalizedPath === "/404") {
+        const notFoundFile = path.join(distPath, "404.html");
+        res.setHeader("Cache-Control", "no-store");
+        return res.status(404).sendFile(notFoundFile);
+      }
+
+      // Resolve pre-rendered SSG HTML file
+      let candidateHtml: string;
+      if (normalizedPath === "/") {
+        candidateHtml = path.join(distPath, "index.html");
+      } else {
+        const relativeRoute = normalizedPath.replace(/^\/+/, "");
+        candidateHtml = path.resolve(distPath, relativeRoute, "index.html");
+        // Guard against path traversal outside dist/
+        if (!candidateHtml.startsWith(distPath + path.sep)) {
+          const notFoundFile = path.join(distPath, "404.html");
+          res.setHeader("Cache-Control", "no-store");
+          return res.status(404).sendFile(notFoundFile);
+        }
+      }
+
+      if (fs.existsSync(candidateHtml)) {
+        res.setHeader("Cache-Control", "public, max-age=0, must-revalidate");
+        return res.status(200).sendFile(candidateHtml);
+      }
+
+      // Unknown route -> return real HTTP 404 with pre-rendered styled 404 page
+      const notFoundFile = path.join(distPath, "404.html");
+      res.setHeader("Cache-Control", "no-store");
+      if (fs.existsSync(notFoundFile)) {
+        return res.status(404).sendFile(notFoundFile);
+      }
+      return res.status(404).send("404 Not Found");
     });
   }
 
